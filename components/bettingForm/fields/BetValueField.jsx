@@ -27,7 +27,6 @@ const BetValueField = ({
             if (e.target.value < 0) e.target.value = -1.0 * e.target.value;
             setBetAmt(e.target.value);
           }}
-          defaultValue={"0.000000"}
           value={betAmt}
           onChange={(e) => {
             setBetAmt(e.target.value);

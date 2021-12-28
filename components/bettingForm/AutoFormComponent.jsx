@@ -9,9 +9,30 @@ import Slider from "react-input-slider";
 import BetValueField from "./fields/BetValueField";
 import ChancesFields from "./fields/ChancesFields";
 
+const getRandomArbitrary = (min, max) => {
+  return Math.random() * (max - min) + min;
+};
+const placeBet = (sliderValue, rollType) => {
+  const result = getRandomArbitrary(0.0, 100.0);
+  if (rollType) {
+    if (result >= sliderValue) {
+      console.log("You win ! Result: ", result);
+    } else {
+      console.log("You Lose ! Result: ", result);
+    }
+  } else {
+    if (result <= sliderValue) {
+      console.log("You win ! Result: ", result);
+    } else {
+      console.log("You Lose ! Result: ", result);
+    }
+  }
+};
+
 const AutoFormComponent = () => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmtAuto, setProfitAmtAuto] = useState(0.0);
+  const [noOfBets, setNoOfBets] = useState(1);
   const [toggleRollOver, setToggleRollOverOver] = useState(true); //true - roll over , false - roll under
   const [sliderValue, setSliderValue] = useState(1.99);
   const [multiplierValue, setMultiplierValue] = useState(1.01);
@@ -52,6 +73,9 @@ const AutoFormComponent = () => {
                   className="px-2 py-2 rounded-l font-medium text-sm w-full"
                   type="number"
                   name="bets"
+                  min={"1"}
+                  value={noOfBets}
+                  onChange={(e) => setNoOfBets(e.target.value)}
                 />
                 <button className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
                   <VariableIcon className="h-4 w-4" />
@@ -231,6 +255,16 @@ const AutoFormComponent = () => {
             <button
               type="button"
               className="text-md font-bold bg-btn1 text-white px-28 py-3 rounded"
+              onClick={() => {
+                const timer = (ms) => new Promise((res) => setTimeout(res, ms));
+                async function load() {
+                  for (let i = 0; i < noOfBets; i++) {
+                    placeBet(sliderValue, toggleRollOver);
+                    await timer(1000); // then the created Promise can be awaited
+                  }
+                }
+                load();
+              }}
             >
               Roll dice
             </button>
@@ -248,6 +282,8 @@ const AutoFormComponent = () => {
             x={sliderValue}
             onChange={({ x }) => {
               setSliderValue(parseFloat(x.toFixed(2)));
+              if (!toggleRollOver) setWinChance(parseFloat(x.toFixed(2)));
+              else setWinChance(parseFloat((100.0 - x).toFixed(2)));
             }}
             styles={{
               track: {

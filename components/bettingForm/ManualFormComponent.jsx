@@ -2,7 +2,28 @@ import { useEffect, useState } from "react";
 import Slider from "react-input-slider";
 import BetValueField from "./fields/BetValueField";
 import ChancesFields from "./fields/ChancesFields";
-const ManualFormComponent = () => {
+
+const getRandomArbitrary = (min, max) => {
+  return Math.random() * (max - min) + min;
+};
+const placeBet = (sliderValue, rollType) => {
+  const result = getRandomArbitrary(0.0, 100.0);
+  if (rollType) {
+    if (result >= sliderValue) {
+      console.log("You win ! Result: ", result);
+    } else {
+      console.log("You Lose ! Result: ", result);
+    }
+  } else {
+    if (result <= sliderValue) {
+      console.log("You win ! Result: ", result);
+    } else {
+      console.log("You Lose ! Result: ", result);
+    }
+  }
+};
+
+const ManualFormComponent = ({ betTurnout, setBetTurnout }) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmt, setProfitAmt] = useState(0.0);
   const [toggleRollOver, setToggleRollOverOver] = useState(true); //true - roll over , false - roll under
@@ -65,6 +86,9 @@ const ManualFormComponent = () => {
             <button
               type="button"
               className="text-md font-bold bg-btn1 text-white px-28 py-3 rounded"
+              onClick={() => {
+                placeBet(sliderValue, toggleRollOver);
+              }}
             >
               Roll dice
             </button>

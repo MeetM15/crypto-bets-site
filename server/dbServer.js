@@ -3,28 +3,22 @@ const app = express();
 const mysql = require("mysql");
 
 require("dotenv").config();
-const DB_HOST = process.env.DB_HOST;
-const DB_USER = process.env.DB_USER;
-const DB_PASSWORD = process.env.DB_PASSWORD;
-const DB_DATABASE = process.env.DB_DATABASE;
-const DB_PORT = process.env.DB_PORT;
+
+// sconnection details
 const db = mysql.createPool({
-  connectionLimit: 100,
-  host: DB_HOST,
-  user: DB_USER,
-  password: DB_PASSWORD,
-  database: DB_DATABASE,
-  port: DB_PORT,
+  host: "l6glqt8gsx37y4hs.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+  user: "ae3jxjses5uz4pvo",
+  password: "jvdktwz5f5knvaal",
+  database: "s8lxs5ne2m2pta3x",
 });
 
 db.getConnection((err, connection) => {
   if (err) throw err;
-  console.log("DB connected successful: " + connection.threadId);
+  console.log("DB connected successfully: " + connection.threadId);
 });
 
-app.listen(process.env.PORT || DB_PORT, () =>
-  console.log(`Server Started on port ${DB_PORT}...`)
-);
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server Started on port ${port}...`));
 
 const bcrypt = require("bcrypt");
 app.use(express.json());

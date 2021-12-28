@@ -1,9 +1,9 @@
 import Navbar from "../navbar/Navbar";
 
-const Layout = ({ children }) => {
+const Layout = ({ children, user, setToggleLoginModalOpen }) => {
   return (
     <div className="bg-primary min-h-screen">
-      <Navbar />
+      <Navbar user={user} setToggleLoginModalOpen={setToggleLoginModalOpen} />
       {children}
     </div>
   );

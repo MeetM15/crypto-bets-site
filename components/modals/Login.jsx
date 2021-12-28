@@ -63,10 +63,14 @@ const Login = ({ toggleLoginModalOpen, setToggleLoginModalOpen }) => {
                 </Tab.List>
                 <Tab.Panels className="p-2 mt-2 bg-white rounded">
                   <Tab.Panel>
-                    <LoginForm />
+                    <LoginForm
+                      setToggleLoginModalOpen={setToggleLoginModalOpen}
+                    />
                   </Tab.Panel>
                   <Tab.Panel>
-                    <SignupForm />
+                    <SignupForm
+                      setToggleLoginModalOpen={setToggleLoginModalOpen}
+                    />
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
