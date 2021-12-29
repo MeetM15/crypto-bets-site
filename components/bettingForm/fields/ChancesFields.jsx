@@ -42,7 +42,7 @@ const ChancesFields = ({
         </label>
         <div className="p-0.5 h-10 flex items-center justify-start">
           <input
-            className="px-2 py-2 rounded-l font-medium text-sm w-full"
+            className="px-2 py-2 rounded-l font-medium text-sm w-full text-center"
             type="number"
             name="multiplier"
             value={multiplierValue}
@@ -68,7 +68,7 @@ const ChancesFields = ({
         </label>
         <div className="p-0.5 h-10 flex items-center justify-start">
           <input
-            className="px-2 py-2 rounded-l font-medium text-sm w-full"
+            className="px-2 py-2 rounded-l font-medium text-sm w-full text-center"
             type="number"
             name="winChance"
             min="0.01"

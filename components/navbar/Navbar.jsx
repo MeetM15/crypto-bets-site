@@ -91,12 +91,9 @@ const Navbar = ({ user, setToggleLoginModalOpen }) => {
       {user ? (
         <div className="flex items-center pr-2 ">
           <Menu as="div" className="mr-3 relative">
-            <Menu.Button className="bg-white border-2 border-white flex text-sm rounded-full">
-              <img
-                className="h-8 w-8 bg-black rounded-full"
-                src="/icons/logo.svg"
-                alt="profilePic"
-              />
+            <Menu.Button className="flex items-center justify-between text-sm text-white">
+              <span className="text-md font-medium">{user.username}</span>
+              <ChevronDownIcon className="ml-2 h-6 w-6 opacity-60" />
             </Menu.Button>
 
             <Transition

@@ -70,7 +70,7 @@ const AutoFormComponent = () => {
               </label>
               <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
                 <input
-                  className="px-2 py-2 rounded-l font-medium text-sm w-full"
+                  className="px-2 py-2 rounded-l font-medium text-sm w-full text-center"
                   type="number"
                   name="bets"
                   min={"1"}
@@ -301,6 +301,7 @@ const AutoFormComponent = () => {
                 width: 24,
                 height: 24,
                 borderRadius: "4px",
+                opacity: 0.8,
               },
             }}
           />
