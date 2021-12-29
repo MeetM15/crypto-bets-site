@@ -1,8 +1,10 @@
 import { LockClosedIcon } from "@heroicons/react/solid";
 import axios from "axios";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 const LoginForm = ({ setToggleLoginModalOpen }) => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleLogin = async (e) => {
@@ -18,6 +20,7 @@ const LoginForm = ({ setToggleLoginModalOpen }) => {
       console.log("error : ", error);
     }
     setToggleLoginModalOpen(false);
+    router.reload();
   };
   return (
     <>

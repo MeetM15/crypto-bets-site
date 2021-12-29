@@ -1,8 +1,10 @@
 import React from "react";
 import { BellIcon, ChevronDownIcon } from "@heroicons/react/solid";
 import { Menu, Transition } from "@headlessui/react";
+import { useRouter } from "next/router";
 
 const Navbar = ({ user, setToggleLoginModalOpen }) => {
+  const router = useRouter();
   return (
     <nav className="bg-secondary relative w-full shadow px-2 sm:px-6 lg:px-8 flex items-center justify-between h-12 text-white">
       <div className="flex-shrink-0 flex items-center">
@@ -115,34 +117,10 @@ const Navbar = ({ user, setToggleLoginModalOpen }) => {
                           ? "bg-gray-100"
                           : "block px-4 py-2 text-sm text-gray-700"
                       }
-                    >
-                      Your Profile
-                    </a>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <a
-                      href="#"
-                      className={
-                        active
-                          ? "bg-gray-100"
-                          : "block px-4 py-2 text-sm text-gray-700"
-                      }
-                    >
-                      Settings
-                    </a>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <a
-                      href="#"
-                      className={
-                        active
-                          ? "bg-gray-100"
-                          : "block px-4 py-2 text-sm text-gray-700"
-                      }
+                      onClick={() => {
+                        localStorage.removeItem("token");
+                        router.reload();
+                      }}
                     >
                       Sign out
                     </a>

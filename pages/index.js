@@ -6,18 +6,30 @@ import { useEffect, useState } from "react";
 import Login from "../components/modals/Login";
 import axios from "axios";
 
-const getRandomArbitrary = (min, max) => {
-  return Math.random() * (max - min) + min;
-};
-
 export default function Home() {
   const [user, setUser] = useState();
   const [toggleLoginModalOpen, setToggleLoginModalOpen] = useState(false);
   const [betTurnout, setBetTurnout] = useState();
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setUser(token);
+    if (localStorage && localStorage.getItem("token")) {
+      axios
+        .get("user", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((res) => {
+          setUser(res.authorizedData);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, []);
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
   return (
     <Layout user={user} setToggleLoginModalOpen={setToggleLoginModalOpen}>
       <Head>
