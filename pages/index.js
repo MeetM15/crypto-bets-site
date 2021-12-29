@@ -12,7 +12,7 @@ export default function Home() {
   const [betTurnout, setBetTurnout] = useState();
 
   useEffect(() => {
-    if (localStorage && localStorage.getItem("token")) {
+    if (localStorage.getItem("token")) {
       axios
         .get("user", {
           headers: {
@@ -20,14 +20,15 @@ export default function Home() {
           },
         })
         .then((res) => {
-          console.log(res.authorizedData);
-          setUser(res.authorizedData);
+          console.log(res.data);
+          setUser(res.data.authorizedData);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          console.log(error);
         });
     }
   }, []);
+
   useEffect(() => {
     console.log(user);
   }, [user]);

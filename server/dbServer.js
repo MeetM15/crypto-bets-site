@@ -55,6 +55,13 @@ app.post("/createUser", async (req, res) => {
           connection.release();
           if (err) throw err;
           console.log("--------> Created new User");
+          console.log("---------> Generating accessToken");
+          const token = generateAccessToken({
+            email: email,
+            username: username,
+          });
+          console.log(token);
+          res.json({ accessToken: token });
           console.log(result.insertId);
           res.sendStatus(201);
         });
