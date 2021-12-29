@@ -20,6 +20,7 @@ export default function Home() {
           },
         })
         .then((res) => {
+          console.log(res.authorizedData);
           setUser(res.authorizedData);
         })
         .catch((err) => {

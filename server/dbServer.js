@@ -90,7 +90,10 @@ app.post("/login", (req, res) => {
         if (await bcrypt.compare(password, hashedPassword)) {
           console.log("---------> Login Successful");
           console.log("---------> Generating accessToken");
-          const token = generateAccessToken({ email: email });
+          const token = generateAccessToken({
+            email: email,
+            username: result[0].username,
+          });
           console.log(token);
           res.json({ accessToken: token });
         } else {
