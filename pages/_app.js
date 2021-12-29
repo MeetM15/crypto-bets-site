@@ -6,8 +6,8 @@ axios.defaults.baseURL = "https://cryptodice1.herokuapp.com/";
 function MyApp({ Component, pageProps }) {
   return (
     <MoralisProvider
-      appId={process.env.NEXT_PUBLIC_MORALIS_APP_ID}
-      serverUrl={process.env.NEXT_PUBLIC_MORALIS_SERVER_ID}
+      appId={"chuIgYSKuoha43XNd0HsvlCj1BhlJ63uR1ntxHW5"}
+      serverUrl={"https://t1l3lc39wqjw.usemoralis.com:2053/server"}
     >
       <Component {...pageProps} />
     </MoralisProvider>
