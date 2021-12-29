@@ -5,10 +5,12 @@ import styles from "../styles/Home.module.css";
 import { useEffect, useState } from "react";
 import Login from "../components/modals/Login";
 import axios from "axios";
+import Wallet from "../components/modals/Wallet";
 
 export default function Home() {
   const [user, setUser] = useState();
   const [toggleLoginModalOpen, setToggleLoginModalOpen] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
   const [betTurnout, setBetTurnout] = useState();
 
   useEffect(() => {
@@ -33,7 +35,11 @@ export default function Home() {
     console.log(user);
   }, [user]);
   return (
-    <Layout user={user} setToggleLoginModalOpen={setToggleLoginModalOpen}>
+    <Layout
+      user={user}
+      setToggleLoginModalOpen={setToggleLoginModalOpen}
+      setShowWalletModal={setShowWalletModal}
+    >
       <Head>
         <title>Crypto Dice</title>
       </Head>
@@ -42,6 +48,12 @@ export default function Home() {
       </div>
       <Login
         toggleLoginModalOpen={toggleLoginModalOpen}
+        setToggleLoginModalOpen={setToggleLoginModalOpen}
+      />
+      <Wallet
+        setShowWalletModal={setShowWalletModal}
+        showWalletModal={showWalletModal}
+        userAcc={user}
         setToggleLoginModalOpen={setToggleLoginModalOpen}
       />
     </Layout>

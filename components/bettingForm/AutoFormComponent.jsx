@@ -13,20 +13,26 @@ const getRandomArbitrary = (min, max) => {
   return Math.random() * (max - min) + min;
 };
 const placeBet = (sliderValue, rollType) => {
-  const result = getRandomArbitrary(0.0, 100.0);
+  const result = [];
+  result[1] = getRandomArbitrary(0.0, 100.0);
   if (rollType) {
-    if (result >= sliderValue) {
+    if (result[1] >= sliderValue) {
       console.log("You win ! Result: ", result);
+      result[0] = "green";
     } else {
       console.log("You Lose ! Result: ", result);
+      result[0] = "red";
     }
   } else {
-    if (result <= sliderValue) {
+    if (result[1] <= sliderValue) {
       console.log("You win ! Result: ", result);
+      result[0] = "green";
     } else {
       console.log("You Lose ! Result: ", result);
+      result[0] = "red";
     }
   }
+  return result;
 };
 
 const AutoFormComponent = () => {
@@ -39,6 +45,15 @@ const AutoFormComponent = () => {
   const [winChance, setWinChance] = useState(
     parseFloat((100 - 1.99).toFixed(2))
   );
+  const [showDice, setShowDice] = useState("hidden");
+  const [result, setResult] = useState();
+
+  useEffect(() => {
+    setShowDice("flex");
+    setTimeout(() => {
+      setShowDice("hidden");
+    }, 5000);
+  }, [result]);
 
   useEffect(() => {
     setProfitAmtAuto(
@@ -259,7 +274,14 @@ const AutoFormComponent = () => {
                 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
                 async function load() {
                   for (let i = 0; i < noOfBets; i++) {
-                    placeBet(sliderValue, toggleRollOver);
+                    const result = placeBet(sliderValue, toggleRollOver);
+                    console.log(Math.floor(result[1]));
+                    document.getElementById(
+                      "dice"
+                    ).style.left = `calc(${Math.floor(result[1])}% - 2rem)`;
+                    setResult(result[1].toFixed(2));
+                    document.getElementById("diceResult").style.color =
+                      result[0];
                     await timer(1000); // then the created Promise can be awaited
                   }
                 }
@@ -274,37 +296,48 @@ const AutoFormComponent = () => {
       <div className="p-2 w-full flex items-center justify-center">
         <div className="w-full md:w-144 text-white bg-secondary rounded-full p-4 flex items-center justify-between gap-4">
           <span className="font-medium text-sm">0</span>
-          <Slider
-            axis="x"
-            xmin={1.99}
-            xmax={97.99}
-            xstep={0.01}
-            x={sliderValue}
-            onChange={({ x }) => {
-              setSliderValue(parseFloat(x.toFixed(2)));
-              if (!toggleRollOver) setWinChance(parseFloat(x.toFixed(2)));
-              else setWinChance(parseFloat((100.0 - x).toFixed(2)));
-            }}
-            styles={{
-              track: {
-                backgroundColor: `${
-                  toggleRollOver ? "rgb(21, 220, 61)" : "rgb(220, 18, 60)"
-                }`,
-                width: "100%",
-              },
-              active: {
-                backgroundColor: `${
-                  toggleRollOver ? "rgb(220, 18, 60)" : "rgb(21, 220, 61)"
-                }`,
-              },
-              thumb: {
-                width: 24,
-                height: 24,
-                borderRadius: "4px",
-                opacity: 0.8,
-              },
-            }}
-          />
+          <div className="w-full relative">
+            <span
+              className={`absolute w-16 h-16 -top-16 z-10 flex-col items-center justify-center ${showDice}`}
+              id="dice"
+            >
+              <span className={`text-md font-bold`} id="diceResult">
+                {result}
+              </span>
+              <img src="/icons/dice.png" alt="dice" className="w-full" />
+            </span>
+            <Slider
+              axis="x"
+              xmin={1.99}
+              xmax={97.99}
+              xstep={0.01}
+              x={sliderValue}
+              onChange={({ x }) => {
+                setSliderValue(parseFloat(x.toFixed(2)));
+                if (!toggleRollOver) setWinChance(parseFloat(x.toFixed(2)));
+                else setWinChance(parseFloat((100.0 - x).toFixed(2)));
+              }}
+              styles={{
+                track: {
+                  backgroundColor: `${
+                    toggleRollOver ? "rgb(21, 220, 61)" : "rgb(220, 18, 60)"
+                  }`,
+                  width: "100%",
+                },
+                active: {
+                  backgroundColor: `${
+                    toggleRollOver ? "rgb(220, 18, 60)" : "rgb(21, 220, 61)"
+                  }`,
+                },
+                thumb: {
+                  width: 24,
+                  height: 24,
+                  borderRadius: "4px",
+                  opacity: 0.8,
+                },
+              }}
+            />
+          </div>
           <span className="font-medium text-sm">100</span>
         </div>
       </div>

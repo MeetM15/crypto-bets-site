@@ -1,9 +1,13 @@
 import React from "react";
-import { BellIcon, ChevronDownIcon } from "@heroicons/react/solid";
+import {
+  BellIcon,
+  ChevronDownIcon,
+  CubeTransparentIcon,
+} from "@heroicons/react/solid";
 import { Menu, Transition } from "@headlessui/react";
 import { useRouter } from "next/router";
 
-const Navbar = ({ user, setToggleLoginModalOpen }) => {
+const Navbar = ({ user, setToggleLoginModalOpen, setShowWalletModal }) => {
   const router = useRouter();
   return (
     <nav className="bg-secondary relative w-full shadow px-2 sm:px-6 lg:px-8 flex items-center justify-between h-12 text-white">
@@ -84,8 +88,12 @@ const Navbar = ({ user, setToggleLoginModalOpen }) => {
         <button
           type="button"
           className="text-sm h-full w-full flex items-center justify-center p-2 font-medium rounded-r bg-btn1 "
+          onClick={() => {
+            setShowWalletModal(true);
+          }}
         >
           Wallet
+          <CubeTransparentIcon className="w-6 h-6 ml-2" />
         </button>
       </div>
       {user ? (
