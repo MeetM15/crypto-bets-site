@@ -45,13 +45,19 @@ const ChancesFields = ({
             className="px-2 py-2 rounded-l font-medium text-sm w-full text-center"
             type="number"
             name="multiplier"
-            value={multiplierValue}
             min="1.01"
+            onBlur={(e) => {
+              e.target.value = Number(e.target.value).toFixed(4);
+              if (e.target.value < 0) e.target.value = -1.0 * e.target.value;
+              if (e.target.value >= 0 && e.target.value < 1.01)
+                e.target.value = 1.01;
+              setMultiplierValue(e.target.value);
+              setWinChance((100.0 / e.target.value).toFixed(6));
+            }}
+            value={multiplierValue}
             onChange={(e) => {
-              if (e.target.value >= 1.01) {
-                setMultiplierValue(e.target.value);
-                setWinChance((100.0 / e.target.value).toFixed(6));
-              }
+              setMultiplierValue(e.target.value);
+              setWinChance((100.0 / e.target.value).toFixed(6));
             }}
           />
           <button

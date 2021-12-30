@@ -32,6 +32,7 @@ const placeBet = (sliderValue, rollType) => {
 const ManualFormComponent = ({ betTurnout, setBetTurnout }) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmt, setProfitAmt] = useState(0.0);
+  const [totalReturnValue, setTotalReturnValue] = useState(0.0);
   const [toggleRollOver, setToggleRollOverOver] = useState(true); //true - roll over , false - roll under
   const [sliderValue, setSliderValue] = useState(1.99);
   const [multiplierValue, setMultiplierValue] = useState(1.01);
@@ -42,29 +43,37 @@ const ManualFormComponent = ({ betTurnout, setBetTurnout }) => {
   const [result, setResult] = useState();
 
   useEffect(() => {
-    setShowDice("flex");
-    setTimeout(() => {
-      setShowDice("hidden");
-    }, 5000);
+    console.log("Return Value : ", totalReturnValue);
+  }, [totalReturnValue]);
+
+  useEffect(() => {
+    if (result != undefined) {
+      setShowDice("flex");
+      setTimeout(() => {
+        setShowDice("hidden");
+      }, 5000);
+    }
   }, [result]);
 
   useEffect(() => {
     setProfitAmt(
-      parseFloat(
-        (Number(multiplierValue).toFixed(6) * betAmt - betAmt).toFixed(6)
-      )
+      (
+        parseFloat(multiplierValue) * parseFloat(betAmt) -
+        parseFloat(betAmt)
+      ).toFixed(6)
     );
   }, []);
   useEffect(() => {
     setProfitAmt(
-      parseFloat(
-        (Number(multiplierValue).toFixed(6) * betAmt - betAmt).toFixed(6)
-      )
+      (
+        parseFloat(multiplierValue) * parseFloat(betAmt) -
+        parseFloat(betAmt)
+      ).toFixed(6)
     );
   }, [multiplierValue]);
   useEffect(() => {
-    if (!toggleRollOver) setSliderValue(winChance.toFixed(4));
-    else setSliderValue((100.0 - winChance).toFixed(4));
+    if (!toggleRollOver) setSliderValue(parseFloat(winChance).toFixed(4));
+    else setSliderValue((100.0 - parseFloat(winChance)).toFixed(4));
   }, [winChance]);
 
   return (
@@ -107,6 +116,15 @@ const ManualFormComponent = ({ betTurnout, setBetTurnout }) => {
                 document.getElementById("dice").style.left = `calc(${Math.floor(
                   result[1]
                 )}% - 2rem)`;
+                //set return value
+                if (result[0] == "green") {
+                  setTotalReturnValue(
+                    (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(6)
+                  );
+                } else {
+                  setTotalReturnValue(-parseFloat(betAmt).toFixed(6));
+                }
+
                 setResult(result[1].toFixed(2));
                 document.getElementById("diceResult").style.color = result[0];
               }}
