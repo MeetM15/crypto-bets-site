@@ -161,11 +161,11 @@ app.get("/user", checkToken, (req, res) => {
 });
 
 //Place bet
-app.post("/bet", (req, res) => {
+app.post("/bet", async (req, res) => {
   const email = req.body.email;
   const betResult = req.body.betResult; // true:win false:lose
-  const betAmt = web3.utils.toWei(req.body.betAmt);
-  const profitAmt = web3.utils.toWei(req.body.profitAmt);
+  const betAmt = await web3.utils.toWei(req.body.betAmt);
+  const profitAmt = await web3.utils.toWei(req.body.profitAmt);
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "Select * from usertable where email = ?";
@@ -184,57 +184,73 @@ app.post("/bet", (req, res) => {
             "bffb9004264cb1be3387106a327170d875b0601598d8ca80ad95da811b90fe36";
           const sender = "0x14d260dcb7c543d289527B8855fb9850390565d2";
           const receiver = result[0].address;
-          web3.eth.getBalance(sender).then((currBal) => {
-            if (parseInt(currBal) < parseInt(profitAmt)) {
-              //If insufficient balance
-              res.send("Insufficient balance!");
-            } else {
-              //send ether
-              web3.eth.accounts
-                .signTransaction(
+          web3.eth
+            .getBalance(sender)
+            .then((currBal) => {
+              if (parseInt(currBal) < parseInt(profitAmt)) {
+                //If insufficient balance
+                res.send("Insufficient balance!");
+              } else {
+                //send ether
+                return web3.eth.accounts.signTransaction(
                   {
                     to: receiver,
-                    value: String(profitAmount),
+                    value: String(profitAmt),
                     gas: 2000000,
                   },
                   privateKey
-                )
-                .then((response) => {
-                  console.log(res);
-                  res.json({
-                    transactionHash: response.transactionHash,
-                  });
-                });
-            }
-          });
+                );
+              }
+            })
+            .then((signedTx) => {
+              console.log(signedTx);
+              return web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+            })
+            .then((hash) => {
+              console.log(hash);
+              res.json({
+                hash: hash,
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         } else {
           //on Lose
           const privateKey = result[0].privateKey;
           const sender = result[0].address;
           const receiver = "0x14d260dcb7c543d289527B8855fb9850390565d2";
-          web3.eth.getBalance(sender).then((currBal) => {
-            if (parseInt(currBal) < parseInt(betAmt)) {
-              //If insufficient balance
-              res.send("Insufficient balance!");
-            } else {
-              //send ether
-              web3.eth.accounts
-                .signTransaction(
+          web3.eth
+            .getBalance(sender)
+            .then((currBal) => {
+              if (parseInt(currBal) < parseInt(betAmt)) {
+                //If insufficient balance
+                res.send("Insufficient balance!");
+              } else {
+                //send ether
+                return web3.eth.accounts.signTransaction(
                   {
                     to: receiver,
                     value: betAmt,
                     gas: 2000000,
                   },
                   privateKey
-                )
-                .then((response) => {
-                  console.log(res);
-                  res.json({
-                    transactionHash: response.transactionHash,
-                  });
-                });
-            }
-          });
+                );
+              }
+            })
+            .then((signedTx) => {
+              console.log(signedTx);
+              return web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+            })
+            .then((hash) => {
+              console.log(hash);
+              res.json({
+                hash: hash,
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         }
       } //end of User exists
     }); //end of connection.query()

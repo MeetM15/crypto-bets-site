@@ -76,9 +76,14 @@ const ManualFormComponent = ({ user, walletBalance, web3 }) => {
               profitAmt: profitAmt,
             };
             console.log("bet data : ", betData);
-            axios.post("/bet", betData).then((res) => {
-              console.log(res);
-            });
+            axios
+              .post("/bet", betData)
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           }
         } else {
           console.log("insufficient balance!");
