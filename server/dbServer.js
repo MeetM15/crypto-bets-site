@@ -3,13 +3,14 @@ var cors = require("cors");
 const app = express();
 const mysql = require("mysql");
 
+app.use(cors());
+
 //web3
 const Web3 = require("web3");
 let web3 = new Web3(
   "wss://rinkeby.infura.io/ws/v3/f3ad0d479bf94c1791f813da1a914632"
 );
 
-app.use(cors());
 require("dotenv").config();
 
 // sconnection details
@@ -184,17 +185,16 @@ app.post("/bet", (req, res) => {
           const sender = "0x14d260dcb7c543d289527B8855fb9850390565d2";
           const receiver = result[0].address;
           web3.eth.getBalance(sender).then((currBal) => {
-            if (parseInt(currBal) < parseInt(betAmt)) {
+            if (parseInt(currBal) < parseInt(profitAmt)) {
               //If insufficient balance
               res.send("Insufficient balance!");
             } else {
               //send ether
-              const returnAmount = parseInt(betAmt) + parseInt(profitAmt);
               web3.eth.accounts
                 .signTransaction(
                   {
                     to: receiver,
-                    value: String(returnAmount),
+                    value: String(profitAmount),
                     gas: 2000000,
                   },
                   privateKey
@@ -213,7 +213,7 @@ app.post("/bet", (req, res) => {
           const sender = result[0].address;
           const receiver = "0x14d260dcb7c543d289527B8855fb9850390565d2";
           web3.eth.getBalance(sender).then((currBal) => {
-            if (parseInt() < parseInt(betAmt)) {
+            if (parseInt(currBal) < parseInt(betAmt)) {
               //If insufficient balance
               res.send("Insufficient balance!");
             } else {
