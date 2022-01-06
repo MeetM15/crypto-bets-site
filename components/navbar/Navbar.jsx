@@ -37,8 +37,7 @@ const Navbar = ({ user, setToggleLoginModalOpen, setShowWalletModal }) => {
             enterTo="opacity-100"
             leave="transition-opacity ease-linear duration-100"
             leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
+            leaveTo="opacity-0">
             <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 ">
               <Menu.Item>
                 {({ active }) => (
@@ -48,8 +47,7 @@ const Navbar = ({ user, setToggleLoginModalOpen, setShowWalletModal }) => {
                       active
                         ? "bg-gray-100"
                         : "block px-4 py-2 text-sm text-gray-700"
-                    }
-                  >
+                    }>
                     Your Profile
                   </a>
                 )}
@@ -62,8 +60,7 @@ const Navbar = ({ user, setToggleLoginModalOpen, setShowWalletModal }) => {
                       active
                         ? "bg-gray-100"
                         : "block px-4 py-2 text-sm text-gray-700"
-                    }
-                  >
+                    }>
                     Settings
                   </a>
                 )}
@@ -76,8 +73,7 @@ const Navbar = ({ user, setToggleLoginModalOpen, setShowWalletModal }) => {
                       active
                         ? "bg-gray-100"
                         : "block px-4 py-2 text-sm text-gray-700"
-                    }
-                  >
+                    }>
                     Sign out
                   </a>
                 )}
@@ -90,17 +86,16 @@ const Navbar = ({ user, setToggleLoginModalOpen, setShowWalletModal }) => {
           className="text-sm h-full w-full flex items-center justify-center p-2 font-medium rounded-r bg-btn1 "
           onClick={() => {
             setShowWalletModal(true);
-          }}
-        >
+          }}>
           Wallet
           <CubeTransparentIcon className="w-6 h-6 ml-2" />
         </button>
       </div>
-      {user ? (
+      {user[0] ? (
         <div className="flex items-center pr-2 ">
           <Menu as="div" className="mr-3 relative">
             <Menu.Button className="flex items-center justify-between text-sm text-white">
-              <span className="text-md font-medium">{user.username}</span>
+              <span className="text-md font-medium">{user[0].username}</span>
               <ChevronDownIcon className="ml-2 h-6 w-6 opacity-60" />
             </Menu.Button>
 
@@ -110,8 +105,7 @@ const Navbar = ({ user, setToggleLoginModalOpen, setShowWalletModal }) => {
               enterTo="transform opacity-100 scale-100"
               leave="transition ease-in duration-75"
               leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
+              leaveTo="transform opacity-0 scale-95">
               <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 ">
                 <Menu.Item>
                   {({ active }) => (
@@ -125,8 +119,7 @@ const Navbar = ({ user, setToggleLoginModalOpen, setShowWalletModal }) => {
                       onClick={() => {
                         localStorage.removeItem("token");
                         router.reload();
-                      }}
-                    >
+                      }}>
                       Sign out
                     </a>
                   )}
@@ -148,8 +141,7 @@ const Navbar = ({ user, setToggleLoginModalOpen, setShowWalletModal }) => {
           <button
             type="button"
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white hover:bg-indigo-700 "
-            onClick={(e) => setToggleLoginModalOpen(true)}
-          >
+            onClick={(e) => setToggleLoginModalOpen(true)}>
             Login
           </button>
           <button
@@ -157,8 +149,7 @@ const Navbar = ({ user, setToggleLoginModalOpen, setShowWalletModal }) => {
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-btn1 focus:outline-none"
             onClick={() => {
               setToggleLoginModalOpen(true);
-            }}
-          >
+            }}>
             Register
           </button>
         </div>

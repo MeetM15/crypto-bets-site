@@ -3,7 +3,7 @@ import AutoFormComponent from "./AutoFormComponent";
 import ManualFormComponent from "./ManualFormComponent";
 
 import { useState } from "react";
-const BettingForm = ({ user, betTurnout, setBetTurnout }) => {
+const BettingForm = ({ user, walletBalance, web3 }) => {
   return (
     <div className="bg-gray-200 p-2 rounded">
       <Tab.Group>
@@ -28,16 +28,13 @@ const BettingForm = ({ user, betTurnout, setBetTurnout }) => {
         <Tab.Panels className="p-4 mt-2 bg-white rounded">
           <Tab.Panel>
             <ManualFormComponent
-              betTurnout={betTurnout}
-              setBetTurnout={setBetTurnout}
               user={user}
+              walletBalance={walletBalance}
+              web3={web3}
             />
           </Tab.Panel>
           <Tab.Panel>
-            <AutoFormComponent
-              betTurnout={betTurnout}
-              setBetTurnout={setBetTurnout}
-            />
+            <AutoFormComponent walletBalance={walletBalance} />
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>

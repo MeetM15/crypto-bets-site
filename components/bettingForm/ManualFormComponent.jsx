@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import Slider from "react-input-slider";
 import BetValueField from "./fields/BetValueField";
@@ -29,7 +30,7 @@ const placeBet = (sliderValue, rollType) => {
   return result;
 };
 
-const ManualFormComponent = ({ user, betTurnout, setBetTurnout }) => {
+const ManualFormComponent = ({ user, walletBalance, web3 }) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmt, setProfitAmt] = useState(0.0);
   const [totalReturnValue, setTotalReturnValue] = useState(0.0);
@@ -41,6 +42,49 @@ const ManualFormComponent = ({ user, betTurnout, setBetTurnout }) => {
   );
   const [showDice, setShowDice] = useState("hidden");
   const [result, setResult] = useState();
+
+  const handlePlaceBet = () => {
+    web3.eth
+      .getBalance(user[0].address)
+      .then((res) => {
+        return web3.utils.fromWei(res);
+      })
+      .then((currBal) => {
+        if (betAmt < parseFloat(currBal)) {
+          const result = placeBet(sliderValue, toggleRollOver);
+          const betResult = result[0];
+          const diceValue = result[1];
+          document.getElementById("dice").style.left = `calc(${Math.floor(
+            diceValue
+          )}% - 2rem)`;
+
+          //set return value
+          if (betResult == "green") {
+            setTotalReturnValue(
+              (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(6)
+            );
+          } else {
+            setTotalReturnValue(-parseFloat(betAmt).toFixed(6));
+          }
+          setResult(parseFloat(diceValue.toFixed(2)));
+          document.getElementById("diceResult").style.color = betResult;
+          if (user[0] != undefined) {
+            const betData = {
+              email: user[0].email,
+              betResult: betResult == "green" ? true : false,
+              betAmt: betAmt,
+              profitAmt: profitAmt,
+            };
+            console.log("bet data : ", betData);
+            axios.post("/bet", betData).then((res) => {
+              console.log(res);
+            });
+          }
+        } else {
+          console.log("insufficient balance!");
+        }
+      });
+  };
 
   useEffect(() => {
     console.log("Return Value : ", totalReturnValue);
@@ -86,6 +130,7 @@ const ManualFormComponent = ({ user, betTurnout, setBetTurnout }) => {
               multiplierValue={multiplierValue}
               setBetAmt={setBetAmt}
               setProfitAmt={setProfitAmt}
+              walletBalance={walletBalance}
             />
             <div className="w-full md:w-1/2 h-16">
               <label htmlFor="profit" className="text-xs font-medium">
@@ -110,24 +155,24 @@ const ManualFormComponent = ({ user, betTurnout, setBetTurnout }) => {
             <button
               type="button"
               className="text-md font-bold bg-btn1 text-white px-28 py-3 rounded"
+              id="rollBtn"
               onClick={() => {
-                const result = placeBet(sliderValue, toggleRollOver);
-                const betResult = result[0];
-                const diceValue = result[1];
-                document.getElementById("dice").style.left = `calc(${Math.floor(
-                  diceValue
-                )}% - 2rem)`;
+                console.log("disable click");
+                document
+                  .getElementById("rollBtn")
+                  .setAttribute("disabled", "true");
 
-                //set return value
-                if (betResult == "green") {
-                  setTotalReturnValue(
-                    (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(6)
-                  );
-                } else {
-                  setTotalReturnValue(-parseFloat(betAmt).toFixed(6));
-                }
-                setResult(parseFloat(diceValue.toFixed(2)));
-                document.getElementById("diceResult").style.color = betResult;
+                handlePlaceBet();
+
+                setTimeout(() => {
+                  console.log("enable click");
+                  if (
+                    document.getElementById("rollBtn").hasAttribute("disabled")
+                  )
+                    document
+                      .getElementById("rollBtn")
+                      .removeAttribute("disabled");
+                }, 2000);
               }}>
               Roll dice
             </button>

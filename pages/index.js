@@ -12,11 +12,10 @@ const web3 = new Web3(
 );
 
 export default function Home() {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState([]);
   const [toggleLoginModalOpen, setToggleLoginModalOpen] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
-  const [betTurnout, setBetTurnout] = useState();
-  const [walletBal, setWalletBal] = useState(0.0);
+  const [walletBalance, setWalletBalance] = useState(0.0);
   useEffect(() => {
     if (localStorage.getItem("token")) {
       axios
@@ -26,8 +25,7 @@ export default function Home() {
           },
         })
         .then((res) => {
-          console.log(res.data);
-          setUser(res.data.authorizedData);
+          setUser([res.data.authorizedData]);
         })
         .catch((error) => {
           console.log(error);
@@ -35,14 +33,43 @@ export default function Home() {
     }
   }, []);
   useEffect(() => {
-    if (user != undefined) {
-      // const bal = web3.eth.getBalance(user.address);
+    if (user[0] != undefined) {
+      web3.eth
+        .getBalance(user[0].address)
+        .then((res) => {
+          return web3.utils.fromWei(res);
+        })
+        .then((res) => {
+          console.log(res);
+          setWalletBalance(parseFloat(res));
+        });
+    }
+  }, []);
+  useEffect(() => {
+    if (user[0] != undefined) {
+      web3.eth
+        .getBalance(user[0].address)
+        .then((res) => {
+          return web3.utils.fromWei(res);
+        })
+        .then((res) => {
+          setWalletBalance(parseFloat(res));
+        });
     }
   }, [user]);
-
   useEffect(() => {
-    console.log(user);
-  }, [user]);
+    if (user[0] != undefined) {
+      web3.eth
+        .getBalance(user[0].address)
+        .then((res) => {
+          return web3.utils.fromWei(res);
+        })
+        .then((res) => {
+          setWalletBalance(parseFloat(res));
+        });
+    }
+  }, [showWalletModal]);
+
   return (
     <Layout
       user={user}
@@ -52,11 +79,7 @@ export default function Home() {
         <title>Crypto Dice</title>
       </Head>
       <div className="p-8 flex items-center justify-center">
-        <BettingForm
-          user={user}
-          setBetTurnout={setBetTurnout}
-          betTurnout={betTurnout}
-        />
+        <BettingForm user={user} walletBalance={walletBalance} web3={web3} />
       </div>
       <Login
         toggleLoginModalOpen={toggleLoginModalOpen}
@@ -65,8 +88,8 @@ export default function Home() {
       <Wallet
         setShowWalletModal={setShowWalletModal}
         showWalletModal={showWalletModal}
-        userAcc={user}
-        setToggleLoginModalOpen={setToggleLoginModalOpen}
+        user={user}
+        walletBalance={walletBalance}
       />
     </Layout>
   );

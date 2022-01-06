@@ -5,6 +5,7 @@ const BetValueField = ({
   betAmt,
   setProfitAmt,
   multiplierValue,
+  walletBalance,
 }) => {
   useEffect(() => {
     if (setProfitAmt != undefined)
@@ -24,8 +25,11 @@ const BetValueField = ({
           name="bettingAmt"
           step="0.000001"
           min="0.000000"
+          max={walletBalance}
           onBlur={(e) => {
             if (e.target.value < 0) e.target.value = -1.0 * e.target.value;
+            if (parseFloat(e.target.value) > walletBalance)
+              e.target.value = walletBalance;
             setBetAmt(e.target.value);
           }}
           value={betAmt}
@@ -39,8 +43,7 @@ const BetValueField = ({
           onClick={() => {
             setBetAmt((prev) => (0.5 * prev).toFixed(6));
           }}
-          type="button"
-        >
+          type="button">
           1/2
         </button>
         <button
@@ -48,8 +51,7 @@ const BetValueField = ({
           onClick={() => {
             setBetAmt((prev) => (2.0 * prev).toFixed(6));
           }}
-          type="button"
-        >
+          type="button">
           2 <XIcon className="h-2 w-2" />
         </button>
       </div>

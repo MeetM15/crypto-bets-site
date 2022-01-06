@@ -117,8 +117,7 @@ const AutoFormComponent = () => {
                         selected
                           ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-2/5"
                           : "rounded text-xs px-1 py-2.5 font-medium w-2/5"
-                      }
-                    >
+                      }>
                       Reset
                     </Tab>
                     <Tab
@@ -126,8 +125,7 @@ const AutoFormComponent = () => {
                         selected
                           ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-full"
                           : "rounded text-xs px-1 py-2.5 font-medium w-full"
-                      }
-                    >
+                      }>
                       Increase By:
                     </Tab>
                   </Tab.List>
@@ -142,8 +140,7 @@ const AutoFormComponent = () => {
                         />
                         <button
                           disabled
-                          className="text-md bg-white font-bold opacity-50 px-2 flex items-center justify-center rounded-r h-full"
-                        >
+                          className="text-md bg-white font-bold opacity-50 px-2 flex items-center justify-center rounded-r h-full">
                           %
                         </button>
                       </div>
@@ -159,8 +156,7 @@ const AutoFormComponent = () => {
                         />
                         <button
                           disabled
-                          className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full"
-                        >
+                          className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full">
                           %
                         </button>
                       </div>
@@ -181,8 +177,7 @@ const AutoFormComponent = () => {
                         selected
                           ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-2/5"
                           : "rounded text-xs px-1 py-2.5 font-medium w-2/5"
-                      }
-                    >
+                      }>
                       Reset
                     </Tab>
                     <Tab
@@ -190,8 +185,7 @@ const AutoFormComponent = () => {
                         selected
                           ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-full"
                           : "rounded text-xs px-1 py-2.5 font-medium w-full"
-                      }
-                    >
+                      }>
                       Increase By:
                     </Tab>
                   </Tab.List>
@@ -206,8 +200,7 @@ const AutoFormComponent = () => {
                         />
                         <button
                           disabled
-                          className="text-md bg-white font-bold opacity-50 px-2 flex items-center justify-center rounded-r h-full"
-                        >
+                          className="text-md bg-white font-bold opacity-50 px-2 flex items-center justify-center rounded-r h-full">
                           %
                         </button>
                       </div>
@@ -223,8 +216,7 @@ const AutoFormComponent = () => {
                         />
                         <button
                           disabled
-                          className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full"
-                        >
+                          className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full">
                           %
                         </button>
                       </div>
@@ -420,8 +412,7 @@ const AutoFormComponent = () => {
                   }
                 }
                 load();
-              }}
-            >
+              }}>
               Roll dice
             </button>
           </div>
@@ -433,8 +424,7 @@ const AutoFormComponent = () => {
           <div className="w-full relative">
             <span
               className={`absolute w-16 h-16 -top-16 z-10 flex-col items-center justify-center ${showDice}`}
-              id="dice"
-            >
+              id="dice">
               <span className={`text-md font-bold`} id="diceResult">
                 {result}
               </span>
