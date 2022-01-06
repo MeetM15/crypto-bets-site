@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 import Login from "../components/modals/Login";
 import axios from "axios";
 import Wallet from "../components/modals/Wallet";
-import Portis from "@portis/web3";
-import Web3 from "web3";
 
 export default function Home() {
   const [user, setUser] = useState();
@@ -15,13 +13,7 @@ export default function Home() {
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [betTurnout, setBetTurnout] = useState();
 
-  const portis = new Portis("c029b334-83fc-4385-aa3c-6deb3aed58da", "mainnet");
-  const web3 = new Web3(portis.provider);
-
   useEffect(() => {
-    web3.eth.getAccounts((error, accounts) => {
-      console.log(accounts);
-    });
     if (localStorage.getItem("token")) {
       axios
         .get("user", {

@@ -3,6 +3,12 @@ var cors = require("cors");
 const app = express();
 const mysql = require("mysql");
 
+//web3
+const Web3 = require("web3");
+let web3 = new Web3(
+  "wss://rinkeby.infura.io/ws/v3/f3ad0d479bf94c1791f813da1a914632"
+);
+
 app.use(cors());
 require("dotenv").config();
 
@@ -30,15 +36,21 @@ app.post("/createUser", async (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  const wallet = web3.eth.accounts.create(web3.utils.randomHex(32));
+  const address = wallet.address;
+  const privateKey = wallet.privateKey;
+
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "SELECT * FROM user_table WHERE email = ?";
     const search_query = mysql.format(sqlSearch, [email]);
-    const sqlInsert = "INSERT INTO user_table VALUES (0,?,?,?)";
+    const sqlInsert = "INSERT INTO user_table VALUES (0,?,?,?,?,?)";
     const insert_query = mysql.format(sqlInsert, [
       username,
       email,
       hashedPassword,
+      address,
+      privateKey,
     ]);
     // ? will be replaced by values
     // ?? will be replaced by string
@@ -59,6 +71,7 @@ app.post("/createUser", async (req, res) => {
           const token = generateAccessToken({
             email: email,
             username: username,
+            address: address,
           });
           console.log(token);
           res.json({ accessToken: token });
@@ -100,6 +113,7 @@ app.post("/login", (req, res) => {
           const token = generateAccessToken({
             email: email,
             username: result[0].username,
+            address: result[0].address,
           });
           console.log(token);
           res.json({ accessToken: token });

@@ -1,6 +1,5 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { Fragment } from "react";
-import { useMoralis } from "react-moralis";
 import {
   DocumentDuplicateIcon,
   WifiIcon,
@@ -13,14 +12,12 @@ const Wallet = ({
   setToggleLoginModalOpen,
   userAcc,
 }) => {
-  const { authenticate, isAuthenticated, logout, user } = useMoralis();
   return (
     <Transition.Root show={showWalletModal} as={Fragment}>
       <Dialog
         as="div"
         className="fixed z-50 inset-0 overflow-y-auto"
-        onClose={setShowWalletModal}
-      >
+        onClose={setShowWalletModal}>
         <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}
@@ -29,16 +26,14 @@ const Wallet = ({
             enterTo="opacity-100"
             leave="ease-in duration-200"
             leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
+            leaveTo="opacity-0">
             <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
           <span
             className="hidden sm:inline-block sm:align-middle sm:h-screen"
-            aria-hidden="true"
-          >
+            aria-hidden="true">
             &#8203;
           </span>
           <Transition.Child
@@ -48,11 +43,10 @@ const Wallet = ({
             enterTo="opacity-100 translate-y-0 sm:scale-100"
             leave="ease-in duration-200"
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-          >
+            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="w-64 md:w-128 h-96 bg-primary">
-                <span className="w-full flex items-center justify-center p-4 font-medium text-lg border-b-4 border-secondary">
+                {/* <span className="w-full flex items-center justify-center p-4 font-medium text-lg border-b-4 border-secondary">
                   Connect to your Metamask Wallet
                 </span>
                 {userAcc ? (
@@ -75,16 +69,14 @@ const Wallet = ({
                       <button
                         type="button"
                         className="text-sm w-full flex items-center justify-center p-2 font-medium rounded bg-btn1 "
-                        onClick={logout}
-                      >
+                        onClick={logout}>
                         Disconnect Wallet
                         <XCircleIcon className="w-6 h-6 ml-2" />
                       </button>
                       <button
                         type="button"
                         className="text-sm w-full mt-2 bg-white flex items-center justify-center p-2 font-medium rounded "
-                        onClick={() => setShowWalletModal(false)}
-                      >
+                        onClick={() => setShowWalletModal(false)}>
                         Close
                       </button>
                     </div>
@@ -95,16 +87,14 @@ const Wallet = ({
                         className="text-sm w-3/4 flex items-center justify-center p-4 font-medium rounded bg-btn1 "
                         onClick={() => {
                           authenticate({ provider: "metamask" });
-                        }}
-                      >
+                        }}>
                         Connect Metamask Wallet
                         <WifiIcon className="w-6 h-6 ml-2" />
                       </button>
                       <button
                         type="button"
                         className="text-sm w-3/4 mt-2 flex items-center justify-center p-2 font-medium rounded bg-white"
-                        onClick={() => setShowWalletModal(false)}
-                      >
+                        onClick={() => setShowWalletModal(false)}>
                         Close
                       </button>
                     </div>
@@ -119,13 +109,12 @@ const Wallet = ({
                         onClick={() => {
                           setShowWalletModal(false);
                           setToggleLoginModalOpen(true);
-                        }}
-                      >
+                        }}>
                         Login
                       </button>
                     </span>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </Transition.Child>
