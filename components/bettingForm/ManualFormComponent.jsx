@@ -29,7 +29,7 @@ const placeBet = (sliderValue, rollType) => {
   return result;
 };
 
-const ManualFormComponent = ({ betTurnout, setBetTurnout }) => {
+const ManualFormComponent = ({ user, betTurnout, setBetTurnout }) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmt, setProfitAmt] = useState(0.0);
   const [totalReturnValue, setTotalReturnValue] = useState(0.0);
@@ -112,23 +112,23 @@ const ManualFormComponent = ({ betTurnout, setBetTurnout }) => {
               className="text-md font-bold bg-btn1 text-white px-28 py-3 rounded"
               onClick={() => {
                 const result = placeBet(sliderValue, toggleRollOver);
-                console.log(Math.floor(result[1]));
+                const betResult = result[0];
+                const diceValue = result[1];
                 document.getElementById("dice").style.left = `calc(${Math.floor(
-                  result[1]
+                  diceValue
                 )}% - 2rem)`;
+
                 //set return value
-                if (result[0] == "green") {
+                if (betResult == "green") {
                   setTotalReturnValue(
                     (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(6)
                   );
                 } else {
                   setTotalReturnValue(-parseFloat(betAmt).toFixed(6));
                 }
-
-                setResult(result[1].toFixed(2));
-                document.getElementById("diceResult").style.color = result[0];
-              }}
-            >
+                setResult(parseFloat(diceValue.toFixed(2)));
+                document.getElementById("diceResult").style.color = betResult;
+              }}>
               Roll dice
             </button>
           </div>
@@ -140,8 +140,7 @@ const ManualFormComponent = ({ betTurnout, setBetTurnout }) => {
           <div className="w-full relative">
             <span
               className={`absolute w-16 h-16 -top-16 z-10 flex-col items-center justify-center ${showDice}`}
-              id="dice"
-            >
+              id="dice">
               <span className={`text-md font-bold`} id="diceResult">
                 {result}
               </span>
