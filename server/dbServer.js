@@ -164,8 +164,8 @@ app.get("/user", checkToken, (req, res) => {
 app.post("/bet", async (req, res) => {
   const email = req.body.email;
   const betResult = req.body.betResult; // true:win false:lose
-  const betAmt = await web3.utils.toWei(req.body.betAmt);
-  const profitAmt = await web3.utils.toWei(req.body.profitAmt);
+  const betAmt = await web3.utils.toWei(String(req.body.betAmt));
+  const profitAmt = await web3.utils.toWei(String(req.body.profitAmt));
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "Select * from usertable where email = ?";
@@ -192,15 +192,19 @@ app.post("/bet", async (req, res) => {
                 res.send("Insufficient balance!");
               } else {
                 //send ether
-                return web3.eth.accounts.signTransaction(
-                  {
-                    to: receiver,
-                    value: String(profitAmt),
-                    gas: 2000000,
-                  },
-                  privateKey
-                );
+                return web3.eth.getTransactionCount(sender, "pending");
               }
+            })
+            .then((nonce) => {
+              return web3.eth.accounts.signTransaction(
+                {
+                  nonce: nonce,
+                  to: receiver,
+                  value: parseInt(profitAmt),
+                  gas: 2000000,
+                },
+                privateKey
+              );
             })
             .then((signedTx) => {
               console.log(signedTx);
@@ -228,15 +232,19 @@ app.post("/bet", async (req, res) => {
                 res.send("Insufficient balance!");
               } else {
                 //send ether
-                return web3.eth.accounts.signTransaction(
-                  {
-                    to: receiver,
-                    value: betAmt,
-                    gas: 2000000,
-                  },
-                  privateKey
-                );
+                return web3.eth.getTransactionCount(sender, "pending");
               }
+            })
+            .then((nonce) => {
+              return web3.eth.accounts.signTransaction(
+                {
+                  nonce: nonce,
+                  to: receiver,
+                  value: betAmt,
+                  gas: 2000000,
+                },
+                privateKey
+              );
             })
             .then((signedTx) => {
               console.log(signedTx);
