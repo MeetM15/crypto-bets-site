@@ -34,7 +34,11 @@ const BettingForm = ({ user, walletBalance, web3 }) => {
             />
           </Tab.Panel>
           <Tab.Panel>
-            <AutoFormComponent walletBalance={walletBalance} />
+            <AutoFormComponent
+              user={user}
+              walletBalance={walletBalance}
+              web3={web3}
+            />
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>

@@ -47,6 +47,7 @@ const ManualFormComponent = ({ user, walletBalance, web3 }) => {
     web3.eth
       .getBalance(user[0].address)
       .then((res) => {
+        console.log(res);
         return web3.utils.fromWei(res);
       })
       .then((currBal) => {
@@ -204,6 +205,23 @@ const ManualFormComponent = ({ user, walletBalance, web3 }) => {
               x={sliderValue}
               onChange={({ x }) => {
                 setSliderValue(parseFloat(x.toFixed(2)));
+                if (toggleRollOver) {
+                  if (parseFloat(x) > 97.99 / parseFloat(multiplierValue)) {
+                    setMultiplierValue(
+                      parseFloat((97.99 / parseFloat(x)).toFixed(2))
+                    );
+                  }
+                } else {
+                  if (
+                    parseFloat(100.0 - x) >
+                    97.99 / parseFloat(multiplierValue)
+                  ) {
+                    setMultiplierValue(
+                      parseFloat((97.99 / parseFloat(x)).toFixed(2))
+                    );
+                  }
+                }
+
                 if (!toggleRollOver) setWinChance(parseFloat(x.toFixed(2)));
                 else setWinChance(parseFloat((100.0 - x).toFixed(2)));
               }}

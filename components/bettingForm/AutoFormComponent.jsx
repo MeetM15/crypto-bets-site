@@ -8,6 +8,7 @@ import { Tab } from "@headlessui/react";
 import Slider from "react-input-slider";
 import BetValueField from "./fields/BetValueField";
 import ChancesFields from "./fields/ChancesFields";
+import axios from "axios";
 
 const getRandomArbitrary = (min, max) => {
   return Math.random() * (max - min) + min;
@@ -35,7 +36,7 @@ const placeBet = (sliderValue, rollType) => {
   return result;
 };
 
-const AutoFormComponent = () => {
+const AutoFormComponent = ({ web3, user, walletBalance }) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmtAuto, setProfitAmtAuto] = useState(0.0);
   const [noOfBets, setNoOfBets] = useState(1);
@@ -51,6 +52,112 @@ const AutoFormComponent = () => {
   const [onLoss, setOnLoss] = useState(0);
   const [stopProfit, setStopProfit] = useState(-1);
   const [stopLoss, setStopLoss] = useState(-1);
+
+  const handlePlaceBet = (currentBet, currentProf, totalProf) => {
+    web3.eth
+      .getBalance(user[0].address)
+      .then((res) => {
+        console.log(res);
+        return web3.utils.fromWei(res);
+      })
+      .then((currBal) => {
+        if (parseFloat(currentBet) < parseFloat(currBal)) {
+          //place bet
+          const result = placeBet(sliderValue, toggleRollOver);
+          const betResult = result[0];
+          const diceValue = result[1];
+
+          //set dice position acc. to bet result
+          document.getElementById("dice").style.left = `calc(${Math.floor(
+            diceValue
+          )}% - 2rem)`;
+
+          //set profitAmtAuto on win and on loss
+          if (betResult == "green") {
+            setProfitAmtAuto((prev) =>
+              (
+                parseFloat(prev) +
+                parseFloat(multiplierValue) * parseFloat(currentBet) -
+                parseFloat(currentBet)
+              ).toFixed(6)
+            );
+            currentProf = (
+              parseFloat(multiplierValue) * parseFloat(currentBet) -
+              parseFloat(currentBet)
+            ).toFixed(6);
+            totalProf = (
+              parseFloat(currentProf) + parseFloat(totalProf)
+            ).toFixed(6);
+          } else {
+            setProfitAmtAuto((prev) =>
+              (parseFloat(prev) - parseFloat(currentBet)).toFixed(6)
+            );
+            currentProf = (-parseFloat(currentBet)).toFixed(6);
+            totalProf = (
+              parseFloat(currentProf) + parseFloat(totalProf)
+            ).toFixed(6);
+          }
+
+          // set bet amt incr. on win/loss
+          if (betResult == "green") {
+            setBetAmt((prev) => {
+              const increasedBetWin = (onWin * parseFloat(prev)) / 100;
+              const newBet = parseFloat(prev) + increasedBetWin;
+              return newBet.toFixed(6);
+            });
+            currentBet = (
+              parseFloat(currentBet) +
+              (parseFloat(onWin) * parseFloat(currentBet)) / 100
+            ).toFixed(6);
+          } else {
+            setBetAmt((prev) => {
+              const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
+              const newBet = parseFloat(prev) + increasedBetLoss;
+              return newBet.toFixed(6);
+            });
+            currentBet = (
+              parseFloat(currentBet) +
+              (parseFloat(onLoss) * parseFloat(currentBet)) / 100
+            ).toFixed(6);
+          }
+          setResult(parseFloat(diceValue.toFixed(2)));
+
+          //set dice result color acc to win/loss
+          document.getElementById("diceResult").style.color = betResult;
+          if (user[0] != undefined) {
+            const betData = {
+              email: user[0].email,
+              betResult: betResult == "green" ? true : false,
+              betAmt: currentBet,
+              profitAmt: parseFloat(currentProf) > 0 ? currentProf : 0.0,
+            };
+            console.log("bet data : ", betData);
+            axios
+              .post("/bet", betData)
+              .then((res) => {
+                console.log("bet res : ", res);
+                return {
+                  currentBet: currentBet,
+                  currentProf: currentProf,
+                  totalProf: totalProf,
+                };
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            return {
+              currentBet: currentBet,
+              currentProf: currentProf,
+              totalProf: totalProf,
+            };
+          }
+        } else {
+          console.log("insufficient balance!");
+          return -1;
+        }
+      });
+  };
 
   useEffect(() => {
     if (result != undefined) {
@@ -74,6 +181,7 @@ const AutoFormComponent = () => {
               betAmt={betAmt}
               setBetAmt={setBetAmt}
               multiplierValue={multiplierValue}
+              walletBalance={walletBalance}
             />
             <div className="w-full md:w-1/2 h-16">
               <label htmlFor="bets" className="text-xs font-medium">
@@ -285,27 +393,15 @@ const AutoFormComponent = () => {
                 document
                   .getElementById("rollBtn")
                   .setAttribute("disabled", "true");
-                setTimeout(() => {
-                  console.log("enable click");
-                  if (
-                    document.getElementById("rollBtn").hasAttribute("disabled")
-                  )
-                    document
-                      .getElementById("rollBtn")
-                      .removeAttribute("disabled");
-
-                  console.log("Final Profit : ", profitAmtAuto);
-                  setProfitAmtAuto(0.0);
-                }, Math.floor(noOfBets) * 1000 + 1000);
 
                 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
-
-                async function load() {
-                  const currentProf = profitAmtAuto;
-                  const totalProf = currentProf;
+                const runBets = async () => {
+                  const currentProf = 0.0;
+                  const totalProf = 0.0;
                   const currentBet = betAmt;
-                  const totalReturnAmt = 0.0;
+
                   for (let i = 0; i < noOfBets; i++) {
+                    currentProf = 0.0;
                     //break loop if stop profit achieved
                     if (stopProfit != -1) {
                       if (parseFloat(totalProf) >= parseFloat(stopProfit)) {
@@ -329,89 +425,39 @@ const AutoFormComponent = () => {
                         break;
                       }
                     }
-
-                    //place bet
-                    const result = placeBet(sliderValue, toggleRollOver);
-
-                    //set dice position acc. to bet result
-                    document.getElementById(
-                      "dice"
-                    ).style.left = `calc(${Math.floor(result[1])}% - 2rem)`;
-
-                    //set profitAmtAuto on win and on loss
-                    if (result[0] == "green") {
-                      setProfitAmtAuto((prev) =>
-                        (
-                          parseFloat(prev) +
-                          parseFloat(multiplierValue) * parseFloat(currentBet) -
-                          parseFloat(currentBet)
-                        ).toFixed(6)
-                      );
-                      currentProf = (
-                        parseFloat(multiplierValue) * parseFloat(currentBet) -
-                        parseFloat(currentBet)
-                      ).toFixed(6);
-                      totalProf = (
-                        parseFloat(currentProf) + parseFloat(totalProf)
-                      ).toFixed(6);
-                    } else {
-                      setProfitAmtAuto((prev) =>
-                        (parseFloat(prev) - parseFloat(currentBet)).toFixed(6)
-                      );
-                      currentProf = (-parseFloat(currentBet)).toFixed(6);
-                      totalProf = (
-                        parseFloat(currentProf) + parseFloat(totalProf)
-                      ).toFixed(6);
+                    const handleBetRes = handlePlaceBet(
+                      currentBet,
+                      currentProf,
+                      totalProf
+                    );
+                    if (handleBetRes == -1) {
+                      console.log("Insufficient Balance!");
+                      break;
                     }
-
-                    //set return reward value
-                    if (result[0] == "green") {
-                      totalReturnAmt = (
-                        parseFloat(totalReturnAmt) +
-                        parseFloat(currentBet) +
-                        parseFloat(currentProf)
-                      ).toFixed(6);
+                    if (handleBetRes) {
+                      currentBet = handleBetRes.currentBet;
+                      currentProf = handleBetRes.currentProf;
+                      totalProf = handleBetRes.totalProf;
                     }
-
-                    // set bet amt incr. on win/loss
-                    if (result[0] == "green") {
-                      setBetAmt((prev) => {
-                        const increasedBetWin =
-                          (onWin * parseFloat(prev)) / 100;
-                        const newBet = parseFloat(prev) + increasedBetWin;
-                        return newBet.toFixed(6);
-                      });
-                      currentBet = (
-                        parseFloat(currentBet) +
-                        (parseFloat(onWin) * parseFloat(currentBet)) / 100
-                      ).toFixed(6);
-                    } else {
-                      setBetAmt((prev) => {
-                        const increasedBetLoss =
-                          (onLoss * parseFloat(prev)) / 100;
-                        const newBet = parseFloat(prev) + increasedBetLoss;
-                        return newBet.toFixed(6);
-                      });
-                      currentBet = (
-                        parseFloat(currentBet) +
-                        (parseFloat(onLoss) * parseFloat(currentBet)) / 100
-                      ).toFixed(6);
-                    }
-                    setResult(result[1].toFixed(2));
-
-                    //set dice result color acc to win/loss
-                    document.getElementById("diceResult").style.color =
-                      result[0];
+                    console.log("CBet : ", currentBet);
                     console.log("CProfit : ", currentProf);
                     console.log("TProfit : ", totalProf);
-                    console.log("Profit : ", stopProfit);
-                    console.log("Loss : ", stopLoss);
-                    console.log("CBet : ", currentBet);
-                    console.log("Totalret : ", totalReturnAmt);
-                    await timer(1000); // wait between next bet
+                    await timer(3000); // wait between next bet
                   }
-                }
-                load();
+
+                  setTimeout(() => {
+                    console.log("enable click");
+                    if (
+                      document
+                        .getElementById("rollBtn")
+                        .hasAttribute("disabled")
+                    )
+                      document
+                        .getElementById("rollBtn")
+                        .removeAttribute("disabled");
+                  }, parseInt(noOfBets) * 1000);
+                };
+                runBets();
               }}>
               Roll dice
             </button>
@@ -438,6 +484,23 @@ const AutoFormComponent = () => {
               x={sliderValue}
               onChange={({ x }) => {
                 setSliderValue(parseFloat(x.toFixed(2)));
+                if (toggleRollOver) {
+                  if (parseFloat(x) > 97.99 / parseFloat(multiplierValue)) {
+                    setMultiplierValue(
+                      parseFloat((97.99 / parseFloat(x)).toFixed(2))
+                    );
+                  }
+                } else {
+                  if (
+                    parseFloat(100.0 - x) >
+                    97.99 / parseFloat(multiplierValue)
+                  ) {
+                    setMultiplierValue(
+                      parseFloat((97.99 / parseFloat(x)).toFixed(2))
+                    );
+                  }
+                }
+
                 if (!toggleRollOver) setWinChance(parseFloat(x.toFixed(2)));
                 else setWinChance(parseFloat((100.0 - x).toFixed(2)));
               }}

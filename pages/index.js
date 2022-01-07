@@ -41,7 +41,7 @@ export default function Home() {
         })
         .then((res) => {
           console.log(res);
-          setWalletBalance(parseFloat(res));
+          setWalletBalance(parseFloat(res) - 0.00005);
         });
     }
   }, []);
@@ -53,7 +53,7 @@ export default function Home() {
           return web3.utils.fromWei(res);
         })
         .then((res) => {
-          setWalletBalance(parseFloat(res));
+          setWalletBalance(parseFloat(res) - 0.00005);
         });
     }
   }, [user]);
@@ -65,7 +65,7 @@ export default function Home() {
           return web3.utils.fromWei(res);
         })
         .then((res) => {
-          setWalletBalance(parseFloat(res));
+          setWalletBalance(parseFloat(res) - 0.00005);
         });
     }
   }, [showWalletModal]);

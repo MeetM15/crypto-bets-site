@@ -10,7 +10,10 @@ const BetValueField = ({
   useEffect(() => {
     if (setProfitAmt != undefined)
       setProfitAmt(
-        (parseFloat(multiplierValue) * parseFloat(betAmt)).toFixed(6)
+        (
+          parseFloat(multiplierValue) * parseFloat(betAmt) -
+          parseFloat(betAmt)
+        ).toFixed(6)
       );
   }, [betAmt]);
   return (
@@ -23,25 +26,26 @@ const BetValueField = ({
           className="px-2 py-2 rounded font-medium text-sm w-full text-center"
           type="number"
           name="bettingAmt"
-          step="0.000001"
-          min="0.000000"
+          step="0.0001"
+          min="0.0000"
           max={walletBalance}
           onBlur={(e) => {
             if (e.target.value < 0) e.target.value = -1.0 * e.target.value;
+            if (e.target.value == "") e.target.value = 0.0;
             if (parseFloat(e.target.value) > walletBalance)
               e.target.value = walletBalance;
-            setBetAmt(e.target.value);
+            setBetAmt(parseFloat(parseFloat(e.target.value).toFixed(4)));
           }}
           value={betAmt}
           onChange={(e) => {
-            setBetAmt(e.target.value);
+            setBetAmt(parseFloat(parseFloat(e.target.value).toFixed(4)));
           }}
           id="betValue"
         />
         <button
           className="text-xs font-medium px-2 border-r-2 border-gray-400 flex items-center justify-center rounded-l hover:bg-gray-300 h-full"
           onClick={() => {
-            setBetAmt((prev) => (0.5 * prev).toFixed(6));
+            setBetAmt((prev) => (0.5 * prev).toFixed(4));
           }}
           type="button">
           1/2
@@ -49,7 +53,7 @@ const BetValueField = ({
         <button
           className="text-xs font-medium px-2 flex items-center justify-center rounded-r hover:bg-gray-300 h-full"
           onClick={() => {
-            setBetAmt((prev) => (2.0 * prev).toFixed(6));
+            setBetAmt((prev) => (2.0 * prev).toFixed(4));
           }}
           type="button">
           2 <XIcon className="h-2 w-2" />
