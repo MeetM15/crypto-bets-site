@@ -5,6 +5,7 @@ const Layout = ({
   user,
   setToggleLoginModalOpen,
   setShowWalletModal,
+  walletBalance,
 }) => {
   return (
     <div className="bg-primary min-h-screen">
@@ -12,6 +13,7 @@ const Layout = ({
         user={user}
         setToggleLoginModalOpen={setToggleLoginModalOpen}
         setShowWalletModal={setShowWalletModal}
+        walletBalance={walletBalance}
       />
       {children}
     </div>

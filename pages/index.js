@@ -74,7 +74,8 @@ export default function Home() {
     <Layout
       user={user}
       setToggleLoginModalOpen={setToggleLoginModalOpen}
-      setShowWalletModal={setShowWalletModal}>
+      setShowWalletModal={setShowWalletModal}
+      walletBalance={walletBalance}>
       <Head>
         <title>Crypto Dice</title>
       </Head>
