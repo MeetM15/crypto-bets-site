@@ -36,7 +36,7 @@ const placeBet = (sliderValue, rollType) => {
   return result;
 };
 
-const AutoFormComponent = ({ web3, user, walletBalance }) => {
+const AutoFormComponent = ({ web3, user, walletBalance, setWalletBalance }) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmtAuto, setProfitAmtAuto] = useState(0.0);
   const [noOfBets, setNoOfBets] = useState(1);
@@ -141,6 +141,16 @@ const AutoFormComponent = ({ web3, user, walletBalance }) => {
                   currentProf: currentProf,
                   totalProf: totalProf,
                 };
+              })
+              .then((res) => {
+                console.log(res);
+                return web3.eth.getBalance(user[0].address);
+              })
+              .then((res) => {
+                return web3.utils.fromWei(res);
+              })
+              .then((res) => {
+                setWalletBalance(parseFloat(res) - 0.00005);
               })
               .catch((err) => {
                 console.log(err);

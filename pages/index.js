@@ -80,7 +80,12 @@ export default function Home() {
         <title>Crypto Dice</title>
       </Head>
       <div className="p-8 flex items-center justify-center">
-        <BettingForm user={user} walletBalance={walletBalance} web3={web3} />
+        <BettingForm
+          user={user}
+          walletBalance={walletBalance}
+          web3={web3}
+          setWalletBalance={setWalletBalance}
+        />
       </div>
       <Login
         toggleLoginModalOpen={toggleLoginModalOpen}

@@ -30,7 +30,12 @@ const placeBet = (sliderValue, rollType) => {
   return result;
 };
 
-const ManualFormComponent = ({ user, walletBalance, web3 }) => {
+const ManualFormComponent = ({
+  user,
+  walletBalance,
+  web3,
+  setWalletBalance,
+}) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmt, setProfitAmt] = useState(0.0);
   const [totalReturnValue, setTotalReturnValue] = useState(0.0);
@@ -81,6 +86,18 @@ const ManualFormComponent = ({ user, walletBalance, web3 }) => {
               .post("/bet", betData)
               .then((res) => {
                 console.log(res);
+                return web3.eth.getBalance(user[0].address);
+              })
+              .then((res) => {
+                return web3.utils.fromWei(res);
+              })
+              .then((res) => {
+                setWalletBalance(parseFloat(res) - 0.00005);
+                console.log("enable click");
+                if (document.getElementById("rollBtn").hasAttribute("disabled"))
+                  document
+                    .getElementById("rollBtn")
+                    .removeAttribute("disabled");
               })
               .catch((err) => {
                 console.log(err);
@@ -169,16 +186,6 @@ const ManualFormComponent = ({ user, walletBalance, web3 }) => {
                   .setAttribute("disabled", "true");
 
                 handlePlaceBet();
-
-                setTimeout(() => {
-                  console.log("enable click");
-                  if (
-                    document.getElementById("rollBtn").hasAttribute("disabled")
-                  )
-                    document
-                      .getElementById("rollBtn")
-                      .removeAttribute("disabled");
-                }, 2000);
               }}>
               Roll dice
             </button>
