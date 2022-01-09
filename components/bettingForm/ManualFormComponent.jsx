@@ -35,6 +35,7 @@ const ManualFormComponent = ({
   walletBalance,
   web3,
   setWalletBalance,
+  setToggleLoginModalOpen,
 }) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmt, setProfitAmt] = useState(0.0);
@@ -105,6 +106,9 @@ const ManualFormComponent = ({
           }
         } else {
           console.log("insufficient balance!");
+          console.log("enable click");
+          if (document.getElementById("rollBtn").hasAttribute("disabled"))
+            document.getElementById("rollBtn").removeAttribute("disabled");
         }
       });
   };
@@ -180,12 +184,16 @@ const ManualFormComponent = ({
               className="text-md font-bold bg-btn1 text-white px-28 py-3 rounded"
               id="rollBtn"
               onClick={() => {
-                console.log("disable click");
-                document
-                  .getElementById("rollBtn")
-                  .setAttribute("disabled", "true");
+                if (user[0]) {
+                  console.log("disable click");
+                  document
+                    .getElementById("rollBtn")
+                    .setAttribute("disabled", "true");
 
-                handlePlaceBet();
+                  handlePlaceBet();
+                } else {
+                  setToggleLoginModalOpen(true);
+                }
               }}>
               Roll dice
             </button>

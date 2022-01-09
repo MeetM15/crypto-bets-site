@@ -36,7 +36,13 @@ const placeBet = (sliderValue, rollType) => {
   return result;
 };
 
-const AutoFormComponent = ({ web3, user, walletBalance, setWalletBalance }) => {
+const AutoFormComponent = ({
+  web3,
+  user,
+  walletBalance,
+  setWalletBalance,
+  setToggleLoginModalOpen,
+}) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmtAuto, setProfitAmtAuto] = useState(0.0);
   const [noOfBets, setNoOfBets] = useState(1);
@@ -398,12 +404,6 @@ const AutoFormComponent = ({ web3, user, walletBalance, setWalletBalance }) => {
               className="text-md font-bold bg-btn1 text-white px-28 py-3 rounded"
               id="rollBtn"
               onClick={() => {
-                // To prevent spamming of bets
-                console.log("disable click");
-                document
-                  .getElementById("rollBtn")
-                  .setAttribute("disabled", "true");
-
                 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
                 const runBets = async () => {
                   const currentProf = 0.0;
@@ -467,7 +467,16 @@ const AutoFormComponent = ({ web3, user, walletBalance, setWalletBalance }) => {
                         .removeAttribute("disabled");
                   }, parseInt(noOfBets) * 1000);
                 };
-                runBets();
+                if (user[0]) {
+                  // To prevent spamming of bets
+                  console.log("disable click");
+                  document
+                    .getElementById("rollBtn")
+                    .setAttribute("disabled", "true");
+                  runBets();
+                } else {
+                  setToggleLoginModalOpen(true);
+                }
               }}>
               Roll dice
             </button>

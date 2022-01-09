@@ -85,6 +85,7 @@ export default function Home() {
           walletBalance={walletBalance}
           web3={web3}
           setWalletBalance={setWalletBalance}
+          setToggleLoginModalOpen={setToggleLoginModalOpen}
         />
       </div>
       <Login

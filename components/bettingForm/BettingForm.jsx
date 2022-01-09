@@ -3,7 +3,13 @@ import AutoFormComponent from "./AutoFormComponent";
 import ManualFormComponent from "./ManualFormComponent";
 
 import { useState } from "react";
-const BettingForm = ({ user, walletBalance, web3, setWalletBalance }) => {
+const BettingForm = ({
+  user,
+  walletBalance,
+  web3,
+  setWalletBalance,
+  setToggleLoginModalOpen,
+}) => {
   return (
     <div className="bg-gray-200 p-2 rounded">
       <Tab.Group>
@@ -32,6 +38,7 @@ const BettingForm = ({ user, walletBalance, web3, setWalletBalance }) => {
               walletBalance={walletBalance}
               web3={web3}
               setWalletBalance={setWalletBalance}
+              setToggleLoginModalOpen={setToggleLoginModalOpen}
             />
           </Tab.Panel>
           <Tab.Panel>
@@ -40,6 +47,7 @@ const BettingForm = ({ user, walletBalance, web3, setWalletBalance }) => {
               walletBalance={walletBalance}
               web3={web3}
               setWalletBalance={setWalletBalance}
+              setToggleLoginModalOpen={setToggleLoginModalOpen}
             />
           </Tab.Panel>
         </Tab.Panels>
