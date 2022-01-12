@@ -6,6 +6,9 @@ const BetValueField = ({
   setProfitAmt,
   multiplierValue,
   walletBalance,
+  disableClick,
+  bnbWalletBalance,
+  chain,
 }) => {
   useEffect(() => {
     if (setProfitAmt != undefined)
@@ -24,17 +27,25 @@ const BetValueField = ({
       <div className="p-0.5 bg-gray-200 rounded w-full h-10 flex items-center justify-start">
         <input
           className="px-2 py-2 rounded font-medium text-sm w-full text-center"
+          disabled={disableClick != undefined ? disableClick : false}
           type="number"
           name="bettingAmt"
           step="0.0001"
           min="0.0000"
-          max={walletBalance}
+          max={chain == "eth" ? walletBalance : bnbWalletBalance}
           onBlur={(e) => {
             if (e.target.value < 0) e.target.value = -1.0 * e.target.value;
             if (e.target.value == "") e.target.value = 0.0;
-            if (parseFloat(e.target.value) > walletBalance)
-              e.target.value = walletBalance;
-            setBetAmt(parseFloat(parseFloat(e.target.value).toFixed(4)));
+            setBetAmt(() => {
+              if (chain == "eth") {
+                if (parseFloat(e.target.value) > walletBalance)
+                  e.target.value = walletBalance;
+              } else {
+                if (parseFloat(e.target.value) > bnbWalletBalance)
+                  e.target.value = bnbWalletBalance;
+              }
+              return parseFloat(parseFloat(e.target.value).toFixed(4));
+            });
           }}
           value={betAmt}
           onChange={(e) => {
@@ -44,6 +55,7 @@ const BetValueField = ({
         />
         <button
           className="text-xs font-medium px-2 border-r-2 border-gray-400 flex items-center justify-center rounded-l hover:bg-gray-300 h-full"
+          disabled={disableClick != undefined ? disableClick : false}
           onClick={() => {
             setBetAmt((prev) => (0.5 * prev).toFixed(4));
           }}
@@ -51,6 +63,7 @@ const BetValueField = ({
           1/2
         </button>
         <button
+          disabled={disableClick != undefined ? disableClick : false}
           className="text-xs font-medium px-2 flex items-center justify-center rounded-r hover:bg-gray-300 h-full"
           onClick={() => {
             setBetAmt((prev) => (2.0 * prev).toFixed(4));

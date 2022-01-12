@@ -10,6 +10,7 @@ const ChancesFields = ({
   setWinChance,
   multiplierValue,
   setMultiplierValue,
+  disableClick,
 }) => {
   return (
     <div className="flex flex-col md:flex-row items-center justify-between w-full">
@@ -21,14 +22,14 @@ const ChancesFields = ({
           <button
             className="text-xs bg-white font-medium px-2 w-full flex items-center justify-center rounded h-full"
             type="button"
+            disabled={disableClick != undefined ? disableClick : false}
             onClick={() => {
               setSliderValue((prevState) => {
-                const newState = 100.0 - prevState - 0.02;
+                const newState = 100.0 - prevState;
                 return parseFloat(newState.toFixed(2));
               });
               setToggleRollOverOver(!toggleRollOver);
-            }}
-          >
+            }}>
             <span className="w-full h-full text-sm font-medium mr-2 flex items-center justify-center">
               {sliderValue}
             </span>
@@ -42,28 +43,32 @@ const ChancesFields = ({
         </label>
         <div className="p-0.5 h-10 flex items-center justify-start">
           <input
-            className="px-2 py-2 rounded-l font-medium text-sm w-full text-center"
+            className="px-2 py-2 rounded-l font-medium text-sm w-full text-center bg-white"
+            disabled={disableClick != undefined ? disableClick : false}
             type="number"
             name="multiplier"
-            min="1.01"
+            min="1.0101"
             onBlur={(e) => {
-              e.target.value = Number(e.target.value).toFixed(4);
+              e.target.value = Number(e.target.value);
               if (e.target.value < 0) e.target.value = -1.0 * e.target.value;
-              if (e.target.value >= 0 && e.target.value < 1.01)
-                e.target.value = 1.01;
-              setMultiplierValue(e.target.value);
-              setWinChance((100.0 / e.target.value).toFixed(6));
+              if (e.target.value >= 0 && e.target.value < 1.0101)
+                e.target.value = 1.0101;
+              setMultiplierValue(
+                parseFloat(parseFloat(e.target.value).toFixed(4))
+              );
+              setWinChance(parseFloat((99.0 / e.target.value).toFixed(2)));
             }}
             value={multiplierValue}
             onChange={(e) => {
-              setMultiplierValue(e.target.value);
-              setWinChance((100.0 / e.target.value).toFixed(6));
+              setMultiplierValue(
+                parseFloat(parseFloat(e.target.value).toFixed(4))
+              );
+              setWinChance(parseFloat((99.0 / e.target.value).toFixed(2)));
             }}
           />
           <button
             disabled
-            className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full"
-          >
+            className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
             <XIcon className="w-4 h-4" />
           </button>
         </div>
@@ -74,29 +79,33 @@ const ChancesFields = ({
         </label>
         <div className="p-0.5 h-10 flex items-center justify-start">
           <input
-            className="px-2 py-2 rounded-l font-medium text-sm w-full text-center"
+            className="px-2 py-2 rounded-l font-medium text-sm w-full text-center bg-white"
+            disabled={disableClick != undefined ? disableClick : false}
             type="number"
             name="winChance"
             min="0.01"
-            max="97.99"
+            max="98.00"
             onBlur={(e) => {
-              if (e.target.value < 98.0) {
-                e.target.value = Number(e.target.value).toFixed(4);
+              if (e.target.value <= 98.0) {
+                e.target.value = parseFloat(e.target.value);
                 if (e.target.value < 0) e.target.value = -1.0 * e.target.value;
-                setWinChance(e.target.value);
+                if (e.target.value == 0.0) e.target.value = 0.01;
+                setWinChance(parseFloat(parseFloat(e.target.value).toFixed(2)));
+              } else {
+                e.target.value = 98.0;
+                setWinChance(parseFloat(parseFloat(e.target.value).toFixed(2)));
               }
             }}
             value={winChance}
             onChange={(e) => {
-              if (e.target.value < 98.0) {
-                setWinChance(e.target.value);
+              if (e.target.value <= 98.0) {
+                setWinChance(parseFloat(parseFloat(e.target.value).toFixed(2)));
               }
             }}
           />
           <button
             disabled
-            className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full"
-          >
+            className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full">
             %
           </button>
         </div>

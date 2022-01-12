@@ -3,7 +3,7 @@ import {
   TrendingUpIcon,
   TrendingDownIcon,
 } from "@heroicons/react/solid";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tab } from "@headlessui/react";
 import Slider from "react-input-slider";
 import BetValueField from "./fields/BetValueField";
@@ -37,12 +37,18 @@ const placeBet = (sliderValue, rollType) => {
 };
 
 const AutoFormComponent = ({
-  web3,
   user,
   walletBalance,
+  bnbWalletBalance,
+  web3,
+  web3_bsc,
   setWalletBalance,
+  setBnbWalletBalance,
   setToggleLoginModalOpen,
+  chain,
 }) => {
+  const btnRef = useRef(false);
+  const [disableClick, setDisableClick] = useState(false);
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmtAuto, setProfitAmtAuto] = useState(0.0);
   const [noOfBets, setNoOfBets] = useState(1);
@@ -60,357 +66,660 @@ const AutoFormComponent = ({
   const [stopLoss, setStopLoss] = useState(-1);
 
   const handlePlaceBet = (currentBet, currentProf, totalProf) => {
-    web3.eth
-      .getBalance(user[0].address)
-      .then((res) => {
-        console.log(res);
-        return web3.utils.fromWei(res);
-      })
-      .then((currBal) => {
-        if (parseFloat(currentBet) < parseFloat(currBal)) {
-          //place bet
-          const result = placeBet(sliderValue, toggleRollOver);
-          const betResult = result[0];
-          const diceValue = result[1];
+    if (user && user[0]) {
+      //place bet
+      const result = placeBet(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
 
-          //set dice position acc. to bet result
-          document.getElementById("dice").style.left = `calc(${Math.floor(
-            diceValue
-          )}% - 2rem)`;
+      //set dice position acc. to bet result
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
 
-          //set profitAmtAuto on win and on loss
-          if (betResult == "green") {
-            setProfitAmtAuto((prev) =>
-              (
-                parseFloat(prev) +
-                parseFloat(multiplierValue) * parseFloat(currentBet) -
-                parseFloat(currentBet)
-              ).toFixed(6)
-            );
-            currentProf = (
+      //set dice result color acc to win/loss
+      document.getElementById("diceResult").style.color = betResult;
+      if (user && user[0] != undefined) {
+        const betData = {
+          email: user[0].email,
+          chain: chain,
+          betResult: betResult == "green" ? true : false,
+          betAmt: currentBet,
+          profitAmt: parseFloat(currentProf) > 0 ? currentProf : 0.0,
+        };
+        console.log("bet data : ", betData);
+        axios
+          .post("/bet", betData)
+          .then((res) => {
+            console.log("bet res : ", res);
+          })
+          .then(() => {
+            return web3.eth.getBalance(user[0].address);
+          })
+          .then((res) => {
+            return web3.utils.fromWei(res);
+          })
+          .then((res) => {
+            setWalletBalance(parseFloat(res));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        //set profitAmtAuto on win and on loss
+        if (betResult == "green") {
+          setWalletBalance(
+            (prev) => parseFloat(prev) + parseFloat(currentProf)
+          );
+          setProfitAmtAuto((prev) =>
+            (
+              parseFloat(prev) +
               parseFloat(multiplierValue) * parseFloat(currentBet) -
               parseFloat(currentBet)
-            ).toFixed(6);
-            totalProf = (
-              parseFloat(currentProf) + parseFloat(totalProf)
-            ).toFixed(6);
-          } else {
-            setProfitAmtAuto((prev) =>
-              (parseFloat(prev) - parseFloat(currentBet)).toFixed(6)
-            );
-            currentProf = (-parseFloat(currentBet)).toFixed(6);
-            totalProf = (
-              parseFloat(currentProf) + parseFloat(totalProf)
-            ).toFixed(6);
-          }
+            ).toFixed(6)
+          );
+          currentProf = parseFloat(
+            (
+              parseFloat(multiplierValue) * parseFloat(currentBet) -
+              parseFloat(currentBet)
+            ).toFixed(6)
+          );
+          totalProf = parseFloat(
+            (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
+          );
+        } else {
+          setWalletBalance((prev) =>
+            parseFloat(parseFloat(prev) - parseFloat(betAmt))
+          );
+          setProfitAmtAuto((prev) =>
+            parseFloat((parseFloat(prev) - parseFloat(currentBet)).toFixed(6))
+          );
+          currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
+          totalProf = parseFloat(
+            (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
+          );
+        }
 
-          // set bet amt incr. on win/loss
-          if (betResult == "green") {
-            setBetAmt((prev) => {
-              const increasedBetWin = (onWin * parseFloat(prev)) / 100;
-              const newBet = parseFloat(prev) + increasedBetWin;
-              return newBet.toFixed(6);
-            });
-            currentBet = (
+        // set bet amt incr. on win/loss
+        if (betResult == "green") {
+          setBetAmt((prev) => {
+            const increasedBetWin = (onWin * parseFloat(prev)) / 100;
+            const newBet = parseFloat(prev) + increasedBetWin;
+            return parseFloat(newBet.toFixed(6));
+          });
+          currentBet = parseFloat(
+            (
               parseFloat(currentBet) +
               (parseFloat(onWin) * parseFloat(currentBet)) / 100
-            ).toFixed(6);
-          } else {
-            setBetAmt((prev) => {
-              const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
-              const newBet = parseFloat(prev) + increasedBetLoss;
-              return newBet.toFixed(6);
-            });
-            currentBet = (
+            ).toFixed(6)
+          );
+        } else {
+          setBetAmt((prev) => {
+            const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
+            const newBet = parseFloat(prev) + increasedBetLoss;
+            return parseFloat(newBet.toFixed(6));
+          });
+          currentBet = parseFloat(
+            (
               parseFloat(currentBet) +
               (parseFloat(onLoss) * parseFloat(currentBet)) / 100
-            ).toFixed(6);
-          }
-          setResult(parseFloat(diceValue.toFixed(2)));
-
-          //set dice result color acc to win/loss
-          document.getElementById("diceResult").style.color = betResult;
-          if (user[0] != undefined) {
-            const betData = {
-              email: user[0].email,
-              betResult: betResult == "green" ? true : false,
-              betAmt: currentBet,
-              profitAmt: parseFloat(currentProf) > 0 ? currentProf : 0.0,
-            };
-            console.log("bet data : ", betData);
-            axios
-              .post("/bet", betData)
-              .then((res) => {
-                console.log("bet res : ", res);
-                return {
-                  currentBet: currentBet,
-                  currentProf: currentProf,
-                  totalProf: totalProf,
-                };
-              })
-              .then((res) => {
-                console.log(res);
-                return web3.eth.getBalance(user[0].address);
-              })
-              .then((res) => {
-                return web3.utils.fromWei(res);
-              })
-              .then((res) => {
-                setWalletBalance(parseFloat(res) - 0.00005);
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          } else {
-            return {
-              currentBet: currentBet,
-              currentProf: currentProf,
-              totalProf: totalProf,
-            };
-          }
-        } else {
-          console.log("insufficient balance!");
-          return -1;
+            ).toFixed(6)
+          );
         }
-      });
-  };
+        setShowDice("flex");
+        setTimeout(() => {
+          setShowDice("hidden");
+        }, 3000);
+        setResult(parseFloat(diceValue.toFixed(2)));
+        return {
+          currentBet: currentBet,
+          currentProf: currentProf,
+          totalProf: totalProf,
+        };
+      } else {
+        return {
+          currentBet: currentBet,
+          currentProf: currentProf,
+          totalProf: totalProf,
+        };
+      }
+    } else {
+      //place bet
+      const result = placeBet(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
 
-  useEffect(() => {
-    if (result != undefined) {
+      //set dice position acc. to bet result
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
+
+      //set profitAmtAuto on win and on loss
+      if (betResult == "green") {
+        setWalletBalance((prev) => parseFloat(prev) + parseFloat(currentProf));
+        setProfitAmtAuto((prev) =>
+          (
+            parseFloat(prev) +
+            parseFloat(multiplierValue) * parseFloat(currentBet) -
+            parseFloat(currentBet)
+          ).toFixed(6)
+        );
+        currentProf = (
+          parseFloat(multiplierValue) * parseFloat(currentBet) -
+          parseFloat(currentBet)
+        ).toFixed(6);
+        totalProf = (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(
+          6
+        );
+      } else {
+        setWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+        setProfitAmtAuto((prev) =>
+          (parseFloat(prev) - parseFloat(currentBet)).toFixed(6)
+        );
+        currentProf = (-parseFloat(currentBet)).toFixed(6);
+        totalProf = (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(
+          6
+        );
+      }
+
+      // set bet amt incr. on win/loss
+      if (betResult == "green") {
+        setBetAmt((prev) => {
+          const increasedBetWin = (onWin * parseFloat(prev)) / 100;
+          const newBet = parseFloat(prev) + increasedBetWin;
+          return newBet.toFixed(6);
+        });
+        currentBet = (
+          parseFloat(currentBet) +
+          (parseFloat(onWin) * parseFloat(currentBet)) / 100
+        ).toFixed(6);
+      } else {
+        setBetAmt((prev) => {
+          const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
+          const newBet = parseFloat(prev) + increasedBetLoss;
+          return newBet.toFixed(6);
+        });
+        currentBet = (
+          parseFloat(currentBet) +
+          (parseFloat(onLoss) * parseFloat(currentBet)) / 100
+        ).toFixed(6);
+      }
       setShowDice("flex");
       setTimeout(() => {
         setShowDice("hidden");
-      }, 5000);
+      }, 3000);
+      setResult(parseFloat(diceValue.toFixed(2)));
+
+      //set dice result color acc to win/loss
+      document.getElementById("diceResult").style.color = betResult;
+      return {
+        currentBet: currentBet,
+        currentProf: currentProf,
+        totalProf: totalProf,
+      };
     }
-  }, [result]);
+  };
+  const handlePlaceBetBnb = (currentBet, currentProf, totalProf) => {
+    if (user && user[0]) {
+      //place bet
+      const result = placeBet(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
+
+      //set dice position acc. to bet result
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
+
+      //set dice result color acc to win/loss
+      document.getElementById("diceResult").style.color = betResult;
+      if (user && user[0] != undefined) {
+        const betData = {
+          email: user[0].email,
+          chain: chain,
+          betResult: betResult == "green" ? true : false,
+          betAmt: currentBet,
+          profitAmt: parseFloat(currentProf) > 0 ? currentProf : 0.0,
+        };
+        console.log("bet data : ", betData);
+        axios
+          .post("/bet", betData)
+          .then((res) => {
+            console.log("bet res : ", res);
+          })
+          .then(() => {
+            return web3_bsc.eth.getBalance(user[0].bscAddress);
+          })
+          .then((res) => {
+            return web3_bsc.utils.fromWei(res);
+          })
+          .then((res) => {
+            setBnbWalletBalance(parseFloat(res));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        //set profitAmtAuto on win and on loss
+        if (betResult == "green") {
+          setBnbWalletBalance(
+            (prev) => parseFloat(prev) + parseFloat(currentProf)
+          );
+          setProfitAmtAuto((prev) =>
+            (
+              parseFloat(prev) +
+              parseFloat(multiplierValue) * parseFloat(currentBet) -
+              parseFloat(currentBet)
+            ).toFixed(6)
+          );
+          currentProf = parseFloat(
+            (
+              parseFloat(multiplierValue) * parseFloat(currentBet) -
+              parseFloat(currentBet)
+            ).toFixed(6)
+          );
+          totalProf = parseFloat(
+            (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
+          );
+        } else {
+          setBnbWalletBalance((prev) =>
+            parseFloat(parseFloat(prev) - parseFloat(betAmt))
+          );
+          setProfitAmtAuto((prev) =>
+            parseFloat((parseFloat(prev) - parseFloat(currentBet)).toFixed(6))
+          );
+          currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
+          totalProf = parseFloat(
+            (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
+          );
+        }
+
+        // set bet amt incr. on win/loss
+        if (betResult == "green") {
+          setBetAmt((prev) => {
+            const increasedBetWin = (onWin * parseFloat(prev)) / 100;
+            const newBet = parseFloat(prev) + increasedBetWin;
+            return parseFloat(newBet.toFixed(6));
+          });
+          currentBet = parseFloat(
+            (
+              parseFloat(currentBet) +
+              (parseFloat(onWin) * parseFloat(currentBet)) / 100
+            ).toFixed(6)
+          );
+        } else {
+          setBetAmt((prev) => {
+            const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
+            const newBet = parseFloat(prev) + increasedBetLoss;
+            return parseFloat(newBet.toFixed(6));
+          });
+          currentBet = parseFloat(
+            (
+              parseFloat(currentBet) +
+              (parseFloat(onLoss) * parseFloat(currentBet)) / 100
+            ).toFixed(6)
+          );
+        }
+        setShowDice("flex");
+        setTimeout(() => {
+          setShowDice("hidden");
+        }, 3000);
+        setResult(parseFloat(diceValue.toFixed(2)));
+        return {
+          currentBet: currentBet,
+          currentProf: currentProf,
+          totalProf: totalProf,
+        };
+      } else {
+        return {
+          currentBet: currentBet,
+          currentProf: currentProf,
+          totalProf: totalProf,
+        };
+      }
+    } else {
+      //place bet
+      const result = placeBet(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
+
+      //set dice position acc. to bet result
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
+
+      //set profitAmtAuto on win and on loss
+      if (betResult == "green") {
+        setBnbWalletBalance(
+          (prev) => parseFloat(prev) + parseFloat(currentProf)
+        );
+        setProfitAmtAuto((prev) =>
+          (
+            parseFloat(prev) +
+            parseFloat(multiplierValue) * parseFloat(currentBet) -
+            parseFloat(currentBet)
+          ).toFixed(6)
+        );
+        currentProf = (
+          parseFloat(multiplierValue) * parseFloat(currentBet) -
+          parseFloat(currentBet)
+        ).toFixed(6);
+        totalProf = (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(
+          6
+        );
+      } else {
+        setBnbWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+        setProfitAmtAuto((prev) =>
+          (parseFloat(prev) - parseFloat(currentBet)).toFixed(6)
+        );
+        currentProf = (-parseFloat(currentBet)).toFixed(6);
+        totalProf = (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(
+          6
+        );
+      }
+
+      // set bet amt incr. on win/loss
+      if (betResult == "green") {
+        setBetAmt((prev) => {
+          const increasedBetWin = (onWin * parseFloat(prev)) / 100;
+          const newBet = parseFloat(prev) + increasedBetWin;
+          return newBet.toFixed(6);
+        });
+        currentBet = (
+          parseFloat(currentBet) +
+          (parseFloat(onWin) * parseFloat(currentBet)) / 100
+        ).toFixed(6);
+      } else {
+        setBetAmt((prev) => {
+          const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
+          const newBet = parseFloat(prev) + increasedBetLoss;
+          return newBet.toFixed(6);
+        });
+        currentBet = (
+          parseFloat(currentBet) +
+          (parseFloat(onLoss) * parseFloat(currentBet)) / 100
+        ).toFixed(6);
+      }
+      setShowDice("flex");
+      setTimeout(() => {
+        setShowDice("hidden");
+      }, 3000);
+      setResult(parseFloat(diceValue.toFixed(2)));
+
+      //set dice result color acc to win/loss
+      document.getElementById("diceResult").style.color = betResult;
+      return {
+        currentBet: currentBet,
+        currentProf: currentProf,
+        totalProf: totalProf,
+      };
+    }
+  };
 
   useEffect(() => {
-    if (!toggleRollOver) setSliderValue(parseFloat(winChance).toFixed(4));
-    else setSliderValue((100.0 - parseFloat(winChance)).toFixed(4));
+    if (!toggleRollOver)
+      setSliderValue(parseFloat(parseFloat(winChance).toFixed(2)));
+    else setSliderValue(parseFloat((100.0 - parseFloat(winChance)).toFixed(2)));
   }, [winChance]);
+
   return (
     <div className="flex flex-col items-center">
       <form>
-        <div className="w-64 sm:w-96 md:w-152 flex flex-wrap items-center justify-between">
-          <div className="flex flex-col md:flex-row items-center justify-between w-full">
-            <BetValueField
-              betAmt={betAmt}
-              setBetAmt={setBetAmt}
+        <div
+          className={`w-64 sm:w-96 md:w-152 flex flex-wrap items-center justify-between`}>
+          <div className={` ${disableClick && "opacity-70"}`}>
+            <div className="flex flex-col md:flex-row items-center justify-between w-full">
+              <BetValueField
+                betAmt={betAmt}
+                setBetAmt={setBetAmt}
+                multiplierValue={multiplierValue}
+                walletBalance={walletBalance}
+                disableClick={disableClick}
+                bnbWalletBalance={bnbWalletBalance}
+                chain={chain}
+              />
+              <div className="w-full md:w-1/2 h-16">
+                <label htmlFor="bets" className="text-xs font-medium">
+                  No. of bets
+                </label>
+                <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
+                  <input
+                    className="px-2 py-2 rounded-l font-medium text-sm w-full text-center"
+                    type="number"
+                    name="bets"
+                    min={"1"}
+                    value={noOfBets}
+                    onChange={(e) => setNoOfBets(e.target.value)}
+                    disabled={disableClick}
+                  />
+                  <button className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
+                    <VariableIcon className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <ChancesFields
+              sliderValue={sliderValue}
+              toggleRollOver={toggleRollOver}
+              setSliderValue={setSliderValue}
+              setToggleRollOverOver={setToggleRollOverOver}
+              winChance={winChance}
+              setWinChance={setWinChance}
               multiplierValue={multiplierValue}
-              walletBalance={walletBalance}
+              setMultiplierValue={setMultiplierValue}
+              disableClick={disableClick}
             />
-            <div className="w-full md:w-1/2 h-16">
-              <label htmlFor="bets" className="text-xs font-medium">
-                No. of bets
-              </label>
-              <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
-                <input
-                  className="px-2 py-2 rounded-l font-medium text-sm w-full text-center"
-                  type="number"
-                  name="bets"
-                  min={"1"}
-                  value={noOfBets}
-                  onChange={(e) => setNoOfBets(e.target.value)}
-                />
-                <button className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
-                  <VariableIcon className="h-4 w-4" />
-                </button>
+            <div className="flex flex-col md:flex-row items-center justify-between w-full">
+              <div className="w-full md:w-1/2 h-16 md:mr-2">
+                <label htmlFor="onWin" className="text-xs font-medium">
+                  On win
+                </label>
+                <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
+                  <Tab.Group>
+                    <Tab.List className="flex items-center justify-between w-1/2">
+                      <Tab
+                        className={({ selected }) =>
+                          selected
+                            ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-2/5"
+                            : "rounded text-xs px-1 py-2.5 font-medium w-2/5"
+                        }>
+                        <span
+                          onClick={() => {
+                            console.log("resetted bet!");
+                            setOnWin(0);
+                          }}>
+                          Reset
+                        </span>
+                      </Tab>
+                      <Tab
+                        className={({ selected }) =>
+                          selected
+                            ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-full"
+                            : "rounded text-xs px-1 py-2.5 font-medium w-full"
+                        }>
+                        Increase By:
+                      </Tab>
+                    </Tab.List>
+                    <Tab.Panels className="w-1/2 ml-1">
+                      <Tab.Panel>
+                        <div className="p-0.5 h-10 flex items-center justify-start w-full">
+                          <input
+                            disabled
+                            className="px-2 py-2 rounded-l bg-white opacity-50 font-medium text-sm w-full"
+                            type="number"
+                            name="reset"
+                          />
+                          <button
+                            disabled
+                            className="text-md bg-white font-bold opacity-50 px-2 flex items-center justify-center rounded-r h-full">
+                            %
+                          </button>
+                        </div>
+                      </Tab.Panel>
+                      <Tab.Panel>
+                        <div className="p-0.5 h-10 flex items-center justify-start w-full">
+                          <input
+                            className="px-2 py-2 rounded-l font-medium text-sm w-full"
+                            type="number"
+                            name="increaseBy"
+                            value={onWin}
+                            onChange={(e) => setOnWin(e.target.value)}
+                            disabled={disableClick}
+                          />
+                          <button
+                            disabled
+                            className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full">
+                            %
+                          </button>
+                        </div>
+                      </Tab.Panel>
+                    </Tab.Panels>
+                  </Tab.Group>
+                </div>
+              </div>
+              <div className="w-full md:w-1/2 h-16">
+                <label htmlFor="onLoss" className="text-xs font-medium">
+                  On Loss
+                </label>
+                <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
+                  <Tab.Group>
+                    <Tab.List className="flex items-center justify-between w-1/2">
+                      <Tab
+                        className={({ selected }) =>
+                          selected
+                            ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-2/5"
+                            : "rounded text-xs px-1 py-2.5 font-medium w-2/5"
+                        }>
+                        <span
+                          onClick={() => {
+                            console.log("resetted bet!");
+                            setOnLoss(0);
+                          }}>
+                          Reset
+                        </span>
+                      </Tab>
+                      <Tab
+                        className={({ selected }) =>
+                          selected
+                            ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-full"
+                            : "rounded text-xs px-1 py-2.5 font-medium w-full"
+                        }>
+                        Increase By:
+                      </Tab>
+                    </Tab.List>
+                    <Tab.Panels className="w-1/2 ml-1">
+                      <Tab.Panel>
+                        <div className="p-0.5 h-10 flex items-center justify-start w-full">
+                          <input
+                            disabled
+                            className="px-2 py-2 rounded-l bg-white opacity-50 font-medium text-sm w-full"
+                            type="number"
+                            name="reset"
+                          />
+                          <button
+                            disabled
+                            className="text-md bg-white font-bold opacity-50 px-2 flex items-center justify-center rounded-r h-full">
+                            %
+                          </button>
+                        </div>
+                      </Tab.Panel>
+                      <Tab.Panel>
+                        <div className="p-0.5 h-10 flex items-center justify-start w-full">
+                          <input
+                            className="px-2 py-2 rounded-l font-medium text-sm w-full"
+                            type="number"
+                            name="increaseBy"
+                            value={onLoss}
+                            onChange={(e) => setOnLoss(e.target.value)}
+                            disabled={disableClick}
+                          />
+                          <button
+                            disabled
+                            className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full">
+                            %
+                          </button>
+                        </div>
+                      </Tab.Panel>
+                    </Tab.Panels>
+                  </Tab.Group>
+                </div>
               </div>
             </div>
-          </div>
-          <ChancesFields
-            sliderValue={sliderValue}
-            toggleRollOver={toggleRollOver}
-            setSliderValue={setSliderValue}
-            setToggleRollOverOver={setToggleRollOverOver}
-            winChance={winChance}
-            setWinChance={setWinChance}
-            multiplierValue={multiplierValue}
-            setMultiplierValue={setMultiplierValue}
-          />
-          <div className="flex flex-col md:flex-row items-center justify-between w-full">
-            <div className="w-full md:w-1/2 h-16 md:mr-2">
-              <label htmlFor="onWin" className="text-xs font-medium">
-                On win
-              </label>
-              <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
-                <Tab.Group>
-                  <Tab.List className="flex items-center justify-between w-1/2">
-                    <Tab
-                      className={({ selected }) =>
-                        selected
-                          ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-2/5"
-                          : "rounded text-xs px-1 py-2.5 font-medium w-2/5"
-                      }>
-                      Reset
-                    </Tab>
-                    <Tab
-                      className={({ selected }) =>
-                        selected
-                          ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-full"
-                          : "rounded text-xs px-1 py-2.5 font-medium w-full"
-                      }>
-                      Increase By:
-                    </Tab>
-                  </Tab.List>
-                  <Tab.Panels className="w-1/2 ml-1">
-                    <Tab.Panel>
-                      <div className="p-0.5 h-10 flex items-center justify-start w-full">
-                        <input
-                          disabled
-                          className="px-2 py-2 rounded-l bg-white opacity-50 font-medium text-sm w-full"
-                          type="number"
-                          name="reset"
-                        />
-                        <button
-                          disabled
-                          className="text-md bg-white font-bold opacity-50 px-2 flex items-center justify-center rounded-r h-full">
-                          %
-                        </button>
-                      </div>
-                    </Tab.Panel>
-                    <Tab.Panel>
-                      <div className="p-0.5 h-10 flex items-center justify-start w-full">
-                        <input
-                          className="px-2 py-2 rounded-l font-medium text-sm w-full"
-                          type="number"
-                          name="increaseBy"
-                          value={onWin}
-                          onChange={(e) => setOnWin(e.target.value)}
-                        />
-                        <button
-                          disabled
-                          className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full">
-                          %
-                        </button>
-                      </div>
-                    </Tab.Panel>
-                  </Tab.Panels>
-                </Tab.Group>
+            <div className="flex items-center justify-between w-full">
+              <div className="w-1/2 h-16 mr-2">
+                <label htmlFor="stopProfit" className="text-xs font-medium">
+                  Stop on profit
+                </label>
+                <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
+                  <input
+                    className="px-2 py-2 rounded-l font-medium text-sm w-full"
+                    type="number"
+                    name="stopProfit"
+                    min="0.0"
+                    onBlur={(e) => {
+                      if (e.target.value <= 0) {
+                        setStopProfit(-1);
+                      }
+                    }}
+                    value={stopProfit}
+                    onChange={(e) => setStopProfit(e.target.value)}
+                    disabled={disableClick}
+                  />
+                  <button className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
+                    <TrendingUpIcon className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="w-full md:w-1/2 h-16">
-              <label htmlFor="onLoss" className="text-xs font-medium">
-                On Loss
-              </label>
-              <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
-                <Tab.Group>
-                  <Tab.List className="flex items-center justify-between w-1/2">
-                    <Tab
-                      className={({ selected }) =>
-                        selected
-                          ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-2/5"
-                          : "rounded text-xs px-1 py-2.5 font-medium w-2/5"
-                      }>
-                      Reset
-                    </Tab>
-                    <Tab
-                      className={({ selected }) =>
-                        selected
-                          ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-full"
-                          : "rounded text-xs px-1 py-2.5 font-medium w-full"
-                      }>
-                      Increase By:
-                    </Tab>
-                  </Tab.List>
-                  <Tab.Panels className="w-1/2 ml-1">
-                    <Tab.Panel>
-                      <div className="p-0.5 h-10 flex items-center justify-start w-full">
-                        <input
-                          disabled
-                          className="px-2 py-2 rounded-l bg-white opacity-50 font-medium text-sm w-full"
-                          type="number"
-                          name="reset"
-                        />
-                        <button
-                          disabled
-                          className="text-md bg-white font-bold opacity-50 px-2 flex items-center justify-center rounded-r h-full">
-                          %
-                        </button>
-                      </div>
-                    </Tab.Panel>
-                    <Tab.Panel>
-                      <div className="p-0.5 h-10 flex items-center justify-start w-full">
-                        <input
-                          className="px-2 py-2 rounded-l font-medium text-sm w-full"
-                          type="number"
-                          name="increaseBy"
-                          value={onLoss}
-                          onChange={(e) => setOnLoss(e.target.value)}
-                        />
-                        <button
-                          disabled
-                          className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full">
-                          %
-                        </button>
-                      </div>
-                    </Tab.Panel>
-                  </Tab.Panels>
-                </Tab.Group>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center justify-between w-full">
-            <div className="w-1/2 h-16 mr-2">
-              <label htmlFor="stopProfit" className="text-xs font-medium">
-                Stop on profit
-              </label>
-              <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
-                <input
-                  className="px-2 py-2 rounded-l font-medium text-sm w-full"
-                  type="number"
-                  name="stopProfit"
-                  min="0.0"
-                  onBlur={(e) => {
-                    if (e.target.value <= 0) {
-                      setStopProfit(-1);
-                    }
-                  }}
-                  value={stopProfit}
-                  onChange={(e) => setStopProfit(e.target.value)}
-                />
-                <button className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
-                  <TrendingUpIcon className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-            <div className="w-1/2 h-16">
-              <label htmlFor="stopLoss" className="text-xs font-medium">
-                Stop on loss
-              </label>
-              <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
-                <input
-                  className="px-2 py-2 rounded-l font-medium text-sm w-full"
-                  type="number"
-                  name="stopLoss"
-                  min="0.0"
-                  onBlur={(e) => {
-                    if (e.target.value <= 0) {
-                      setStopLoss(-1);
-                    }
-                  }}
-                  value={stopLoss}
-                  onChange={(e) => setStopLoss(e.target.value)}
-                />
-                <button className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
-                  <TrendingDownIcon className="h-4 w-4" />
-                </button>
+              <div className="w-1/2 h-16">
+                <label htmlFor="stopLoss" className="text-xs font-medium">
+                  Stop on loss
+                </label>
+                <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
+                  <input
+                    className="px-2 py-2 rounded-l font-medium text-sm w-full"
+                    type="number"
+                    name="stopLoss"
+                    min="0.0"
+                    onBlur={(e) => {
+                      if (e.target.value <= 0) {
+                        setStopLoss(-1);
+                      }
+                    }}
+                    value={stopLoss}
+                    onChange={(e) => setStopLoss(e.target.value)}
+                    disabled={disableClick}
+                  />
+                  <button className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
+                    <TrendingDownIcon className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
           <div className="w-full h-20 flex items-center justify-center p-2">
             <button
               type="button"
-              className="text-md font-bold bg-btn1 text-white px-28 py-3 rounded"
+              className={`text-md font-bold bg-btn1 text-white px-28 py-3 rounded ${
+                disableClick && "hidden"
+              }`}
               id="rollBtn"
               onClick={() => {
+                setDisableClick(true);
                 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
-                const runBets = async () => {
+                const runBetsBnb = async () => {
                   const currentProf = 0.0;
                   const totalProf = 0.0;
                   const currentBet = betAmt;
 
                   for (let i = 0; i < noOfBets; i++) {
+                    console.log("stop", btnRef.current);
+                    if (btnRef.current) {
+                      console.log("enable click");
+                      document
+                        .getElementById("rollBtn")
+                        .removeAttribute("disabled");
+                      setDisableClick(false);
+                      btnRef.current = false;
+                      break;
+                    }
                     currentProf = 0.0;
                     //break loop if stop profit achieved
                     if (stopProfit != -1) {
@@ -419,6 +728,7 @@ const AutoFormComponent = ({
                         document
                           .getElementById("rollBtn")
                           .removeAttribute("disabled");
+                        setDisableClick(false);
                         break;
                       }
                     }
@@ -432,6 +742,80 @@ const AutoFormComponent = ({
                         document
                           .getElementById("rollBtn")
                           .removeAttribute("disabled");
+                        setDisableClick(false);
+                        break;
+                      }
+                    }
+                    const handleBetRes = handlePlaceBetBnb(
+                      currentBet,
+                      currentProf,
+                      totalProf
+                    );
+                    if (handleBetRes == -1) {
+                      console.log("Insufficient Balance!");
+                      break;
+                    }
+                    if (handleBetRes) {
+                      currentBet = handleBetRes.currentBet;
+                      currentProf = handleBetRes.currentProf;
+                      totalProf = handleBetRes.totalProf;
+                    }
+                    if (i == noOfBets - 1) {
+                      console.log("enable click");
+                      document
+                        .getElementById("rollBtn")
+                        .removeAttribute("disabled");
+                      setDisableClick(false);
+                    }
+                    console.log("Handle bet res : ", handleBetRes);
+
+                    console.log("stopLoss " + i + " : ", stopLoss);
+                    console.log("stopProfit " + i + " : ", stopProfit);
+                    console.log("CBet : ", currentBet);
+                    console.log("CProfit : ", currentProf);
+                    console.log("TProfit : ", totalProf);
+                    await timer(2000); // wait between next bet
+                  }
+                };
+                const runBets = async () => {
+                  const currentProf = 0.0;
+                  const totalProf = 0.0;
+                  const currentBet = betAmt;
+
+                  for (let i = 0; i < noOfBets; i++) {
+                    console.log("stop", btnRef.current);
+                    if (btnRef.current) {
+                      console.log("enable click");
+                      document
+                        .getElementById("rollBtn")
+                        .removeAttribute("disabled");
+                      setDisableClick(false);
+                      btnRef.current = false;
+                      break;
+                    }
+                    currentProf = 0.0;
+                    //break loop if stop profit achieved
+                    if (stopProfit != -1) {
+                      if (parseFloat(totalProf) >= parseFloat(stopProfit)) {
+                        console.log("enable click");
+                        document
+                          .getElementById("rollBtn")
+                          .removeAttribute("disabled");
+                        setDisableClick(false);
+                        break;
+                      }
+                    }
+                    //break loop if stop Loss achieved
+                    if (stopLoss != -1) {
+                      if (
+                        parseFloat(totalProf) < 0 &&
+                        Math.abs(parseFloat(totalProf)) >= stopLoss
+                      ) {
+                        console.log("enable click");
+                        document
+                          .getElementById("rollBtn")
+                          .removeAttribute("disabled");
+                        setDisableClick(false);
                         break;
                       }
                     }
@@ -449,36 +833,44 @@ const AutoFormComponent = ({
                       currentProf = handleBetRes.currentProf;
                       totalProf = handleBetRes.totalProf;
                     }
-                    console.log("CBet : ", currentBet);
-                    console.log("CProfit : ", currentProf);
-                    console.log("TProfit : ", totalProf);
-                    await timer(3000); // wait between next bet
-                  }
-
-                  setTimeout(() => {
-                    console.log("enable click");
-                    if (
-                      document
-                        .getElementById("rollBtn")
-                        .hasAttribute("disabled")
-                    )
+                    if (i == noOfBets - 1) {
+                      console.log("enable click");
                       document
                         .getElementById("rollBtn")
                         .removeAttribute("disabled");
-                  }, parseInt(noOfBets) * 1000);
+                      setDisableClick(false);
+                    }
+                    console.log("Handle bet res : ", handleBetRes);
+
+                    console.log("stopLoss " + i + " : ", stopLoss);
+                    console.log("stopProfit " + i + " : ", stopProfit);
+                    console.log("CBet : ", currentBet);
+                    console.log("CProfit : ", currentProf);
+                    console.log("TProfit : ", totalProf);
+                    await timer(2000); // wait between next bet
+                  }
                 };
-                if (user[0]) {
-                  // To prevent spamming of bets
-                  console.log("disable click");
-                  document
-                    .getElementById("rollBtn")
-                    .setAttribute("disabled", "true");
-                  runBets();
-                } else {
-                  setToggleLoginModalOpen(true);
-                }
+                // To prevent spamming of bets
+                setDisableClick(true);
+                console.log("disable click");
+                document
+                  .getElementById("rollBtn")
+                  .setAttribute("disabled", "true");
+                if (chain == "eth") runBets();
+                else runBetsBnb();
               }}>
-              Roll dice
+              Roll Dice
+            </button>
+            <button
+              type="button"
+              className={`text-md font-bold bg-btn1 text-white px-28 py-3 rounded ${
+                !disableClick && "hidden"
+              }`}
+              id="rollBtn"
+              onClick={() => {
+                btnRef.current = true;
+              }}>
+              Stop Bet
             </button>
           </div>
         </div>
@@ -502,26 +894,27 @@ const AutoFormComponent = ({
               xstep={0.01}
               x={sliderValue}
               onChange={({ x }) => {
-                setSliderValue(parseFloat(x.toFixed(2)));
+                setSliderValue(x);
                 if (toggleRollOver) {
-                  if (parseFloat(x) > 97.99 / parseFloat(multiplierValue)) {
+                  if (
+                    parseFloat(100.0 - x) >=
+                    99.0 / parseFloat(multiplierValue)
+                  ) {
                     setMultiplierValue(
-                      parseFloat((97.99 / parseFloat(x)).toFixed(2))
+                      parseFloat((99.0 / parseFloat(100.0 - x)).toFixed(4))
                     );
                   }
                 } else {
-                  if (
-                    parseFloat(100.0 - x) >
-                    97.99 / parseFloat(multiplierValue)
-                  ) {
+                  if (parseFloat(x) >= 99.0 / parseFloat(multiplierValue)) {
                     setMultiplierValue(
-                      parseFloat((97.99 / parseFloat(x)).toFixed(2))
+                      parseFloat((99.0 / parseFloat(x)).toFixed(4))
                     );
                   }
                 }
 
                 if (!toggleRollOver) setWinChance(parseFloat(x.toFixed(2)));
-                else setWinChance(parseFloat((100.0 - x).toFixed(2)));
+                else
+                  setWinChance(parseFloat((100.0 - parseFloat(x)).toFixed(2)));
               }}
               styles={{
                 track: {

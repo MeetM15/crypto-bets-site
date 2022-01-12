@@ -1,53 +1,74 @@
-import {
-  BellIcon,
-  ChevronDownIcon,
-  CubeTransparentIcon,
-  UserCircleIcon,
-} from "@heroicons/react/solid";
+import { ChevronDownIcon, UserCircleIcon } from "@heroicons/react/solid";
 import { Menu, Transition } from "@headlessui/react";
+import { RiWallet3Fill } from "react-icons/ri";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { RiWallet3Fill } from "react-icons/ri";
 const Navbar = ({
   user,
   setToggleLoginModalOpen,
   setShowWalletModal,
   walletBalance,
+  bnbWalletBalance,
+  setWalletBalance,
+  setBnbWalletBalance,
+  chain,
+  setChain,
+  web3,
+  web3_bsc,
 }) => {
   const router = useRouter();
-  const [currency, setCurrency] = useState([
-    "ETH",
-    "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/13c43/eth-diamond-black.png",
-  ]);
+  const [currency, setCurrency] = useState(["ETH", "/icons/eth.svg"]);
 
   return (
     <nav className="bg-secondary relative w-full shadow px-2 sm:px-6 lg:px-8 flex items-center justify-between h-12 text-white">
       <div className="flex-shrink-0 flex items-center">
         <img
-          className="block lg:hidden h-8 w-auto p-1.5"
+          className="block sm:hidden h-8 w-auto p-1.5"
           src="/icons/logo_m.svg"
           alt="logo"
         />
         <img
-          className="hidden lg:block h-8 w-auto p-1.5"
+          className="hidden sm:block h-8 w-auto p-1.5"
           src="/icons/logo.svg"
           alt="logo"
         />
       </div>
-      {user[0] && (
+      {user && user[0] && (
         <div className="bg-secondaryLight flex items-center justify-between rounded">
-          <Menu as="div" className="relative px-2 py-1">
-            <div>
-              <Menu.Button className="flex items-center justify-between text-xs sm:text-sm text-white font-medium">
+          <Menu as="div" className="relative px-2 py-1 w-full">
+            <div
+              onClick={() => {
+                if (user && user[0] != undefined) {
+                  web3.eth
+                    .getBalance(user[0].address)
+                    .then((res) => {
+                      return web3.utils.fromWei(res);
+                    })
+                    .then((res) => {
+                      setWalletBalance(parseFloat(res));
+                    });
+                  web3_bsc.eth
+                    .getBalance(user[0].bscAddress)
+                    .then((res) => {
+                      return web3.utils.fromWei(res);
+                    })
+                    .then((res) => {
+                      console.log(res);
+                      setBnbWalletBalance(parseFloat(res));
+                    });
+                }
+              }}>
+              <Menu.Button className="flex items-center justify-between text-xs text-white font-medium">
                 {currency[0] && currency[1] ? (
                   <>
-                    {parseFloat(walletBalance).toFixed(8)}
+                    {chain == "eth"
+                      ? parseFloat(walletBalance).toFixed(8)
+                      : parseFloat(bnbWalletBalance).toFixed(8)}
                     <img
                       src={currency[1]}
-                      alt="ethereum"
-                      className="md:m-1 m-0.5 md:p-1 p-0.5 w-3 sm:w-4"
+                      alt="logo"
+                      className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-1"
                     />
-                    <span className="text-md font-medium">{currency[0]}</span>
                   </>
                 ) : (
                   ""
@@ -56,31 +77,47 @@ const Navbar = ({
               </Menu.Button>
             </div>
             <Transition
-              enter="transition-opacity ease-linear duration-100"
+              enter="transition-opacity ease-out duration-100"
               enterFrom="opacity-0"
               enterTo="opacity-100"
-              leave="transition-opacity ease-linear duration-100"
+              leave="transition-opacity ease-out duration-100"
               leaveFrom="opacity-100"
               leaveTo="opacity-0">
-              <Menu.Items className="origin-top-right absolute right-0 mt-2 w-auto rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 ">
+              <Menu.Items className="origin-top-right absolute right-0 mt-2 w-full w-38 rounded-md shadow-lg p-1 bg-white ring-1 ring-black ring-opacity-5 z-10">
                 <Menu.Item>
                   <span
                     className={
-                      "px-2 sm:px-4 py-0.5 sm:py-1 text-xs sm:text-sm w-32 text-gray-700 flex cursor-pointer items-center justify-start font-medium"
+                      "px-2  py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
                     }
-                    onClick={() =>
-                      setCurrency([
-                        "ETH",
-                        "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/13c43/eth-diamond-black.png",
-                      ])
-                    }>
+                    onClick={() => {
+                      setChain("eth");
+                      setCurrency(["ETH", "/icons/eth.svg"]);
+                    }}>
                     {parseFloat(walletBalance).toFixed(8)}
                     <img
-                      src="https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/13c43/eth-diamond-black.png"
-                      alt="ethereum"
-                      className="md:m-1 m-0.5 md:p-1 p-0.5 w-3 sm:w-4"
+                      src="/icons/eth.svg"
+                      alt="logo"
+                      className="md:p-1 p-0.5 w-3 sm:w-5"
                     />
                     ETH
+                  </span>
+                </Menu.Item>
+                <Menu.Item>
+                  <span
+                    className={
+                      "px-2  py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
+                    }
+                    onClick={() => {
+                      setChain("bsc");
+                      setCurrency(["BNB", "/icons/bnb.svg"]);
+                    }}>
+                    {parseFloat(bnbWalletBalance).toFixed(8)}
+                    <img
+                      src="/icons/bnb.svg"
+                      alt="ethereum"
+                      className="md:p-1 p-0.5 w-3 sm:w-5"
+                    />
+                    BNB
                   </span>
                 </Menu.Item>
               </Menu.Items>
@@ -88,17 +125,18 @@ const Navbar = ({
           </Menu>
           <button
             type="button"
-            className="text-sm h-full w-full flex items-center justify-center p-2 font-medium rounded-r bg-btn1 "
+            className="text-sm h-full w-full flex items-center justify-center p-3 font-medium rounded-r bg-btn1 "
             onClick={() => {
               setShowWalletModal(true);
             }}>
-            <RiWallet3Fill size={"24px"} />
+            <span className="hidden sm:flex mr-1">Wallet</span>
+            <RiWallet3Fill size={"20px"} />
           </button>
         </div>
       )}
-      {user[0] ? (
+      {user && user[0] ? (
         <>
-          <div className="hidden sm:flex items-center pr-2 ">
+          <div className="hidden sm:flex items-center pr-2">
             <Menu as="div" className="mr-3 relative">
               <Menu.Button className="flex items-center justify-between text-sm text-white">
                 <span className="text-md font-medium">{user[0].username}</span>
@@ -112,7 +150,7 @@ const Navbar = ({
                 leave="transition ease-in duration-75"
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95">
-                <Menu.Items className="origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 flex flex-col">
+                <Menu.Items className="origin-top-right absolute right-0 mt-2 min-w-full w-24 rounded-md shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 flex flex-col">
                   <Menu.Item>
                     <a
                       href="#"
@@ -138,14 +176,6 @@ const Navbar = ({
                 </Menu.Items>
               </Transition>
             </Menu>
-            {/* <button type="button" className="p-1 rounded-full hover:text-white ">
-            <BellIcon
-              className="h-6 w-6 text-white opacity-60"
-              aria-hidden="true"
-            />
-          </button> */}
-
-            {/* Profile dropdown */}
           </div>
           <div className="flex sm:hidden items-center">
             <Menu as="div" className="mr-3 relative">
@@ -160,7 +190,7 @@ const Navbar = ({
                 leave="transition ease-in duration-75"
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95">
-                <Menu.Items className="origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 flex flex-col">
+                <Menu.Items className="origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 flex flex-col">
                   <Menu.Item>
                     <a
                       href="#"
@@ -186,14 +216,6 @@ const Navbar = ({
                 </Menu.Items>
               </Transition>
             </Menu>
-            {/* <button type="button" className="p-1 rounded-full hover:text-white ">
-            <BellIcon
-              className="h-6 w-6 text-white opacity-60"
-              aria-hidden="true"
-            />
-          </button> */}
-
-            {/* Profile dropdown */}
           </div>
         </>
       ) : (

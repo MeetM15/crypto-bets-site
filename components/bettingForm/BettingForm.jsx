@@ -7,8 +7,12 @@ const BettingForm = ({
   user,
   walletBalance,
   web3,
+  web3_bsc,
   setWalletBalance,
   setToggleLoginModalOpen,
+  bnbWalletBalance,
+  setBnbWalletBalance,
+  chain,
 }) => {
   return (
     <div className="bg-gray-200 p-2 rounded">
@@ -36,18 +40,26 @@ const BettingForm = ({
             <ManualFormComponent
               user={user}
               walletBalance={walletBalance}
+              bnbWalletBalance={bnbWalletBalance}
               web3={web3}
+              web3_bsc={web3_bsc}
               setWalletBalance={setWalletBalance}
+              setBnbWalletBalance={setBnbWalletBalance}
               setToggleLoginModalOpen={setToggleLoginModalOpen}
+              chain={chain}
             />
           </Tab.Panel>
           <Tab.Panel>
             <AutoFormComponent
               user={user}
               walletBalance={walletBalance}
+              bnbWalletBalance={bnbWalletBalance}
               web3={web3}
+              web3_bsc={web3_bsc}
               setWalletBalance={setWalletBalance}
+              setBnbWalletBalance={setBnbWalletBalance}
               setToggleLoginModalOpen={setToggleLoginModalOpen}
+              chain={chain}
             />
           </Tab.Panel>
         </Tab.Panels>

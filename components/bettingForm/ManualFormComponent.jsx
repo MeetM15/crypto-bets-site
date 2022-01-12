@@ -33,118 +33,207 @@ const placeBet = (sliderValue, rollType) => {
 const ManualFormComponent = ({
   user,
   walletBalance,
+  bnbWalletBalance,
   web3,
+  web3_bsc,
   setWalletBalance,
+  setBnbWalletBalance,
   setToggleLoginModalOpen,
+  chain,
 }) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmt, setProfitAmt] = useState(0.0);
-  const [totalReturnValue, setTotalReturnValue] = useState(0.0);
   const [toggleRollOver, setToggleRollOverOver] = useState(true); //true - roll over , false - roll under
   const [sliderValue, setSliderValue] = useState(1.99);
-  const [multiplierValue, setMultiplierValue] = useState(1.01);
+  const [multiplierValue, setMultiplierValue] = useState(1.0101);
   const [winChance, setWinChance] = useState(
-    parseFloat((100 - 1.99).toFixed(2))
+    parseFloat((100.0 - 2.0).toFixed(2))
   );
   const [showDice, setShowDice] = useState("hidden");
   const [result, setResult] = useState();
 
-  const handlePlaceBet = () => {
-    web3.eth
-      .getBalance(user[0].address)
-      .then((res) => {
-        console.log(res);
-        return web3.utils.fromWei(res);
-      })
-      .then((currBal) => {
-        if (betAmt < parseFloat(currBal)) {
-          const result = placeBet(sliderValue, toggleRollOver);
-          const betResult = result[0];
-          const diceValue = result[1];
-          document.getElementById("dice").style.left = `calc(${Math.floor(
-            diceValue
-          )}% - 2rem)`;
+  const handlePlaceBetBnb = () => {
+    if (user && user[0]) {
+      const result = placeBet(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
 
-          //set return value
-          if (betResult == "green") {
-            setTotalReturnValue(
-              (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(6)
-            );
-          } else {
-            setTotalReturnValue(-parseFloat(betAmt).toFixed(6));
-          }
-          setResult(parseFloat(diceValue.toFixed(2)));
-          document.getElementById("diceResult").style.color = betResult;
-          if (user[0] != undefined) {
-            const betData = {
-              email: user[0].email,
-              betResult: betResult == "green" ? true : false,
-              betAmt: betAmt,
-              profitAmt: profitAmt,
-            };
-            console.log("bet data : ", betData);
-            axios
-              .post("/bet", betData)
-              .then((res) => {
-                console.log(res);
-                return web3.eth.getBalance(user[0].address);
-              })
-              .then((res) => {
-                return web3.utils.fromWei(res);
-              })
-              .then((res) => {
-                setWalletBalance(parseFloat(res) - 0.00005);
-                console.log("enable click");
-                if (document.getElementById("rollBtn").hasAttribute("disabled"))
-                  document
-                    .getElementById("rollBtn")
-                    .removeAttribute("disabled");
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          }
-        } else {
-          console.log("insufficient balance!");
-          console.log("enable click");
-          if (document.getElementById("rollBtn").hasAttribute("disabled"))
-            document.getElementById("rollBtn").removeAttribute("disabled");
-        }
-      });
-  };
-
-  useEffect(() => {
-    console.log("Return Value : ", totalReturnValue);
-  }, [totalReturnValue]);
-
-  useEffect(() => {
-    if (result != undefined) {
+      //set return value
+      if (betResult == "green") {
+        setBnbWalletBalance((prev) => parseFloat(prev) + parseFloat(profitAmt));
+      } else {
+        setBnbWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+      }
       setShowDice("flex");
       setTimeout(() => {
         setShowDice("hidden");
-      }, 5000);
+      }, 3000);
+      setResult(parseFloat(diceValue.toFixed(2)));
+      document.getElementById("diceResult").style.color = betResult;
+      if (user && user[0] != undefined) {
+        const betData = {
+          email: user[0].email,
+          chain: chain,
+          betResult: betResult == "green" ? true : false,
+          betAmt: betAmt,
+          profitAmt: profitAmt,
+        };
+        console.log("bet data : ", betData);
+        axios
+          .post("/bet", betData)
+          .then((res) => {
+            console.log(res);
+            return web3_bsc.eth.getBalance(user[0].bscAddress);
+          })
+          .then((res) => {
+            return web3_bsc.utils.fromWei(res);
+          })
+          .then((res) => {
+            setBnbWalletBalance(parseFloat(res));
+            console.log("enable click");
+            if (document.getElementById("rollBtn").hasAttribute("disabled"))
+              document.getElementById("rollBtn").removeAttribute("disabled");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    } else {
+      const result = placeBet(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
+      //set return value
+      if (betResult == "green") {
+        setBnbWalletBalance((prev) => parseFloat(prev) + parseFloat(profitAmt));
+      } else {
+        setBnbWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+      }
+      setShowDice("flex");
+      setTimeout(() => {
+        setShowDice("hidden");
+      }, 3000);
+      setResult(parseFloat(diceValue.toFixed(2)));
+      document.getElementById("diceResult").style.color = betResult;
+      console.log("enable click");
+      if (document.getElementById("rollBtn").hasAttribute("disabled"))
+        document.getElementById("rollBtn").removeAttribute("disabled");
     }
-  }, [result]);
+  };
+  const handlePlaceBet = () => {
+    if (user && user[0]) {
+      const result = placeBet(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
+
+      //set return value
+      if (betResult == "green") {
+        setWalletBalance((prev) => parseFloat(prev) + parseFloat(profitAmt));
+      } else {
+        setWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+      }
+      setShowDice("flex");
+      setTimeout(() => {
+        setShowDice("hidden");
+      }, 3000);
+      setResult(parseFloat(diceValue.toFixed(2)));
+      document.getElementById("diceResult").style.color = betResult;
+      if (user && user[0] != undefined) {
+        const betData = {
+          email: user[0].email,
+          chain: chain,
+          betResult: betResult == "green" ? true : false,
+          betAmt: betAmt,
+          profitAmt: profitAmt,
+        };
+        console.log("bet data : ", betData);
+        axios
+          .post("/bet", betData)
+          .then((res) => {
+            console.log(res);
+            return web3.eth.getBalance(user[0].address);
+          })
+          .then((res) => {
+            return web3.utils.fromWei(res);
+          })
+          .then((res) => {
+            setWalletBalance(parseFloat(res));
+            console.log("enable click");
+            if (document.getElementById("rollBtn").hasAttribute("disabled"))
+              document.getElementById("rollBtn").removeAttribute("disabled");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    } else {
+      const result = placeBet(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
+      //set return value
+      if (betResult == "green") {
+        setWalletBalance((prev) => parseFloat(prev) + parseFloat(profitAmt));
+      } else {
+        setWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+      }
+      setShowDice("flex");
+      setTimeout(() => {
+        setShowDice("hidden");
+      }, 3000);
+      setResult(parseFloat(diceValue.toFixed(2)));
+      document.getElementById("diceResult").style.color = betResult;
+      console.log("enable click");
+      if (document.getElementById("rollBtn").hasAttribute("disabled"))
+        document.getElementById("rollBtn").removeAttribute("disabled");
+    }
+  };
+
+  useEffect(() => {
+    console.log("enable click");
+    if (document.getElementById("rollBtn").hasAttribute("disabled"))
+      document.getElementById("rollBtn").removeAttribute("disabled");
+  }, [walletBalance]);
+  useEffect(() => {
+    console.log("enable click");
+    if (document.getElementById("rollBtn").hasAttribute("disabled"))
+      document.getElementById("rollBtn").removeAttribute("disabled");
+  }, [bnbWalletBalance]);
 
   useEffect(() => {
     setProfitAmt(
-      (
-        parseFloat(multiplierValue) * parseFloat(betAmt) -
-        parseFloat(betAmt)
-      ).toFixed(6)
+      parseFloat(
+        (
+          parseFloat(multiplierValue) * parseFloat(betAmt) -
+          parseFloat(betAmt)
+        ).toFixed(6)
+      )
     );
   }, []);
   useEffect(() => {
     setProfitAmt(
-      (
-        parseFloat(multiplierValue) * parseFloat(betAmt) -
-        parseFloat(betAmt)
-      ).toFixed(6)
+      parseFloat(
+        (
+          parseFloat(multiplierValue) * parseFloat(betAmt) -
+          parseFloat(betAmt)
+        ).toFixed(6)
+      )
     );
   }, [multiplierValue]);
   useEffect(() => {
-    if (!toggleRollOver) setSliderValue(parseFloat(winChance).toFixed(4));
-    else setSliderValue((100.0 - parseFloat(winChance)).toFixed(4));
+    if (!toggleRollOver)
+      setSliderValue(parseFloat(parseFloat(winChance).toFixed(2)));
+    else setSliderValue(parseFloat((100.0 - parseFloat(winChance)).toFixed(2)));
   }, [winChance]);
 
   return (
@@ -158,6 +247,8 @@ const ManualFormComponent = ({
               setBetAmt={setBetAmt}
               setProfitAmt={setProfitAmt}
               walletBalance={walletBalance}
+              bnbWalletBalance={bnbWalletBalance}
+              chain={chain}
             />
             <div className="w-full md:w-1/2 h-16">
               <label htmlFor="profit" className="text-xs font-medium">
@@ -184,16 +275,12 @@ const ManualFormComponent = ({
               className="text-md font-bold bg-btn1 text-white px-28 py-3 rounded"
               id="rollBtn"
               onClick={() => {
-                if (user[0]) {
-                  console.log("disable click");
-                  document
-                    .getElementById("rollBtn")
-                    .setAttribute("disabled", "true");
-
-                  handlePlaceBet();
-                } else {
-                  setToggleLoginModalOpen(true);
-                }
+                console.log("disable click");
+                document
+                  .getElementById("rollBtn")
+                  .setAttribute("disabled", "true");
+                if (chain == "eth") handlePlaceBet();
+                else handlePlaceBetBnb();
               }}>
               Roll dice
             </button>
@@ -219,26 +306,27 @@ const ManualFormComponent = ({
               xstep={0.01}
               x={sliderValue}
               onChange={({ x }) => {
-                setSliderValue(parseFloat(x.toFixed(2)));
+                setSliderValue(x);
                 if (toggleRollOver) {
-                  if (parseFloat(x) > 97.99 / parseFloat(multiplierValue)) {
+                  if (
+                    parseFloat(100.0 - x) >=
+                    99.0 / parseFloat(multiplierValue)
+                  ) {
                     setMultiplierValue(
-                      parseFloat((97.99 / parseFloat(x)).toFixed(2))
+                      parseFloat((99.0 / parseFloat(100.0 - x)).toFixed(4))
                     );
                   }
                 } else {
-                  if (
-                    parseFloat(100.0 - x) >
-                    97.99 / parseFloat(multiplierValue)
-                  ) {
+                  if (parseFloat(x) >= 99.0 / parseFloat(multiplierValue)) {
                     setMultiplierValue(
-                      parseFloat((97.99 / parseFloat(x)).toFixed(2))
+                      parseFloat((99.0 / parseFloat(x)).toFixed(4))
                     );
                   }
                 }
 
                 if (!toggleRollOver) setWinChance(parseFloat(x.toFixed(2)));
-                else setWinChance(parseFloat((100.0 - x).toFixed(2)));
+                else
+                  setWinChance(parseFloat((100.0 - parseFloat(x)).toFixed(2)));
               }}
               styles={{
                 track: {

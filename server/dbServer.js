@@ -10,6 +10,9 @@ const Web3 = require("web3");
 let web3 = new Web3(
   "wss://rinkeby.infura.io/ws/v3/f3ad0d479bf94c1791f813da1a914632"
 );
+let web3_bsc = new Web3(
+  "https://speedy-nodes-nyc.moralis.io/487960593a8857bde8a74862/bsc/testnet"
+);
 
 require("dotenv").config();
 
@@ -37,21 +40,26 @@ app.post("/createUser", async (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
-  const wallet = web3.eth.accounts.create(web3.utils.randomHex(32));
+  const wallet = await web3.eth.accounts.create();
+  const bscwallet = await web3_bsc.eth.accounts.create();
   const address = wallet.address;
   const privateKey = wallet.privateKey;
+  const bscAddress = bscwallet.address;
+  const bscPrivateKey = bscwallet.privateKey;
 
   db.getConnection(async (err, connection) => {
     if (err) throw err;
-    const sqlSearch = "SELECT * FROM usertable WHERE email = ?";
+    const sqlSearch = "SELECT * FROM userinfotable WHERE email = ?";
     const search_query = mysql.format(sqlSearch, [email]);
-    const sqlInsert = "INSERT INTO usertable VALUES (0,?,?,?,?,?)";
+    const sqlInsert = "INSERT INTO userinfotable VALUES (0,?,?,?,?,?,?,?)";
     const insert_query = mysql.format(sqlInsert, [
       username,
       email,
       hashedPassword,
       address,
+      bscAddress,
       privateKey,
+      bscPrivateKey,
     ]);
     // ? will be replaced by values
     // ?? will be replaced by string
@@ -73,6 +81,7 @@ app.post("/createUser", async (req, res) => {
             email: email,
             username: username,
             address: address,
+            bscAddress: bscAddress,
           });
           console.log(token);
           res.json({ accessToken: token });
@@ -87,7 +96,7 @@ app.post("/createUser", async (req, res) => {
 //generateAccessToken function
 const jwt = require("jsonwebtoken");
 function generateAccessToken(email) {
-  return jwt.sign(email, "secret", { expiresIn: "15m" });
+  return jwt.sign(email, "secret", {});
 }
 
 //LOGIN (AUTHENTICATE USER, and return accessToken)
@@ -96,7 +105,7 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   db.getConnection(async (err, connection) => {
     if (err) throw err;
-    const sqlSearch = "Select * from usertable where email = ?";
+    const sqlSearch = "Select * from userinfotable where email = ?";
     const search_query = mysql.format(sqlSearch, [email]);
     await connection.query(search_query, async (err, result) => {
       connection.release();
@@ -115,6 +124,7 @@ app.post("/login", (req, res) => {
             email: email,
             username: result[0].username,
             address: result[0].address,
+            bscAddress: result[0].bscAddress,
           });
           console.log(token);
           res.json({ accessToken: token });
@@ -163,12 +173,13 @@ app.get("/user", checkToken, (req, res) => {
 //Place bet
 app.post("/bet", async (req, res) => {
   const email = req.body.email;
+  const chain = req.body.chain;
   const betResult = req.body.betResult; // true:win false:lose
   const betAmt = await web3.utils.toWei(String(req.body.betAmt));
   const profitAmt = await web3.utils.toWei(String(req.body.profitAmt));
   db.getConnection(async (err, connection) => {
     if (err) throw err;
-    const sqlSearch = "Select * from usertable where email = ?";
+    const sqlSearch = "Select * from userinfotable where email = ?";
     const search_query = mysql.format(sqlSearch, [email]);
     await connection.query(search_query, async (err, result) => {
       connection.release();
@@ -178,16 +189,209 @@ app.post("/bet", async (req, res) => {
         console.log("--------> User does not exist");
         res.sendStatus(404);
       } else {
-        if (betResult == true) {
-          //on win
-          const privateKey =
-            "bffb9004264cb1be3387106a327170d875b0601598d8ca80ad95da811b90fe36";
-          const sender = "0x14d260dcb7c543d289527B8855fb9850390565d2";
-          const receiver = result[0].address;
+        if (chain == "eth") {
+          if (betResult == true) {
+            //on win
+            const privateKey =
+              "bffb9004264cb1be3387106a327170d875b0601598d8ca80ad95da811b90fe36";
+            const sender = "0x14d260dcb7c543d289527B8855fb9850390565d2";
+            const receiver = result[0].address;
+            web3.eth
+              .getBalance(sender)
+              .then((currBal) => {
+                if (parseInt(currBal) < parseInt(profitAmt)) {
+                  //If insufficient balance
+                  res.send("Insufficient balance!");
+                } else {
+                  //send ether
+                  return web3.eth.getTransactionCount(sender, "pending");
+                }
+              })
+              .then((nonce) => {
+                return web3.eth.accounts.signTransaction(
+                  {
+                    nonce: nonce,
+                    to: receiver,
+                    value: parseInt(profitAmt),
+                    gas: 2000000,
+                  },
+                  privateKey
+                );
+              })
+              .then((signedTx) => {
+                console.log(signedTx);
+                return web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+              })
+              .then((hash) => {
+                console.log(hash);
+                res.json({
+                  hash: hash,
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            //on Lose
+            const privateKey = result[0].privateKey;
+            const sender = result[0].address;
+            const receiver = "0x14d260dcb7c543d289527B8855fb9850390565d2";
+            web3.eth
+              .getBalance(sender)
+              .then((currBal) => {
+                if (parseInt(currBal) < parseInt(betAmt)) {
+                  //If insufficient balance
+                  res.send("Insufficient balance!");
+                } else {
+                  //send ether
+                  return web3.eth.getTransactionCount(sender, "pending");
+                }
+              })
+              .then((nonce) => {
+                return web3.eth.accounts.signTransaction(
+                  {
+                    nonce: nonce,
+                    to: receiver,
+                    value: betAmt,
+                    gas: 2000000,
+                  },
+                  privateKey
+                );
+              })
+              .then((signedTx) => {
+                console.log(signedTx);
+                return web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+              })
+              .then((hash) => {
+                console.log(hash);
+                res.json({
+                  hash: hash,
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        } else {
+          if (betResult == true) {
+            //on win
+            const privateKey =
+              "bffb9004264cb1be3387106a327170d875b0601598d8ca80ad95da811b90fe36";
+            const sender = "0x14d260dcb7c543d289527B8855fb9850390565d2";
+            const receiver = result[0].bscAddress;
+            web3_bsc.eth
+              .getBalance(sender)
+              .then((currBal) => {
+                if (parseInt(currBal) < parseInt(profitAmt)) {
+                  //If insufficient balance
+                  res.send("Insufficient balance!");
+                } else {
+                  //send ether
+                  return web3_bsc.eth.getTransactionCount(sender, "pending");
+                }
+              })
+              .then((nonce) => {
+                return web3_bsc.eth.accounts.signTransaction(
+                  {
+                    nonce: nonce,
+                    to: receiver,
+                    value: parseInt(profitAmt),
+                    gas: 2000000,
+                  },
+                  privateKey
+                );
+              })
+              .then((signedTx) => {
+                console.log(signedTx);
+                return web3_bsc.eth.sendSignedTransaction(
+                  signedTx.rawTransaction
+                );
+              })
+              .then((hash) => {
+                console.log(hash);
+                res.json({
+                  hash: hash,
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            //on Lose
+            const privateKey = result[0].bscPrivateKey;
+            const sender = result[0].bscAddress;
+            const receiver = "0x14d260dcb7c543d289527B8855fb9850390565d2";
+            web3_bsc.eth
+              .getBalance(sender)
+              .then((currBal) => {
+                if (parseInt(currBal) < parseInt(betAmt)) {
+                  //If insufficient balance
+                  res.send("Insufficient balance!");
+                } else {
+                  //send ether
+                  return web3_bsc.eth.getTransactionCount(sender, "pending");
+                }
+              })
+              .then((nonce) => {
+                return web3_bsc.eth.accounts.signTransaction(
+                  {
+                    nonce: nonce,
+                    to: receiver,
+                    value: betAmt,
+                    gas: 2000000,
+                  },
+                  privateKey
+                );
+              })
+              .then((signedTx) => {
+                console.log(signedTx);
+                return web3_bsc.eth.sendSignedTransaction(
+                  signedTx.rawTransaction
+                );
+              })
+              .then((hash) => {
+                console.log(hash);
+                res.json({
+                  hash: hash,
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        }
+      } //end of User exists
+    }); //end of connection.query()
+  }); //end of db.connection()
+}); //end of app.post()
+//Reward on win bet
+
+//Withdraw winnings
+app.post("/withdraw", async (req, res) => {
+  const email = req.body.email;
+  const chain = req.body.chain;
+  const receiver = req.body.receiver;
+  const amt = await web3.utils.toWei(String(req.body.amt));
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlSearch = "Select * from userinfotable where email = ?";
+    const search_query = mysql.format(sqlSearch, [email]);
+    await connection.query(search_query, async (err, result) => {
+      connection.release();
+
+      if (err) throw err;
+      if (result.length == 0) {
+        console.log("--------> User does not exist");
+        res.sendStatus(404);
+      } else {
+        if (chain == "eth") {
+          //on Lose
+          const privateKey = result[0].privateKey;
+          const sender = result[0].address;
           web3.eth
             .getBalance(sender)
             .then((currBal) => {
-              if (parseInt(currBal) < parseInt(profitAmt)) {
+              if (parseInt(currBal) < parseInt(amt)) {
                 //If insufficient balance
                 res.send("Insufficient balance!");
               } else {
@@ -200,7 +404,7 @@ app.post("/bet", async (req, res) => {
                 {
                   nonce: nonce,
                   to: receiver,
-                  value: parseInt(profitAmt),
+                  value: amt,
                   gas: 2000000,
                 },
                 privateKey
@@ -221,26 +425,25 @@ app.post("/bet", async (req, res) => {
             });
         } else {
           //on Lose
-          const privateKey = result[0].privateKey;
-          const sender = result[0].address;
-          const receiver = "0x14d260dcb7c543d289527B8855fb9850390565d2";
-          web3.eth
+          const privateKey = result[0].bscPrivateKey;
+          const sender = result[0].bscAddress;
+          web3_bsc.eth
             .getBalance(sender)
             .then((currBal) => {
-              if (parseInt(currBal) < parseInt(betAmt)) {
+              if (parseInt(currBal) < parseInt(amt)) {
                 //If insufficient balance
                 res.send("Insufficient balance!");
               } else {
                 //send ether
-                return web3.eth.getTransactionCount(sender, "pending");
+                return web3_bsc.eth.getTransactionCount(sender, "pending");
               }
             })
             .then((nonce) => {
-              return web3.eth.accounts.signTransaction(
+              return web3_bsc.eth.accounts.signTransaction(
                 {
                   nonce: nonce,
                   to: receiver,
-                  value: betAmt,
+                  value: amt,
                   gas: 2000000,
                 },
                 privateKey
@@ -248,7 +451,9 @@ app.post("/bet", async (req, res) => {
             })
             .then((signedTx) => {
               console.log(signedTx);
-              return web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+              return web3_bsc.eth.sendSignedTransaction(
+                signedTx.rawTransaction
+              );
             })
             .then((hash) => {
               console.log(hash);
@@ -264,4 +469,4 @@ app.post("/bet", async (req, res) => {
     }); //end of connection.query()
   }); //end of db.connection()
 }); //end of app.post()
-//Reward on win bet
+//withdraw winnings
