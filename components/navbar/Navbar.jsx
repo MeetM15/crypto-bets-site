@@ -190,7 +190,7 @@ const Navbar = ({
                 leave="transition ease-in duration-75"
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95">
-                <Menu.Items className="origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 flex flex-col">
+                <Menu.Items className="origin-top-right absolute right-0 mt-2 min-w-full rounded-md shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 flex flex-col">
                   <Menu.Item>
                     <a
                       href="#"
