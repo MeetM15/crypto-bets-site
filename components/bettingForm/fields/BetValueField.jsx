@@ -57,7 +57,17 @@ const BetValueField = ({
           className="text-xs font-medium px-2 border-r-2 border-gray-400 flex items-center justify-center rounded-l hover:bg-gray-300 h-full"
           disabled={disableClick != undefined ? disableClick : false}
           onClick={() => {
-            setBetAmt((prev) => (0.5 * prev).toFixed(4));
+            setBetAmt((prev) => {
+              const newValue = 0.5 * parseFloat(prev);
+              if (chain == "eth") {
+                if (parseFloat(newValue) > walletBalance)
+                  newValue = walletBalance;
+              } else {
+                if (parseFloat(newValue) > bnbWalletBalance)
+                  newValue = bnbWalletBalance;
+              }
+              return parseFloat(parseFloat(newValue).toFixed(4));
+            });
           }}
           type="button">
           1/2
@@ -66,7 +76,17 @@ const BetValueField = ({
           disabled={disableClick != undefined ? disableClick : false}
           className="text-xs font-medium px-2 flex items-center justify-center rounded-r hover:bg-gray-300 h-full"
           onClick={() => {
-            setBetAmt((prev) => (2.0 * prev).toFixed(4));
+            setBetAmt((prev) => {
+              const newValue = 2.0 * parseFloat(prev);
+              if (chain == "eth") {
+                if (parseFloat(newValue) > walletBalance)
+                  newValue = walletBalance;
+              } else {
+                if (parseFloat(newValue) > bnbWalletBalance)
+                  newValue = bnbWalletBalance;
+              }
+              return parseFloat(parseFloat(newValue).toFixed(4));
+            });
           }}
           type="button">
           2 <XIcon className="h-2 w-2" />
