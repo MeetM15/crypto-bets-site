@@ -2,13 +2,13 @@ import { LockClosedIcon } from "@heroicons/react/solid";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
-
+import { ClipLoader } from "react-spinners";
 const SignupForm = ({ setToggleLoginModalOpen }) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
   const handleSignup = async (e) => {
     e.preventDefault();
     const data = {
@@ -22,8 +22,11 @@ const SignupForm = ({ setToggleLoginModalOpen }) => {
     } catch (error) {
       console.log("error : ", error);
     }
-    setToggleLoginModalOpen(false);
     router.reload();
+    setToggleLoginModalOpen(() => {
+      setIsLoginLoading(false);
+      return false;
+    });
   };
   return (
     <>
@@ -91,14 +94,24 @@ const SignupForm = ({ setToggleLoginModalOpen }) => {
             <div className="flex items-center">
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <LockClosedIcon
-                    className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
-                    aria-hidden="true"
-                  />
-                </span>
-                Sign Up
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={(e) => {
+                  setIsLoginLoading(true);
+                  handleSignup(e);
+                }}>
+                {isLoginLoading ? (
+                  <ClipLoader size={"20px"} />
+                ) : (
+                  <>
+                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                      <LockClosedIcon
+                        className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
+                        aria-hidden="true"
+                      />
+                    </span>
+                    Sign Up
+                  </>
+                )}
               </button>
               <button
                 type="button"
