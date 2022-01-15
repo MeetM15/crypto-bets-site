@@ -54,7 +54,7 @@ const AutoFormComponent = ({
   const [noOfBets, setNoOfBets] = useState(1);
   const [toggleRollOver, setToggleRollOverOver] = useState(true); //true - roll over , false - roll under
   const [sliderValue, setSliderValue] = useState(1.99);
-  const [multiplierValue, setMultiplierValue] = useState(1.01);
+  const [multiplierValue, setMultiplierValue] = useState(2.0);
   const [winChance, setWinChance] = useState(
     parseFloat((100 - 1.99).toFixed(2))
   );
@@ -454,6 +454,9 @@ const AutoFormComponent = ({
     }
   };
 
+  useEffect(() => {
+    setWinChance(parseFloat((99.0 / multiplierValue).toFixed(2)));
+  }, [multiplierValue]);
   useEffect(() => {
     if (!toggleRollOver)
       setSliderValue(parseFloat(parseFloat(winChance).toFixed(2)));

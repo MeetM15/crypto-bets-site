@@ -1,6 +1,6 @@
 import { XIcon } from "@heroicons/react/solid";
 import { SwitchHorizontalIcon } from "@heroicons/react/solid";
-
+import { useEffect, useState } from "react";
 const ChancesFields = ({
   toggleRollOver,
   sliderValue,
@@ -12,6 +12,10 @@ const ChancesFields = ({
   setMultiplierValue,
   disableClick,
 }) => {
+  const [rollValue, setRollValue] = useState(sliderValue);
+  useEffect(() => {
+    setRollValue(parseFloat(sliderValue.toFixed(2)));
+  }, [sliderValue]);
   return (
     <div className="flex flex-col md:flex-row items-center justify-between w-full">
       <div className="rounded w-full md:w-48 pt-3 px-2 pb-2 flex flex-col mt-2 bg-gray-200 h-20">
@@ -31,7 +35,7 @@ const ChancesFields = ({
               setToggleRollOverOver(!toggleRollOver);
             }}>
             <span className="w-full h-full text-sm font-medium mr-2 flex items-center justify-center">
-              {sliderValue}
+              {rollValue}
             </span>
             <SwitchHorizontalIcon className="h-4 w-4" />
           </button>

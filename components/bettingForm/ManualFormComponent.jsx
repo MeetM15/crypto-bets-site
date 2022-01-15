@@ -45,7 +45,7 @@ const ManualFormComponent = ({
   const [profitAmt, setProfitAmt] = useState(0.0);
   const [toggleRollOver, setToggleRollOverOver] = useState(true); //true - roll over , false - roll under
   const [sliderValue, setSliderValue] = useState(1.99);
-  const [multiplierValue, setMultiplierValue] = useState(1.0101);
+  const [multiplierValue, setMultiplierValue] = useState(2.0);
   const [winChance, setWinChance] = useState(
     parseFloat((100.0 - 2.0).toFixed(2))
   );
@@ -221,6 +221,7 @@ const ManualFormComponent = ({
     );
   }, []);
   useEffect(() => {
+    setWinChance(parseFloat((99.0 / multiplierValue).toFixed(2)));
     setProfitAmt(
       parseFloat(
         (
