@@ -172,6 +172,12 @@ app.get("/user", checkToken, (req, res) => {
 
 //Place bet
 app.post("/bet", async (req, res) => {
+  const username = req.body.username;
+  const betAmtInNative = req.body.betAmt;
+  const multiplier = req.body.multiplier;
+  const betTime = req.body.betTime;
+  const result = req.body.result;
+  const payout = req.body.payout;
   const email = req.body.email;
   const chain = req.body.chain;
   const betResult = req.body.betResult; // true:win false:lose
@@ -181,6 +187,16 @@ app.post("/bet", async (req, res) => {
     if (err) throw err;
     const sqlSearch = "Select * from userinfotable where email = ?";
     const search_query = mysql.format(sqlSearch, [email]);
+    const sqlInsert = "INSERT INTO betstable VALUES (0,?,?,?,?,?,?,?)";
+    const insert_query = mysql.format(sqlInsert, [
+      username,
+      betTime,
+      betAmtInNative,
+      multiplier,
+      result,
+      payout,
+      betResult,
+    ]);
     await connection.query(search_query, async (err, result) => {
       connection.release();
 
@@ -361,7 +377,16 @@ app.post("/bet", async (req, res) => {
           }
         }
       } //end of User exists
-    }); //end of connection.query()
+    }); //end of bet connection.query()
+
+    //Store bet details
+    await connection.query(insert_query, async (err, result) => {
+      connection.release();
+      if (err) throw err;
+      console.log("--------> added bet data");
+      console.log(result.insertId);
+      res.sendStatus(201);
+    }); //end of bet details connection.query()
   }); //end of db.connection()
 }); //end of app.post()
 //Reward on win bet
@@ -470,3 +495,35 @@ app.post("/withdraw", async (req, res) => {
   }); //end of db.connection()
 }); //end of app.post()
 //withdraw winnings
+
+//Store bet details
+// app.post("/betdetails", async (req, res) => {
+//   const username = req.body.username;
+//   const betAmt = req.body.betAmt;
+//   const multiplier = req.body.multiplier;
+//   const result = req.body.result;
+//   const payout = req.body.payout;
+//   const win = req.body.win;
+
+//   db.getConnection(async (err, connection) => {
+//     if (err) throw err;
+//     const sqlInsert = "INSERT INTO betstable VALUES (0,?,0,?,?,?,?,?)";
+//     const insert_query = mysql.format(sqlInsert, [
+//       username,
+//       betAmt,
+//       multiplier,
+//       result,
+//       payout,
+//       win,
+//     ]);
+//     // ? will be replaced by values
+//     // ?? will be replaced by string
+//     await connection.query(insert_query, (err, result) => {
+//       connection.release();
+//       if (err) throw err;
+//       console.log("--------> added bet data");
+//       console.log(result.insertId);
+//       res.sendStatus(201);
+//     });
+//   }); //end of db.getConnection()
+// }); //end of app.post()

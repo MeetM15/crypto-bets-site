@@ -80,9 +80,20 @@ const AutoFormComponent = ({
       //set dice result color acc to win/loss
       document.getElementById("diceResult").style.color = betResult;
       if (user && user[0] != undefined) {
+        var d = new Date(); // for curr time
+        const betTime = `${
+          String(d.getHours().toString()).length == 1
+            ? "0" + Number(d.getHours()).toString()
+            : Number(d.getHours()).toString()
+        }:${
+          String(d.getMinutes().toString()).length == 1
+            ? "0" + Number(d.getMinutes()).toString()
+            : Number(d.getMinutes()).toString()
+        }`;
         const betData = {
           username: user[0].username,
           multiplier: multiplierValue,
+          betTime: betTime,
           result: diceValue,
           payout:
             betResult == "green"
@@ -280,9 +291,20 @@ const AutoFormComponent = ({
       //set dice result color acc to win/loss
       document.getElementById("diceResult").style.color = betResult;
       if (user && user[0] != undefined) {
+        var d = new Date(); // for curr time
+        const betTime = `${
+          String(d.getHours().toString()).length == 1
+            ? "0" + Number(d.getHours()).toString()
+            : Number(d.getHours()).toString()
+        }:${
+          String(d.getMinutes().toString()).length == 1
+            ? "0" + Number(d.getMinutes()).toString()
+            : Number(d.getMinutes()).toString()
+        }`;
         const betData = {
           username: user[0].username,
           multiplier: multiplierValue,
+          betTime: betTime,
           result: diceValue,
           payout:
             betResult == "green"
