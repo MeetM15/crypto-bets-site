@@ -75,6 +75,13 @@ const ManualFormComponent = ({
       document.getElementById("diceResult").style.color = betResult;
       if (user && user[0] != undefined) {
         const betData = {
+          username: user[0].username,
+          multiplier: multiplierValue,
+          result: diceValue,
+          payout:
+            betResult == "green"
+              ? (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(8)
+              : `-${betAmt}`,
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
@@ -148,6 +155,13 @@ const ManualFormComponent = ({
       document.getElementById("diceResult").style.color = betResult;
       if (user && user[0] != undefined) {
         const betData = {
+          username: user[0].username,
+          multiplier: multiplierValue,
+          result: diceValue,
+          payout:
+            betResult == "green"
+              ? (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(8)
+              : `-${betAmt}`,
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,

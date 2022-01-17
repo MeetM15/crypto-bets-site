@@ -81,10 +81,17 @@ const AutoFormComponent = ({
       document.getElementById("diceResult").style.color = betResult;
       if (user && user[0] != undefined) {
         const betData = {
+          username: user[0].username,
+          multiplier: multiplierValue,
+          result: diceValue,
+          payout:
+            betResult == "green"
+              ? (parseFloat(betAmt) + parseFloat(currentProf)).toFixed(8)
+              : `-${betAmt}`,
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: currentBet,
+          betAmt: betAmt,
           profitAmt: parseFloat(currentProf) > 0 ? currentProf : 0.0,
         };
         console.log("bet data : ", betData);
@@ -274,10 +281,17 @@ const AutoFormComponent = ({
       document.getElementById("diceResult").style.color = betResult;
       if (user && user[0] != undefined) {
         const betData = {
+          username: user[0].username,
+          multiplier: multiplierValue,
+          result: diceValue,
+          payout:
+            betResult == "green"
+              ? (parseFloat(betAmt) + parseFloat(currentProf)).toFixed(8)
+              : `-${betAmt}`,
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: currentBet,
+          betAmt: betAmt,
           profitAmt: parseFloat(currentProf) > 0 ? currentProf : 0.0,
         };
         console.log("bet data : ", betData);
