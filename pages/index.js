@@ -11,7 +11,7 @@ import { io } from "socket.io-client";
 import Web3 from "web3";
 import LiveBetsComponent from "../components/liveBets/LiveBetsComponent";
 const web3 = new Web3(
-  "wss://rinkeby.infura.io/ws/v3/f3ad0d479bf94c1791f813da1a914632"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/rinkeby"
 );
 const web3_bsc = new Web3(
   "https://speedy-nodes-nyc.moralis.io/487960593a8857bde8a74862/bsc/testnet"
