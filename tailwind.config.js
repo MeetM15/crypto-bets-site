@@ -39,6 +39,10 @@ module.exports = {
         160: "40rem",
         192: "48rem",
       },
+      screens: {
+        xsm: "480px",
+        // => @media (min-width: 540px) { ... }
+      },
     },
   },
   plugins: [],

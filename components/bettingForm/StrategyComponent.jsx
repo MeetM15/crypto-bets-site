@@ -30,7 +30,7 @@ const placeBet = (sliderValue, rollType) => {
   return result;
 };
 
-const ManualFormComponent = ({
+const StrategyComponent = ({
   user,
   walletBalance,
   bnbWalletBalance,
@@ -40,13 +40,12 @@ const ManualFormComponent = ({
   setBnbWalletBalance,
   setToggleLoginModalOpen,
   chain,
-  socket,
 }) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmt, setProfitAmt] = useState(0.0);
   const [toggleRollOver, setToggleRollOverOver] = useState(true); //true - roll over , false - roll under
   const [sliderValue, setSliderValue] = useState(1.99);
-  const [multiplierValue, setMultiplierValue] = useState(2.0);
+  const [multiplierValue, setMultiplierValue] = useState(1.0101);
   const [winChance, setWinChance] = useState(
     parseFloat((100.0 - 2.0).toFixed(2))
   );
@@ -75,26 +74,7 @@ const ManualFormComponent = ({
       setResult(parseFloat(diceValue.toFixed(2)));
       document.getElementById("diceResult").style.color = betResult;
       if (user && user[0] != undefined) {
-        var d = new Date(); // for curr time
-        const betTime = `${
-          String(d.getHours().toString()).length == 1
-            ? "0" + Number(d.getHours()).toString()
-            : Number(d.getHours()).toString()
-        }:${
-          String(d.getMinutes().toString()).length == 1
-            ? "0" + Number(d.getMinutes()).toString()
-            : Number(d.getMinutes()).toString()
-        }`;
-
         const betData = {
-          username: user[0].username,
-          multiplier: multiplierValue,
-          betTime: betTime,
-          result: diceValue,
-          payout:
-            betResult == "green"
-              ? (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(8)
-              : `-${betAmt}`,
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
@@ -106,9 +86,6 @@ const ManualFormComponent = ({
           .post("/bet", betData)
           .then((res) => {
             console.log(res);
-            return socket.emit("placeBet");
-          })
-          .then((res) => {
             return web3_bsc.eth.getBalance(user[0].bscAddress);
           })
           .then((res) => {
@@ -170,25 +147,7 @@ const ManualFormComponent = ({
       setResult(parseFloat(diceValue.toFixed(2)));
       document.getElementById("diceResult").style.color = betResult;
       if (user && user[0] != undefined) {
-        var d = new Date(); // for curr time
-        const betTime = `${
-          String(d.getHours().toString()).length == 1
-            ? "0" + Number(d.getHours()).toString()
-            : Number(d.getHours()).toString()
-        }:${
-          String(d.getMinutes().toString()).length == 1
-            ? "0" + Number(d.getMinutes()).toString()
-            : Number(d.getMinutes()).toString()
-        }`;
         const betData = {
-          username: user[0].username,
-          multiplier: multiplierValue,
-          betTime: betTime,
-          result: diceValue,
-          payout:
-            betResult == "green"
-              ? (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(8)
-              : `-${betAmt}`,
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
@@ -200,9 +159,6 @@ const ManualFormComponent = ({
           .post("/bet", betData)
           .then((res) => {
             console.log(res);
-            return socket.emit("placeBet");
-          })
-          .then((res) => {
             return web3.eth.getBalance(user[0].address);
           })
           .then((res) => {
@@ -265,7 +221,6 @@ const ManualFormComponent = ({
     );
   }, []);
   useEffect(() => {
-    setWinChance(parseFloat((99.0 / multiplierValue).toFixed(2)));
     setProfitAmt(
       parseFloat(
         (
@@ -401,4 +356,4 @@ const ManualFormComponent = ({
   );
 };
 
-export default ManualFormComponent;
+export default StrategyComponent;

@@ -7,13 +7,17 @@ import Login from "../components/modals/Login";
 import axios from "axios";
 import Wallet from "../components/modals/Wallet";
 import { MoonLoader } from "react-spinners";
+import { io } from "socket.io-client";
 import Web3 from "web3";
+import LiveBetsComponent from "../components/liveBets/LiveBetsComponent";
 const web3 = new Web3(
   "wss://rinkeby.infura.io/ws/v3/f3ad0d479bf94c1791f813da1a914632"
 );
 const web3_bsc = new Web3(
   "https://speedy-nodes-nyc.moralis.io/487960593a8857bde8a74862/bsc/testnet"
 );
+const socket = io("https://cryptodice1.herokuapp.com/");
+
 export default function Home() {
   const [user, setUser] = useState();
   const [chain, setChain] = useState("eth");
@@ -21,6 +25,76 @@ export default function Home() {
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0.0);
   const [bnbWalletBalance, setBnbWalletBalance] = useState(0.0);
+  const [currLiveBets, setCurrLiveBets] = useState([]);
+  const [myBets, setMyBets] = useState([]);
+
+  //Live bets
+  useEffect(() => {
+    socket.on("getLiveBetData", () => {
+      //get live data
+      axios
+        .get("liveBets")
+        .then((res) => {
+          setCurrLiveBets(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+  }, [socket]);
+  useEffect(() => {
+    axios
+      .get("liveBets")
+      .then((res) => {
+        setCurrLiveBets(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  //My bets
+  useEffect(() => {
+    socket.on("getMyBetData", () => {
+      //get live data
+      axios
+        .post("myBets", { email: user[0].email })
+        .then((res) => {
+          setMyBets(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+  }, [socket]);
+  useEffect(() => {
+    if (user && user[0] != undefined) {
+      //post live data
+      axios
+        .post("myBets", { email: user[0].email })
+        .then((res) => {
+          setMyBets(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, []);
+  useEffect(() => {
+    if (user && user[0] != undefined) {
+      //post live data
+      axios
+        .post("myBets", { email: user[0].email })
+        .then((res) => {
+          setMyBets(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [user]);
+
+  //get user details
   useEffect(() => {
     if (localStorage.getItem("token")) {
       axios
@@ -40,6 +114,8 @@ export default function Home() {
       setUser([]);
     }
   }, []);
+
+  //get balance
   useEffect(() => {
     if (user && user[0] != undefined) {
       web3.eth
@@ -133,7 +209,11 @@ export default function Home() {
           setBnbWalletBalance={setBnbWalletBalance}
           setToggleLoginModalOpen={setToggleLoginModalOpen}
           chain={chain}
+          socket={socket}
         />
+      </div>
+      <div className="p-8 w-full h-screen bg-white flex">
+        <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
       </div>
       <Login
         toggleLoginModalOpen={toggleLoginModalOpen}

@@ -13,9 +13,10 @@ const BettingForm = ({
   bnbWalletBalance,
   setBnbWalletBalance,
   chain,
+  socket,
 }) => {
   return (
-    <div className="bg-gray-200 p-2 rounded">
+    <div className="bg-gray-200 p-2 rounded mt-12">
       <Tab.Group>
         <Tab.List className="w-full flex items-center bg-gray-200">
           <Tab
@@ -47,6 +48,7 @@ const BettingForm = ({
               setBnbWalletBalance={setBnbWalletBalance}
               setToggleLoginModalOpen={setToggleLoginModalOpen}
               chain={chain}
+              socket={socket}
             />
           </Tab.Panel>
           <Tab.Panel>
@@ -60,6 +62,7 @@ const BettingForm = ({
               setBnbWalletBalance={setBnbWalletBalance}
               setToggleLoginModalOpen={setToggleLoginModalOpen}
               chain={chain}
+              socket={socket}
             />
           </Tab.Panel>
         </Tab.Panels>

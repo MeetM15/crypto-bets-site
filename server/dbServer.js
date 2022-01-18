@@ -1,10 +1,19 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 var cors = require("cors");
+const http = require("http");
+const socketIo = require("socket.io");
 const app = express();
 const mysql = require("mysql");
 
-app.use(cors());
-
+const port = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "*",
+  },
+});
 //web3
 const Web3 = require("web3");
 let web3 = new Web3(
@@ -15,7 +24,8 @@ let web3_bsc = new Web3(
 );
 
 require("dotenv").config();
-
+app.use(cors());
+app.use(express.json());
 // sconnection details
 const db = mysql.createPool({
   host: "l6glqt8gsx37y4hs.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
@@ -29,11 +39,28 @@ db.getConnection((err, connection) => {
   console.log("DB connected successfully: " + connection.threadId);
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server Started on port ${port}...`));
+//connect socket
+io.on("connection", (socket) => {
+  console.log("A user is connected");
 
-const bcrypt = require("bcrypt");
-app.use(express.json());
+  socket.on("message", (message) => {
+    console.log(`message from ${socket.id} : ${message}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`socket ${socket.id} disconnected`);
+  });
+  //on bet
+  socket.on("placeBet", (socket) => {
+    console.log("A User Placed Bet!");
+    io.emit("getLiveBetData");
+  });
+  socket.on("placeBet", (socket) => {
+    console.log("A User Placed Bet!");
+    io.emit("getMyBetData");
+  });
+});
+
 //middleware to read req.body.<params>
 //CREATE USER
 app.post("/createUser", async (req, res) => {
@@ -94,7 +121,6 @@ app.post("/createUser", async (req, res) => {
 }); //end of app.post()
 
 //generateAccessToken function
-const jwt = require("jsonwebtoken");
 function generateAccessToken(email) {
   return jwt.sign(email, "secret", {});
 }
@@ -187,7 +213,7 @@ app.post("/bet", async (req, res) => {
     if (err) throw err;
     const sqlSearch = "Select * from userinfotable where email = ?";
     const search_query = mysql.format(sqlSearch, [email]);
-    const sqlInsert = "INSERT INTO betstable VALUES (0,?,?,?,?,?,?,?)";
+    const sqlInsert = "INSERT INTO betstable VALUES (0,?,?,?,?,?,?,?,?,?)";
     const insert_query = mysql.format(sqlInsert, [
       username,
       betTime,
@@ -196,6 +222,8 @@ app.post("/bet", async (req, res) => {
       result,
       payout,
       betResult,
+      chain,
+      email,
     ]);
     await connection.query(search_query, async (err, result) => {
       connection.release();
@@ -495,35 +523,35 @@ app.post("/withdraw", async (req, res) => {
   }); //end of db.connection()
 }); //end of app.post()
 //withdraw winnings
-
 //Store bet details
-// app.post("/betdetails", async (req, res) => {
-//   const username = req.body.username;
-//   const betAmt = req.body.betAmt;
-//   const multiplier = req.body.multiplier;
-//   const result = req.body.result;
-//   const payout = req.body.payout;
-//   const win = req.body.win;
 
-//   db.getConnection(async (err, connection) => {
-//     if (err) throw err;
-//     const sqlInsert = "INSERT INTO betstable VALUES (0,?,0,?,?,?,?,?)";
-//     const insert_query = mysql.format(sqlInsert, [
-//       username,
-//       betAmt,
-//       multiplier,
-//       result,
-//       payout,
-//       win,
-//     ]);
-//     // ? will be replaced by values
-//     // ?? will be replaced by string
-//     await connection.query(insert_query, (err, result) => {
-//       connection.release();
-//       if (err) throw err;
-//       console.log("--------> added bet data");
-//       console.log(result.insertId);
-//       res.sendStatus(201);
-//     });
-//   }); //end of db.getConnection()
-// }); //end of app.post()
+//live bets
+app.get("/liveBets", (req, res) => {
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const search_query = "SELECT * FROM betstable ORDER BY betId DESC LIMIT 10";
+    await connection.query(search_query, async (err, result) => {
+      connection.release();
+      if (err) throw err;
+      else res.json(result);
+    }); //end of connection.query()
+  }); //end of db.connection()
+}); //end of app.post()
+
+//my bets
+app.post("/myBets", (req, res) => {
+  const email = req.body.email;
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlSearch =
+      "Select * from betstable where email = ? ORDER BY betId DESC LIMIT 10";
+    const search_query = mysql.format(sqlSearch, [email]);
+    await connection.query(search_query, async (err, result) => {
+      connection.release();
+      if (err) throw err;
+      else res.json(result);
+    }); //end of connection.query()
+  }); //end of db.connection()
+}); //end of app.post()
+
+server.listen(port, () => console.log(`Server Started on port ${port}...`));

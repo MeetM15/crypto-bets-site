@@ -20,7 +20,7 @@ const Navbar = ({
   const [currency, setCurrency] = useState(["ETH", "/icons/eth.svg"]);
 
   return (
-    <nav className="bg-secondary relative w-full shadow px-2 sm:px-6 lg:px-8 flex items-center justify-between h-12 text-white">
+    <nav className="bg-secondary fixed w-full shadow px-2 sm:px-6 lg:px-8 flex items-center justify-between h-12 text-white z-10">
       <div className="flex-shrink-0 flex items-center">
         <img
           className="block sm:hidden h-8 w-auto p-1.5"

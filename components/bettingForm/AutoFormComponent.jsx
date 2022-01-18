@@ -46,6 +46,7 @@ const AutoFormComponent = ({
   setBnbWalletBalance,
   setToggleLoginModalOpen,
   chain,
+  socket,
 }) => {
   const btnRef = useRef(false);
   const [disableClick, setDisableClick] = useState(false);
@@ -111,7 +112,11 @@ const AutoFormComponent = ({
           .then((res) => {
             console.log("bet res : ", res);
           })
-          .then(() => {
+          .then((res) => {
+            console.log(res);
+            return socket.emit("placeBet");
+          })
+          .then((res) => {
             return web3.eth.getBalance(user[0].address);
           })
           .then((res) => {
@@ -322,7 +327,11 @@ const AutoFormComponent = ({
           .then((res) => {
             console.log("bet res : ", res);
           })
-          .then(() => {
+          .then((res) => {
+            console.log(res);
+            return socket.emit("placeBet");
+          })
+          .then((res) => {
             return web3_bsc.eth.getBalance(user[0].bscAddress);
           })
           .then((res) => {
