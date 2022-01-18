@@ -15,6 +15,17 @@ const ChancesFields = ({
   const [rollValue, setRollValue] = useState(sliderValue);
   useEffect(() => {
     setRollValue(parseFloat(sliderValue.toFixed(2)));
+    if (toggleRollOver) {
+      setMultiplierValue(
+        parseFloat(
+          (99.0 / parseFloat(100.0 - parseFloat(sliderValue))).toFixed(4)
+        )
+      );
+    } else {
+      setMultiplierValue(
+        parseFloat((99.0 / parseFloat(sliderValue)).toFixed(4))
+      );
+    }
   }, [sliderValue]);
   return (
     <div className="flex flex-col md:flex-row items-center justify-between w-full">

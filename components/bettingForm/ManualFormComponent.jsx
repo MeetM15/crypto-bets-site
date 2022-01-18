@@ -45,10 +45,12 @@ const ManualFormComponent = ({
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmt, setProfitAmt] = useState(0.0);
   const [toggleRollOver, setToggleRollOverOver] = useState(true); //true - roll over , false - roll under
-  const [sliderValue, setSliderValue] = useState(1.99);
+  const [sliderValue, setSliderValue] = useState(
+    parseFloat((100.0 - parseFloat((99.0 / 2.0).toFixed(2))).toFixed(2))
+  );
   const [multiplierValue, setMultiplierValue] = useState(2.0);
   const [winChance, setWinChance] = useState(
-    parseFloat((100.0 - 2.0).toFixed(2))
+    parseFloat((99.0 / 2.0).toFixed(2))
   );
   const [showDice, setShowDice] = useState("hidden");
   const [result, setResult] = useState();
@@ -353,20 +355,13 @@ const ManualFormComponent = ({
               onChange={({ x }) => {
                 setSliderValue(x);
                 if (toggleRollOver) {
-                  if (
-                    parseFloat(100.0 - x) >=
-                    99.0 / parseFloat(multiplierValue)
-                  ) {
-                    setMultiplierValue(
-                      parseFloat((99.0 / parseFloat(100.0 - x)).toFixed(4))
-                    );
-                  }
+                  setMultiplierValue(
+                    parseFloat((99.0 / parseFloat(100.0 - x)).toFixed(4))
+                  );
                 } else {
-                  if (parseFloat(x) >= 99.0 / parseFloat(multiplierValue)) {
-                    setMultiplierValue(
-                      parseFloat((99.0 / parseFloat(x)).toFixed(4))
-                    );
-                  }
+                  setMultiplierValue(
+                    parseFloat((99.0 / parseFloat(x)).toFixed(4))
+                  );
                 }
 
                 if (!toggleRollOver) setWinChance(parseFloat(x.toFixed(2)));
