@@ -58,7 +58,7 @@ export default function Home() {
     socket.on("getMyBetData", () => {
       //get live data
       axios
-        .post("myBets", { email: user[0].email })
+        .post("myBets", { email: user && user[0] ? user[0].email : "" })
         .then((res) => {
           setMyBets(res.data);
         })
@@ -66,7 +66,7 @@ export default function Home() {
           console.log(error);
         });
     });
-  }, [socket]);
+  }, [socket, user]);
   useEffect(() => {
     if (user && user[0] != undefined) {
       //post live data
