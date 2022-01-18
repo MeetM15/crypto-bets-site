@@ -62,12 +62,13 @@ const ChancesFields = ({
             disabled={disableClick != undefined ? disableClick : false}
             type="number"
             name="multiplier"
-            min="1.0101"
+            min="1.0102"
+            step="1.0"
             onBlur={(e) => {
               e.target.value = Number(e.target.value);
               if (e.target.value < 0) e.target.value = -1.0 * e.target.value;
-              if (e.target.value >= 0 && e.target.value < 1.0101)
-                e.target.value = 1.0101;
+              if (e.target.value >= 0 && e.target.value < 1.0102)
+                e.target.value = 1.0102;
               setMultiplierValue(
                 parseFloat(parseFloat(e.target.value).toFixed(4))
               );
@@ -78,7 +79,8 @@ const ChancesFields = ({
               setMultiplierValue(
                 parseFloat(parseFloat(e.target.value).toFixed(4))
               );
-              setWinChance(parseFloat((99.0 / e.target.value).toFixed(2)));
+              if (e.target.value != undefined && e.target.value > 1.0101)
+                setWinChance(parseFloat((99.0 / e.target.value).toFixed(2)));
             }}
           />
           <button
