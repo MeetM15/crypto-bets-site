@@ -45,7 +45,11 @@ const Navbar = ({
                       return web3.utils.fromWei(res);
                     })
                     .then((res) => {
-                      setWalletBalance(parseFloat(res) - 0.00003);
+                      setWalletBalance(
+                        parseFloat(res) > 0.00003
+                          ? parseFloat(res) - 0.00003
+                          : 0.0
+                      );
                     });
                   web3_bsc.eth
                     .getBalance(user[0].bscAddress)
@@ -54,7 +58,11 @@ const Navbar = ({
                     })
                     .then((res) => {
                       console.log(res);
-                      setBnbWalletBalance(parseFloat(res) - 0.00003);
+                      setBnbWalletBalance(
+                        parseFloat(res) > 0.00003
+                          ? parseFloat(res) - 0.00003
+                          : 0.0
+                      );
                     });
                 }
               }}>
