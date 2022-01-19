@@ -128,11 +128,8 @@ const AutoFormComponent = ({
             return web3.utils.fromWei(res);
           })
           .then((res) => {
-            setWalletBalance(
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-            );
-            currBalEth.current =
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0;
+            setWalletBalance(parseFloat(res) - 0.00003);
+            currBalEth.current = parseFloat(res) - 0.00003;
           })
           .catch((err) => {
             console.log(err);
@@ -355,11 +352,8 @@ const AutoFormComponent = ({
             return web3_bsc.utils.fromWei(res);
           })
           .then((res) => {
-            setBnbWalletBalance(
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-            );
-            currBalBnb.current =
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0;
+            setBnbWalletBalance(parseFloat(res) - 0.00003);
+            currBalBnb.current = parseFloat(res) - 0.00003;
           })
           .catch((err) => {
             console.log(err);

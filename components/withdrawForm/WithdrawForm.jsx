@@ -41,14 +41,8 @@ const WithdrawForm = ({
           else return web3_bsc.utils.fromWei(res);
         })
         .then((res) => {
-          if (currChain == "eth")
-            setWalletBalance(
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-            );
-          else
-            setBnbWalletBalance(
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-            );
+          if (currChain == "eth") setWalletBalance(parseFloat(res) - 0.00003);
+          else setBnbWalletBalance(parseFloat(res) - 0.00003);
 
           console.log("enable click");
           if (document.getElementById("rollBtn").hasAttribute("disabled"))

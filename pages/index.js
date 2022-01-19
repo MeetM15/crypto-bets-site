@@ -125,9 +125,7 @@ export default function Home() {
         })
         .then((res) => {
           console.log(res);
-          setWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
+          setWalletBalance(parseFloat(res) - 0.00003);
         });
       web3_bsc.eth
         .getBalance(user[0].bscAddress)
@@ -136,9 +134,7 @@ export default function Home() {
         })
         .then((res) => {
           console.log(res);
-          setBnbWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
+          setBnbWalletBalance(parseFloat(res) - 0.00003);
         });
     }
   }, []);
@@ -151,9 +147,7 @@ export default function Home() {
           return web3.utils.fromWei(res);
         })
         .then((res) => {
-          setWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
+          setWalletBalance(parseFloat(res) - 0.00003);
         });
       web3_bsc.eth
         .getBalance(user[0].bscAddress)
@@ -162,9 +156,7 @@ export default function Home() {
         })
         .then((res) => {
           console.log(res);
-          setBnbWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
+          setBnbWalletBalance(parseFloat(res) - 0.00003);
         });
     }
   }, [user]);
@@ -176,9 +168,7 @@ export default function Home() {
           return web3.utils.fromWei(res);
         })
         .then((res) => {
-          setWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
+          setWalletBalance(parseFloat(res) - 0.00003);
         });
       web3_bsc.eth
         .getBalance(user[0].bscAddress)
@@ -187,9 +177,7 @@ export default function Home() {
         })
         .then((res) => {
           console.log(res);
-          setBnbWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
+          setBnbWalletBalance(parseFloat(res) - 0.00003);
         });
     }
   }, [showWalletModal]);

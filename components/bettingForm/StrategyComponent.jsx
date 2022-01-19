@@ -92,9 +92,7 @@ const StrategyComponent = ({
             return web3_bsc.utils.fromWei(res);
           })
           .then((res) => {
-            setBnbWalletBalance(
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-            );
+            setBnbWalletBalance(parseFloat(res) - 0.00003);
             console.log("enable click");
             if (document.getElementById("rollBtn").hasAttribute("disabled"))
               document.getElementById("rollBtn").removeAttribute("disabled");
