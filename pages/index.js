@@ -125,16 +125,16 @@ export default function Home() {
         })
         .then((res) => {
           console.log(res);
-          setWalletBalance(parseFloat(res));
+          setWalletBalance(parseFloat(res) - 0.00003);
         });
       web3_bsc.eth
         .getBalance(user[0].bscAddress)
         .then((res) => {
-          return web3.utils.fromWei(res);
+          return web3_bsc.utils.fromWei(res);
         })
         .then((res) => {
           console.log(res);
-          setBnbWalletBalance(parseFloat(res));
+          setBnbWalletBalance(parseFloat(res) - 0.000001);
         });
     }
   }, []);
@@ -147,16 +147,16 @@ export default function Home() {
           return web3.utils.fromWei(res);
         })
         .then((res) => {
-          setWalletBalance(parseFloat(res));
+          setWalletBalance(parseFloat(res) - 0.00003);
         });
       web3_bsc.eth
         .getBalance(user[0].bscAddress)
         .then((res) => {
-          return web3.utils.fromWei(res);
+          return web3_bsc.utils.fromWei(res);
         })
         .then((res) => {
           console.log(res);
-          setBnbWalletBalance(parseFloat(res));
+          setBnbWalletBalance(parseFloat(res) - 0.000001);
         });
     }
   }, [user]);
@@ -168,16 +168,16 @@ export default function Home() {
           return web3.utils.fromWei(res);
         })
         .then((res) => {
-          setWalletBalance(parseFloat(res));
+          setWalletBalance(parseFloat(res) - 0.00003);
         });
       web3_bsc.eth
         .getBalance(user[0].bscAddress)
         .then((res) => {
-          return web3.utils.fromWei(res);
+          return web3_bsc.utils.fromWei(res);
         })
         .then((res) => {
           console.log(res);
-          setBnbWalletBalance(parseFloat(res));
+          setBnbWalletBalance(parseFloat(res) - 0.000001);
         });
     }
   }, [showWalletModal]);

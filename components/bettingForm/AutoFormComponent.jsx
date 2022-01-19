@@ -49,6 +49,9 @@ const AutoFormComponent = ({
   socket,
 }) => {
   const btnRef = useRef(false);
+  const isBetting = useRef(false);
+  const currBalEth = useRef(walletBalance);
+  const currBalBnb = useRef(bnbWalletBalance);
   const [disableClick, setDisableClick] = useState(false);
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmtAuto, setProfitAmtAuto] = useState(0.0);
@@ -125,7 +128,8 @@ const AutoFormComponent = ({
             return web3.utils.fromWei(res);
           })
           .then((res) => {
-            setWalletBalance(parseFloat(res));
+            setWalletBalance(parseFloat(res) - 0.00003);
+            currBalEth.current = parseFloat(res) - 0.00003;
           })
           .catch((err) => {
             console.log(err);
@@ -135,6 +139,8 @@ const AutoFormComponent = ({
           setWalletBalance(
             (prev) => parseFloat(prev) + parseFloat(currentProf)
           );
+          currBalEth.current =
+            parseFloat(currBalEth.current) + parseFloat(currentProf);
           setProfitAmtAuto((prev) =>
             (
               parseFloat(prev) +
@@ -155,6 +161,8 @@ const AutoFormComponent = ({
           setWalletBalance((prev) =>
             parseFloat(parseFloat(prev) - parseFloat(betAmt))
           );
+          currBalEth.current =
+            parseFloat(currBalEth.current) - parseFloat(betAmt);
           setProfitAmtAuto((prev) =>
             parseFloat((parseFloat(prev) - parseFloat(currentBet)).toFixed(6))
           );
@@ -221,6 +229,8 @@ const AutoFormComponent = ({
       //set profitAmtAuto on win and on loss
       if (betResult == "green") {
         setWalletBalance((prev) => parseFloat(prev) + parseFloat(currentProf));
+        currBalEth.current =
+          parseFloat(currBalEth.current) + parseFloat(currentProf);
         setProfitAmtAuto((prev) =>
           (
             parseFloat(prev) +
@@ -237,6 +247,8 @@ const AutoFormComponent = ({
         );
       } else {
         setWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+        currBalEth.current =
+          parseFloat(currBalEth.current) - parseFloat(betAmt);
         setProfitAmtAuto((prev) =>
           (parseFloat(prev) - parseFloat(currentBet)).toFixed(6)
         );
@@ -340,7 +352,8 @@ const AutoFormComponent = ({
             return web3_bsc.utils.fromWei(res);
           })
           .then((res) => {
-            setBnbWalletBalance(parseFloat(res));
+            setBnbWalletBalance(parseFloat(res) - 0.000001);
+            currBalBnb.current = parseFloat(res);
           })
           .catch((err) => {
             console.log(err);
@@ -350,6 +363,8 @@ const AutoFormComponent = ({
           setBnbWalletBalance(
             (prev) => parseFloat(prev) + parseFloat(currentProf)
           );
+          currBalBnb.current =
+            parseFloat(currBalBnb.current) + parseFloat(currentProf);
           setProfitAmtAuto((prev) =>
             (
               parseFloat(prev) +
@@ -370,6 +385,8 @@ const AutoFormComponent = ({
           setBnbWalletBalance((prev) =>
             parseFloat(parseFloat(prev) - parseFloat(betAmt))
           );
+          currBalBnb.current =
+            parseFloat(currBalBnb.current) - parseFloat(betAmt);
           setProfitAmtAuto((prev) =>
             parseFloat((parseFloat(prev) - parseFloat(currentBet)).toFixed(6))
           );
@@ -438,6 +455,8 @@ const AutoFormComponent = ({
         setBnbWalletBalance(
           (prev) => parseFloat(prev) + parseFloat(currentProf)
         );
+        currBalBnb.current =
+          parseFloat(currBalBnb.current) + parseFloat(currentProf);
         setProfitAmtAuto((prev) =>
           (
             parseFloat(prev) +
@@ -454,6 +473,8 @@ const AutoFormComponent = ({
         );
       } else {
         setBnbWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+        currBalBnb.current =
+          parseFloat(currBalBnb.current) - parseFloat(betAmt);
         setProfitAmtAuto((prev) =>
           (parseFloat(prev) - parseFloat(currentBet)).toFixed(6)
         );
@@ -500,6 +521,25 @@ const AutoFormComponent = ({
       };
     }
   };
+
+  useEffect(() => {
+    if (!isBetting.current) {
+      if (currBalEth.current < walletBalance)
+        currBalEth.current = walletBalance;
+    } else {
+      if (currBalEth.current >= walletBalance)
+        currBalEth.current = walletBalance;
+    }
+  }, [walletBalance]);
+  useEffect(() => {
+    if (!isBetting.current) {
+      if (currBalBnb.current < walletBalance)
+        currBalBnb.current = walletBalance;
+    } else {
+      if (currBalBnb.current >= walletBalance)
+        currBalBnb.current = walletBalance;
+    }
+  }, [bnbWalletBalance]);
 
   useEffect(() => {
     setWinChance(parseFloat((99.0 / multiplierValue).toFixed(2)));
@@ -752,6 +792,7 @@ const AutoFormComponent = ({
               }`}
               id="rollBtn"
               onClick={() => {
+                isBetting.current = true;
                 setDisableClick(true);
                 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
                 const runBetsBnb = async () => {
@@ -768,6 +809,17 @@ const AutoFormComponent = ({
                         .removeAttribute("disabled");
                       setDisableClick(false);
                       btnRef.current = false;
+                      isBetting.current = false;
+                      break;
+                    }
+                    if (currBalBnb.current < currentBet) {
+                      console.log("enable click");
+                      console.log("Insufficient Balance!");
+                      document
+                        .getElementById("rollBtn")
+                        .removeAttribute("disabled");
+                      setDisableClick(false);
+                      isBetting.current = false;
                       break;
                     }
                     currentProf = 0.0;
@@ -779,6 +831,7 @@ const AutoFormComponent = ({
                           .getElementById("rollBtn")
                           .removeAttribute("disabled");
                         setDisableClick(false);
+                        isBetting.current = false;
                         break;
                       }
                     }
@@ -793,6 +846,7 @@ const AutoFormComponent = ({
                           .getElementById("rollBtn")
                           .removeAttribute("disabled");
                         setDisableClick(false);
+                        isBetting.current = false;
                         break;
                       }
                     }
@@ -816,6 +870,7 @@ const AutoFormComponent = ({
                         .getElementById("rollBtn")
                         .removeAttribute("disabled");
                       setDisableClick(false);
+                      isBetting.current = false;
                     }
                     console.log("Handle bet res : ", handleBetRes);
 
@@ -841,8 +896,20 @@ const AutoFormComponent = ({
                         .removeAttribute("disabled");
                       setDisableClick(false);
                       btnRef.current = false;
+                      isBetting.current = false;
                       break;
                     }
+                    if (currBalEth.current < currentBet) {
+                      console.log("enable click");
+                      console.log("Insufficient Balance!");
+                      document
+                        .getElementById("rollBtn")
+                        .removeAttribute("disabled");
+                      setDisableClick(false);
+                      isBetting.current = false;
+                      break;
+                    }
+
                     currentProf = 0.0;
                     //break loop if stop profit achieved
                     if (stopProfit != -1) {
@@ -852,6 +919,7 @@ const AutoFormComponent = ({
                           .getElementById("rollBtn")
                           .removeAttribute("disabled");
                         setDisableClick(false);
+                        isBetting.current = false;
                         break;
                       }
                     }
@@ -866,6 +934,7 @@ const AutoFormComponent = ({
                           .getElementById("rollBtn")
                           .removeAttribute("disabled");
                         setDisableClick(false);
+                        isBetting.current = false;
                         break;
                       }
                     }
@@ -889,6 +958,7 @@ const AutoFormComponent = ({
                         .getElementById("rollBtn")
                         .removeAttribute("disabled");
                       setDisableClick(false);
+                      isBetting.current = false;
                     }
                     console.log("Handle bet res : ", handleBetRes);
 

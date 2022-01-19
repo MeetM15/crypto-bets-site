@@ -37,11 +37,12 @@ const WithdrawForm = ({
           else return web3_bsc.eth.getBalance(user[0].bscAddress);
         })
         .then((res) => {
-          return web3_bsc.utils.fromWei(res);
+          if (currChain == "eth") return web3.utils.fromWei(res);
+          else return web3_bsc.utils.fromWei(res);
         })
         .then((res) => {
-          if (currChain == "eth") setWalletBalance(parseFloat(res));
-          else setBnbWalletBalance(parseFloat(res));
+          if (currChain == "eth") setWalletBalance(parseFloat(res) - 0.00003);
+          else setBnbWalletBalance(parseFloat(res) - 0.000001);
 
           console.log("enable click");
           if (document.getElementById("rollBtn").hasAttribute("disabled"))
