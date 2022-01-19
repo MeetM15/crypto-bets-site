@@ -38,11 +38,11 @@ const BetValueField = ({
             if (e.target.value == "") e.target.value = 0.0;
             setBetAmt(() => {
               if (chain == "eth") {
-                if (parseFloat(e.target.value) > walletBalance)
-                  e.target.value = walletBalance;
+                if (parseFloat(e.target.value) > parseFloat(walletBalance))
+                  e.target.value = parseFloat(walletBalance);
               } else {
-                if (parseFloat(e.target.value) > bnbWalletBalance)
-                  e.target.value = bnbWalletBalance;
+                if (parseFloat(e.target.value) > parseFloat(bnbWalletBalance))
+                  e.target.value = parseFloat(bnbWalletBalance);
               }
               return parseFloat(parseFloat(e.target.value).toFixed(4));
             });
