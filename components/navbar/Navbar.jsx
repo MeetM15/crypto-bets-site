@@ -54,7 +54,7 @@ const Navbar = ({
                     })
                     .then((res) => {
                       console.log(res);
-                      setBnbWalletBalance(parseFloat(res) - 0.000001);
+                      setBnbWalletBalance(parseFloat(res) - 0.00003);
                     });
                 }
               }}>

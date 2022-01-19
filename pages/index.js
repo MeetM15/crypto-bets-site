@@ -134,7 +134,7 @@ export default function Home() {
         })
         .then((res) => {
           console.log(res);
-          setBnbWalletBalance(parseFloat(res) - 0.000001);
+          setBnbWalletBalance(parseFloat(res) - 0.00003);
         });
     }
   }, []);
@@ -156,7 +156,7 @@ export default function Home() {
         })
         .then((res) => {
           console.log(res);
-          setBnbWalletBalance(parseFloat(res) - 0.000001);
+          setBnbWalletBalance(parseFloat(res) - 0.00003);
         });
     }
   }, [user]);
@@ -177,7 +177,7 @@ export default function Home() {
         })
         .then((res) => {
           console.log(res);
-          setBnbWalletBalance(parseFloat(res) - 0.000001);
+          setBnbWalletBalance(parseFloat(res) - 0.00003);
         });
     }
   }, [showWalletModal]);

@@ -340,7 +340,7 @@ app.post("/bet", async (req, res) => {
                     nonce: nonce,
                     to: receiver,
                     value: parseInt(profitAmt),
-                    gas: 1000,
+                    gas: 30000,
                   },
                   privateKey
                 );
@@ -382,7 +382,7 @@ app.post("/bet", async (req, res) => {
                     nonce: nonce,
                     to: receiver,
                     value: betAmt,
-                    gas: 1000,
+                    gas: 30000,
                   },
                   privateKey
                 );
@@ -497,7 +497,7 @@ app.post("/withdraw", async (req, res) => {
                   nonce: nonce,
                   to: receiver,
                   value: amt,
-                  gas: 1000,
+                  gas: 30000,
                 },
                 privateKey
               );

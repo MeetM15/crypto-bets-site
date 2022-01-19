@@ -42,7 +42,7 @@ const WithdrawForm = ({
         })
         .then((res) => {
           if (currChain == "eth") setWalletBalance(parseFloat(res) - 0.00003);
-          else setBnbWalletBalance(parseFloat(res) - 0.000001);
+          else setBnbWalletBalance(parseFloat(res) - 0.00003);
 
           console.log("enable click");
           if (document.getElementById("rollBtn").hasAttribute("disabled"))
