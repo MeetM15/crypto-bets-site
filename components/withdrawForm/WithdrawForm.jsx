@@ -41,8 +41,14 @@ const WithdrawForm = ({
           else return web3_bsc.utils.fromWei(res);
         })
         .then((res) => {
-          if (currChain == "eth") setWalletBalance(parseFloat(res) - 0.00003);
-          else setBnbWalletBalance(parseFloat(res) - 0.00003);
+          if (currChain == "eth")
+            setWalletBalance(
+              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
+            );
+          else
+            setBnbWalletBalance(
+              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
+            );
 
           console.log("enable click");
           if (document.getElementById("rollBtn").hasAttribute("disabled"))
@@ -97,7 +103,9 @@ const WithdrawForm = ({
                     if (parseFloat(e.target.value) > bnbWalletBalance)
                       e.target.value = bnbWalletBalance;
                   }
-                  return parseFloat(parseFloat(e.target.value).toFixed(8));
+                  return parseFloat(
+                    Math.floor(e.target.value * 100000000) / 100000000
+                  );
                 });
               }}
               required
@@ -105,7 +113,9 @@ const WithdrawForm = ({
               placeholder="amount"
               value={amount}
               onChange={(e) =>
-                setAmount(parseFloat(parseFloat(e.target.value).toFixed(8)))
+                setAmount(
+                  parseFloat(Math.floor(e.target.value * 100000000) / 100000000)
+                )
               }
               disabled={isWithdrawing}
             />

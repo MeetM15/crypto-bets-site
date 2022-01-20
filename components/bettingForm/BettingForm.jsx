@@ -2,7 +2,6 @@ import { Tab } from "@headlessui/react";
 import AutoFormComponent from "./AutoFormComponent";
 import ManualFormComponent from "./ManualFormComponent";
 
-import { useState } from "react";
 const BettingForm = ({
   user,
   walletBalance,

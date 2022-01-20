@@ -13,10 +13,13 @@ const BetValueField = ({
   useEffect(() => {
     if (setProfitAmt != undefined)
       setProfitAmt(
-        (
-          parseFloat(multiplierValue) * parseFloat(betAmt) -
-          parseFloat(betAmt)
-        ).toFixed(6)
+        parseFloat(
+          Math.floor(
+            (parseFloat(multiplierValue) * parseFloat(betAmt) -
+              parseFloat(betAmt)) *
+              1000000
+          ) / 1000000
+        )
       );
   }, [betAmt]);
   return (
@@ -38,18 +41,18 @@ const BetValueField = ({
             if (e.target.value == "") e.target.value = 0.0;
             setBetAmt(() => {
               if (chain == "eth") {
-                if (parseFloat(e.target.value) > parseFloat(walletBalance))
-                  e.target.value = parseFloat(walletBalance);
+                if (parseFloat(e.target.value) > walletBalance)
+                  e.target.value = walletBalance;
               } else {
-                if (parseFloat(e.target.value) > parseFloat(bnbWalletBalance))
-                  e.target.value = parseFloat(bnbWalletBalance);
+                if (parseFloat(e.target.value) > bnbWalletBalance)
+                  e.target.value = bnbWalletBalance;
               }
-              return parseFloat(parseFloat(e.target.value).toFixed(4));
+              return parseFloat(Math.floor(e.target.value * 10000) / 10000);
             });
           }}
           value={betAmt}
           onChange={(e) => {
-            setBetAmt(parseFloat(parseFloat(e.target.value).toFixed(4)));
+            setBetAmt(parseFloat(Math.floor(e.target.value * 10000) / 10000));
           }}
           id="betValue"
         />
@@ -66,7 +69,7 @@ const BetValueField = ({
                 if (parseFloat(newValue) > bnbWalletBalance)
                   newValue = bnbWalletBalance;
               }
-              return parseFloat(parseFloat(newValue).toFixed(4));
+              return parseFloat(Math.floor(newValue * 10000) / 10000);
             });
           }}
           type="button">
@@ -85,7 +88,7 @@ const BetValueField = ({
                 if (parseFloat(newValue) > bnbWalletBalance)
                   newValue = bnbWalletBalance;
               }
-              return parseFloat(parseFloat(newValue).toFixed(4));
+              return parseFloat(Math.floor(newValue * 10000) / 10000);
             });
           }}
           type="button">

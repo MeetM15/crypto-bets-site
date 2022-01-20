@@ -207,8 +207,13 @@ app.post("/bet", async (req, res) => {
   const email = req.body.email;
   const chain = req.body.chain;
   const betResult = req.body.betResult; // true:win false:lose
-  const betAmt = await web3.utils.toWei(String(req.body.betAmt));
-  const profitAmt = await web3.utils.toWei(String(req.body.profitAmt));
+  if (chain == "eth") {
+    const betAmt = await web3.utils.toWei(String(req.body.betAmt));
+    const profitAmt = await web3.utils.toWei(String(req.body.profitAmt));
+  } else {
+    const betAmt = await web3_bsc.utils.toWei(String(req.body.betAmt));
+    const profitAmt = await web3_bsc.utils.toWei(String(req.body.profitAmt));
+  }
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "Select * from userinfotable where email = ?";
@@ -424,7 +429,11 @@ app.post("/withdraw", async (req, res) => {
   const email = req.body.email;
   const chain = req.body.chain;
   const receiver = req.body.receiver;
-  const amt = await web3.utils.toWei(String(req.body.amt));
+  if (chain == "eth") {
+    const amt = await web3.utils.toWei(String(req.body.amt));
+  } else {
+    const amt = await web3_bsc.utils.toWei(String(req.body.amt));
+  }
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "Select * from userinfotable where email = ?";

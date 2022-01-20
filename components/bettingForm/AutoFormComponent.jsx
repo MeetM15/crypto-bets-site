@@ -128,8 +128,11 @@ const AutoFormComponent = ({
             return web3.utils.fromWei(res);
           })
           .then((res) => {
-            setWalletBalance(parseFloat(res) - 0.00003);
-            currBalEth.current = parseFloat(res) - 0.00003;
+            setWalletBalance(
+              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
+            );
+            currBalEth.current =
+              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0;
           })
           .catch((err) => {
             console.log(err);
@@ -177,7 +180,7 @@ const AutoFormComponent = ({
           setBetAmt((prev) => {
             const increasedBetWin = (onWin * parseFloat(prev)) / 100;
             const newBet = parseFloat(prev) + increasedBetWin;
-            return parseFloat(newBet.toFixed(6));
+            return parseFloat(Math.floor(newBet * 1000000) / 1000000);
           });
           currentBet = parseFloat(
             (
@@ -189,7 +192,7 @@ const AutoFormComponent = ({
           setBetAmt((prev) => {
             const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
             const newBet = parseFloat(prev) + increasedBetLoss;
-            return parseFloat(newBet.toFixed(6));
+            return parseFloat(Math.floor(newBet * 1000000) / 1000000);
           });
           currentBet = parseFloat(
             (
@@ -246,7 +249,9 @@ const AutoFormComponent = ({
           6
         );
       } else {
-        setWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+        setWalletBalance((prev) =>
+          parseFloat(parseFloat(prev) - parseFloat(betAmt))
+        );
         currBalEth.current =
           parseFloat(currBalEth.current) - parseFloat(betAmt);
         setProfitAmtAuto((prev) =>
@@ -263,7 +268,7 @@ const AutoFormComponent = ({
         setBetAmt((prev) => {
           const increasedBetWin = (onWin * parseFloat(prev)) / 100;
           const newBet = parseFloat(prev) + increasedBetWin;
-          return newBet.toFixed(6);
+          return parseFloat(Math.floor(newBet * 1000000) / 1000000);
         });
         currentBet = (
           parseFloat(currentBet) +
@@ -273,7 +278,7 @@ const AutoFormComponent = ({
         setBetAmt((prev) => {
           const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
           const newBet = parseFloat(prev) + increasedBetLoss;
-          return newBet.toFixed(6);
+          return parseFloat(Math.floor(newBet * 1000000) / 1000000);
         });
         currentBet = (
           parseFloat(currentBet) +
@@ -352,8 +357,11 @@ const AutoFormComponent = ({
             return web3_bsc.utils.fromWei(res);
           })
           .then((res) => {
-            setBnbWalletBalance(parseFloat(res) - 0.00003);
-            currBalBnb.current = parseFloat(res) - 0.00003;
+            setBnbWalletBalance(
+              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
+            );
+            currBalBnb.current =
+              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0;
           })
           .catch((err) => {
             console.log(err);
@@ -401,7 +409,7 @@ const AutoFormComponent = ({
           setBetAmt((prev) => {
             const increasedBetWin = (onWin * parseFloat(prev)) / 100;
             const newBet = parseFloat(prev) + increasedBetWin;
-            return parseFloat(newBet.toFixed(6));
+            return parseFloat(Math.floor(newBet * 1000000) / 1000000);
           });
           currentBet = parseFloat(
             (
@@ -413,7 +421,7 @@ const AutoFormComponent = ({
           setBetAmt((prev) => {
             const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
             const newBet = parseFloat(prev) + increasedBetLoss;
-            return parseFloat(newBet.toFixed(6));
+            return parseFloat(Math.floor(newBet * 1000000) / 1000000);
           });
           currentBet = parseFloat(
             (
@@ -489,7 +497,7 @@ const AutoFormComponent = ({
         setBetAmt((prev) => {
           const increasedBetWin = (onWin * parseFloat(prev)) / 100;
           const newBet = parseFloat(prev) + increasedBetWin;
-          return newBet.toFixed(6);
+          return parseFloat(Math.floor(newBet * 1000000) / 1000000);
         });
         currentBet = (
           parseFloat(currentBet) +
@@ -499,7 +507,7 @@ const AutoFormComponent = ({
         setBetAmt((prev) => {
           const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
           const newBet = parseFloat(prev) + increasedBetLoss;
-          return newBet.toFixed(6);
+          return parseFloat(Math.floor(newBet * 1000000) / 1000000);
         });
         currentBet = (
           parseFloat(currentBet) +
