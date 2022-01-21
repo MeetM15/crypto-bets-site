@@ -272,7 +272,7 @@ const StrategyComponent = ({
           <div className="w-full h-20 flex items-center justify-center p-2">
             <button
               type="button"
-              className="text-md font-bold bg-btn1 text-white px-28 py-3 rounded"
+              className="text-md font-bold bg-btn1 text-secondary px-28 py-3 rounded"
               id="rollBtn"
               onClick={() => {
                 console.log("disable click");
@@ -288,7 +288,7 @@ const StrategyComponent = ({
         </div>
       </form>
       <div className="p-2 mt-8 flex items-center justify-center">
-        <div className="w-64 md:w-144 bg-secondary text-white rounded-full p-4 flex items-center justify-between gap-4">
+        <div className="w-64 md:w-144 bg-secondary text-secondary rounded-full p-4 flex items-center justify-between gap-4">
           <span className="font-medium text-sm">0</span>
           <div className="w-full relative">
             <span

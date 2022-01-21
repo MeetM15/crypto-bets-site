@@ -575,12 +575,14 @@ const AutoFormComponent = ({
                 chain={chain}
               />
               <div className="w-full md:w-1/2 h-16">
-                <label htmlFor="bets" className="text-xs font-medium">
-                  No. of bets
+                <label
+                  htmlFor="bets"
+                  className="text-xs text-formtext font-medium">
+                  Number of bets
                 </label>
-                <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
+                <div className="h-10 w-full shadow-inner flex items-center bg-inputbg rounded-md justify-center">
                   <input
-                    className="px-2 py-2 rounded-l font-medium text-sm w-full text-center"
+                    className="px-8 py-2 rounded-l-md bg-inputbg font-medium text-sm w-full"
                     type="number"
                     name="bets"
                     min={"1"}
@@ -588,7 +590,9 @@ const AutoFormComponent = ({
                     onChange={(e) => setNoOfBets(e.target.value)}
                     disabled={disableClick}
                   />
-                  <button className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
+                  <button
+                    disabled
+                    className="text-xs text-btntext bg-inputbg font-medium p-2 flex items-center justify-center rounded-r-md h-full">
                     <VariableIcon className="h-4 w-4" />
                   </button>
                 </div>
@@ -605,19 +609,21 @@ const AutoFormComponent = ({
               setMultiplierValue={setMultiplierValue}
               disableClick={disableClick}
             />
-            <div className="flex flex-col md:flex-row items-center justify-between w-full">
-              <div className="w-full md:w-1/2 h-16 md:mr-2">
-                <label htmlFor="onWin" className="text-xs font-medium">
-                  On win
+            <div className="mt-7 flex flex-col md:flex-row items-center justify-between w-full">
+              <div className="md:w-1/2 w-full h-16 md:mr-2">
+                <label
+                  htmlFor="onWin"
+                  className="text-xs text-formtext font-medium">
+                  On Win
                 </label>
-                <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
+                <div className="p-1 h-10 w-full flex items-center shadow-inner bg-inputbg rounded-md justify-center">
                   <Tab.Group>
                     <Tab.List className="flex items-center justify-between w-1/2">
                       <Tab
                         className={({ selected }) =>
                           selected
-                            ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-2/5"
-                            : "rounded text-xs px-1 py-2.5 font-medium w-2/5"
+                            ? "rounded-lg bg-secondary text-xs text-btntext px-1 py-2.5 font-medium w-2/5"
+                            : "rounded-lg text-xs text-btntext px-1 py-2.5 font-medium w-2/5"
                         }>
                         <span
                           onClick={() => {
@@ -630,8 +636,8 @@ const AutoFormComponent = ({
                       <Tab
                         className={({ selected }) =>
                           selected
-                            ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-full"
-                            : "rounded text-xs px-1 py-2.5 font-medium w-full"
+                            ? "rounded-lg bg-secondary text-xs text-btntext px-1 py-2.5 font-medium w-full"
+                            : "rounded-lg text-xs text-btntext px-1 py-2.5 font-medium w-full"
                         }>
                         Increase By:
                       </Tab>
@@ -641,13 +647,13 @@ const AutoFormComponent = ({
                         <div className="p-0.5 h-10 flex items-center justify-start w-full">
                           <input
                             disabled
-                            className="px-2 py-2 rounded-l bg-white opacity-50 font-medium text-sm w-full"
+                            className="px-4 py-2 rounded-l-md bg-secondary opacity-50 font-medium text-sm w-full"
                             type="number"
                             name="reset"
                           />
                           <button
                             disabled
-                            className="text-md bg-white font-bold opacity-50 px-2 flex items-center justify-center rounded-r h-full">
+                            className="text-md text-btntext bg-secondary font-bold opacity-50 px-2 flex items-center justify-center rounded-r-md h-full">
                             %
                           </button>
                         </div>
@@ -655,7 +661,7 @@ const AutoFormComponent = ({
                       <Tab.Panel>
                         <div className="p-0.5 h-10 flex items-center justify-start w-full">
                           <input
-                            className="px-2 py-2 rounded-l font-medium text-sm w-full"
+                            className="px-4 py-2 rounded-l-md font-medium text-sm w-full"
                             type="number"
                             name="increaseBy"
                             value={onWin}
@@ -664,7 +670,7 @@ const AutoFormComponent = ({
                           />
                           <button
                             disabled
-                            className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full">
+                            className="text-md text-btntext bg-secondary font-bold px-2 flex items-center justify-center rounded-r-md h-full">
                             %
                           </button>
                         </div>
@@ -673,18 +679,20 @@ const AutoFormComponent = ({
                   </Tab.Group>
                 </div>
               </div>
-              <div className="w-full md:w-1/2 h-16">
-                <label htmlFor="onLoss" className="text-xs font-medium">
+              <div className="md:w-1/2 w-full h-16">
+                <label
+                  htmlFor="onLoss"
+                  className="text-xs text-formtext font-medium">
                   On Loss
                 </label>
-                <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
+                <div className="p-1 h-10 w-full flex items-center shadow-inner bg-inputbg rounded-md justify-center">
                   <Tab.Group>
                     <Tab.List className="flex items-center justify-between w-1/2">
                       <Tab
                         className={({ selected }) =>
                           selected
-                            ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-2/5"
-                            : "rounded text-xs px-1 py-2.5 font-medium w-2/5"
+                            ? "rounded-lg bg-secondary text-xs text-btntext px-1 py-2.5 font-medium w-2/5"
+                            : "rounded-lg text-xs text-btntext px-1 py-2.5 font-medium w-2/5"
                         }>
                         <span
                           onClick={() => {
@@ -697,8 +705,8 @@ const AutoFormComponent = ({
                       <Tab
                         className={({ selected }) =>
                           selected
-                            ? "rounded bg-white text-xs px-1 py-2.5 font-medium w-full"
-                            : "rounded text-xs px-1 py-2.5 font-medium w-full"
+                            ? "rounded-lg bg-secondary text-xs text-btntext px-1 py-2.5 font-medium w-full"
+                            : "rounded-lg text-xs text-btntext px-1 py-2.5 font-medium w-full"
                         }>
                         Increase By:
                       </Tab>
@@ -708,13 +716,13 @@ const AutoFormComponent = ({
                         <div className="p-0.5 h-10 flex items-center justify-start w-full">
                           <input
                             disabled
-                            className="px-2 py-2 rounded-l bg-white opacity-50 font-medium text-sm w-full"
+                            className="px-4 py-2 rounded-l-md bg-secondary opacity-50 font-medium text-sm w-full"
                             type="number"
                             name="reset"
                           />
                           <button
                             disabled
-                            className="text-md bg-white font-bold opacity-50 px-2 flex items-center justify-center rounded-r h-full">
+                            className="text-md text-btntext bg-secondary font-bold opacity-50 px-2 flex items-center justify-center rounded-r-md h-full">
                             %
                           </button>
                         </div>
@@ -722,7 +730,7 @@ const AutoFormComponent = ({
                       <Tab.Panel>
                         <div className="p-0.5 h-10 flex items-center justify-start w-full">
                           <input
-                            className="px-2 py-2 rounded-l font-medium text-sm w-full"
+                            className="px-4 py-2 rounded-l-md font-medium text-sm w-full"
                             type="number"
                             name="increaseBy"
                             value={onLoss}
@@ -731,7 +739,7 @@ const AutoFormComponent = ({
                           />
                           <button
                             disabled
-                            className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full">
+                            className="text-md text-btntext bg-secondary font-bold px-2 flex items-center justify-center rounded-r-md h-full">
                             %
                           </button>
                         </div>
@@ -741,14 +749,16 @@ const AutoFormComponent = ({
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-between w-full">
-              <div className="w-1/2 h-16 mr-2">
-                <label htmlFor="stopProfit" className="text-xs font-medium">
+            <div className="mt-7 flex flex-col md:flex-row items-center justify-between w-full">
+              <div className="w-full md:w-1/2 h-16 md:mr-2">
+                <label
+                  htmlFor="stopProfit"
+                  className="text-xs text-formtext font-medium">
                   Stop on profit
                 </label>
-                <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
+                <div className="h-10 w-full flex items-center bg-inputbg shadow-inner rounded-md justify-center">
                   <input
-                    className="px-2 py-2 rounded-l font-medium text-sm w-full"
+                    className="px-8 py-2 rounded-l-md bg-inputbg font-medium text-sm w-full"
                     type="number"
                     name="stopProfit"
                     min="0.0"
@@ -761,18 +771,22 @@ const AutoFormComponent = ({
                     onChange={(e) => setStopProfit(e.target.value)}
                     disabled={disableClick}
                   />
-                  <button className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
+                  <button
+                    type="button"
+                    className="text-xs text-btntext bg-inputbg font-medium px-2 flex items-center justify-center rounded-r-md h-full">
                     <TrendingUpIcon className="h-4 w-4" />
                   </button>
                 </div>
               </div>
-              <div className="w-1/2 h-16">
-                <label htmlFor="stopLoss" className="text-xs font-medium">
+              <div className="w-full md:w-1/2 h-16">
+                <label
+                  htmlFor="stopLoss"
+                  className="text-xs text-formtext font-medium">
                   Stop on loss
                 </label>
-                <div className="p-0.5 h-10 w-full flex items-center bg-gray-200 rounded justify-center">
+                <div className="h-10 w-full flex items-center bg-inputbg shadow-inner rounded-md justify-center">
                   <input
-                    className="px-2 py-2 rounded-l font-medium text-sm w-full"
+                    className="px-8 py-2 rounded-l-md bg-inputbg font-medium text-sm w-full"
                     type="number"
                     name="stopLoss"
                     min="0.0"
@@ -785,17 +799,19 @@ const AutoFormComponent = ({
                     onChange={(e) => setStopLoss(e.target.value)}
                     disabled={disableClick}
                   />
-                  <button className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
+                  <button
+                    type="button"
+                    className="text-xs text-btntext bg-inputbg font-medium px-2 flex items-center justify-center rounded-r-md h-full">
                     <TrendingDownIcon className="h-4 w-4" />
                   </button>
                 </div>
               </div>
             </div>
           </div>
-          <div className="w-full h-20 flex items-center justify-center p-2">
+          <div className="mt-12 w-full h-20 flex items-center justify-center p-2">
             <button
               type="button"
-              className={`text-md font-bold bg-btn1 text-white px-28 py-3 rounded ${
+              className={`text-md font-medium bg-primary-100 text-secondary px-28 py-3 rounded-md ${
                 disableClick && "hidden"
               }`}
               id="rollBtn"
@@ -991,7 +1007,7 @@ const AutoFormComponent = ({
             </button>
             <button
               type="button"
-              className={`text-md font-bold bg-btn1 text-white px-28 py-3 rounded ${
+              className={`text-md font-medium bg-primary-100 text-secondary px-28 py-3 rounded-md ${
                 !disableClick && "hidden"
               }`}
               id="rollBtn"
@@ -1004,8 +1020,8 @@ const AutoFormComponent = ({
         </div>
       </form>
       <div className="p-2 mt-8 w-full flex items-center justify-center">
-        <div className="w-full md:w-144 text-white bg-secondary rounded-full p-4 flex items-center justify-between gap-4">
-          <span className="font-medium text-sm">0</span>
+        <div className="w-full md:w-144 text-secondary bg-secondary rounded-full p-1 md:p-4 flex items-center justify-between gap-2 md:gap-4">
+          <span className="font-medium text-sm text-btntext">0</span>
           <div className="w-full relative">
             <span
               className={`absolute w-16 h-16 -top-16 z-10 flex-col items-center justify-center ${showDice}`}
@@ -1039,26 +1055,23 @@ const AutoFormComponent = ({
               }}
               styles={{
                 track: {
-                  backgroundColor: `${
-                    toggleRollOver ? "rgb(21, 220, 61)" : "rgb(220, 18, 60)"
-                  }`,
+                  backgroundColor: `${toggleRollOver ? "#24AE8F" : "#F3F3F3"}`,
                   width: "100%",
                 },
                 active: {
-                  backgroundColor: `${
-                    toggleRollOver ? "rgb(220, 18, 60)" : "rgb(21, 220, 61)"
-                  }`,
+                  backgroundColor: `${toggleRollOver ? "#F3F3F3" : "#24AE8F"}`,
                 },
                 thumb: {
-                  width: 24,
-                  height: 24,
-                  borderRadius: "4px",
+                  width: 28,
+                  height: 28,
+                  borderRadius: "16px",
                   opacity: 0.8,
+                  backgroundColor: "#24AE8F",
                 },
               }}
             />
           </div>
-          <span className="font-medium text-sm">100</span>
+          <span className="font-medium text-sm text-btntext">100</span>
         </div>
       </div>
     </div>

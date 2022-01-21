@@ -286,6 +286,15 @@ const ManualFormComponent = ({
       setSliderValue(parseFloat(parseFloat(winChance).toFixed(2)));
     else setSliderValue(parseFloat((100.0 - parseFloat(winChance)).toFixed(2)));
   }, [winChance]);
+  useEffect(() => {
+    if (chain == "eth") {
+      if (betAmt > parseFloat(walletBalance))
+        setBetAmt(parseFloat(Math.floor(walletBalance * 10000) / 10000));
+    } else {
+      if (betAmt > parseFloat(bnbWalletBalance))
+        setBetAmt(parseFloat(Math.floor(bnbWalletBalance * 10000) / 10000));
+    }
+  }, [chain]);
 
   return (
     <div className="flex flex-col items-center">
@@ -302,10 +311,12 @@ const ManualFormComponent = ({
               chain={chain}
             />
             <div className="w-full md:w-1/2 h-16">
-              <label htmlFor="profit" className="text-xs font-medium">
+              <label
+                htmlFor="profit"
+                className="text-xs text-formtext font-medium">
                 Profit on win
               </label>
-              <div className="h-10 rounded text-sm font-medium p-3 bg-gray-200 w-full flex items-center justify-center">
+              <div className="h-10 px-8 rounded-md shadow-inner text-sm font-medium p-3 bg-inputbg w-full flex items-center">
                 {profitAmt}
               </div>
             </div>
@@ -320,10 +331,10 @@ const ManualFormComponent = ({
             multiplierValue={multiplierValue}
             setMultiplierValue={setMultiplierValue}
           />
-          <div className="w-full h-20 flex items-center justify-center p-2">
+          <div className="w-full mt-12 h-20 flex items-center justify-center p-2">
             <button
               type="button"
-              className="text-md font-bold bg-btn1 text-white px-28 py-3 rounded"
+              className="text-md font-medium rounded-md bg-primary-100 text-secondary px-28 py-3 rounded"
               id="rollBtn"
               onClick={() => {
                 console.log("disable click");
@@ -338,9 +349,9 @@ const ManualFormComponent = ({
           </div>
         </div>
       </form>
-      <div className="p-2 mt-8 flex items-center justify-center">
-        <div className="w-64 md:w-144 bg-secondary text-white rounded-full p-4 flex items-center justify-between gap-4">
-          <span className="font-medium text-sm">0</span>
+      <div className="p-2 mt-8 w-full flex items-center justify-center">
+        <div className="w-full md:w-144 text-secondary bg-secondary rounded-full p-1 md:p-4 flex items-center justify-between gap-2 md:gap-4">
+          <span className="font-medium text-sm text-btntext">0</span>
           <div className="w-full relative">
             <span
               className={`absolute w-16 h-16 -top-16 z-10 flex-col items-center justify-center ${showDice}`}
@@ -374,26 +385,23 @@ const ManualFormComponent = ({
               }}
               styles={{
                 track: {
-                  backgroundColor: `${
-                    toggleRollOver ? "rgb(21, 220, 61)" : "rgb(220, 18, 60)"
-                  }`,
+                  backgroundColor: `${toggleRollOver ? "#24AE8F" : "#F3F3F3"}`,
                   width: "100%",
                 },
                 active: {
-                  backgroundColor: `${
-                    toggleRollOver ? "rgb(220, 18, 60)" : "rgb(21, 220, 61)"
-                  }`,
+                  backgroundColor: `${toggleRollOver ? "#F3F3F3" : "#24AE8F"}`,
                 },
                 thumb: {
-                  width: 24,
-                  height: 24,
-                  borderRadius: "4px",
+                  width: 28,
+                  height: 28,
+                  borderRadius: "16px",
                   opacity: 0.8,
+                  backgroundColor: "#24AE8F",
                 },
               }}
             />
           </div>
-          <span className="font-medium text-sm">100</span>
+          <span className="font-medium text-sm text-btntext">100</span>
         </div>
       </div>
     </div>

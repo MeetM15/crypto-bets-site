@@ -11,15 +11,19 @@ const Layout = ({
   setBnbWalletBalance,
   chain,
   setChain,
+  loginTab,
+  setLoginTab,
   web3,
   web3_bsc,
 }) => {
   return (
-    <div className="bg-primary min-h-screen">
+    <div className="bg-primary-5 min-h-screen">
       <Navbar
         user={user}
         chain={chain}
         setChain={setChain}
+        loginTab={loginTab}
+        setLoginTab={setLoginTab}
         setToggleLoginModalOpen={setToggleLoginModalOpen}
         setShowWalletModal={setShowWalletModal}
         walletBalance={walletBalance}
@@ -29,7 +33,7 @@ const Layout = ({
         setWalletBalance={setWalletBalance}
         setBnbWalletBalance={setBnbWalletBalance}
       />
-      {children}
+      <div className="flex flex-col items-center">{children}</div>
     </div>
   );
 };

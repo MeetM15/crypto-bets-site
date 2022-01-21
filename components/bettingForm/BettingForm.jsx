@@ -15,27 +15,27 @@ const BettingForm = ({
   socket,
 }) => {
   return (
-    <div className="bg-gray-200 p-2 rounded mt-12">
+    <div className="bg-secondary p-2 md:p-7 rounded-2xl mt-12">
       <Tab.Group>
-        <Tab.List className="w-full flex items-center bg-gray-200">
+        <Tab.List className="w-full flex items-center bg-inputbg rounded-lg p-2.5">
           <Tab
             className={({ selected }) =>
               selected
-                ? "w-1/2 font-medium mr-2 px-12 py-2 rounded bg-white"
-                : "w-1/2 font-medium mr-2 px-12 py-2 rounded bg-gray-200"
+                ? "w-1/2 font-medium mr-2 px-8 md:px-24 py-3 rounded-md bg-secondary text-primary-100"
+                : "w-1/2 font-medium mr-2 px-8 md:px-24 py-3 rounded-md bg-inputbg"
             }>
             Manual
           </Tab>
           <Tab
             className={({ selected }) =>
               selected
-                ? "w-1/2 font-medium mr-2 px-12 py-2 rounded bg-white"
-                : "w-1/2 font-medium mr-2 px-12 py-2 rounded bg-gray-200"
+                ? "w-1/2 font-medium mr-2 px-8 md:px-24 py-3 rounded-md bg-secondary text-primary-100"
+                : "w-1/2 font-medium mr-2 px-8 md:px-24 py-3 rounded-md bg-inputbg"
             }>
             Auto
           </Tab>
         </Tab.List>
-        <Tab.Panels className="p-4 mt-2 bg-white rounded">
+        <Tab.Panels className="p-4 mt-2 bg-secondary rounded">
           <Tab.Panel>
             <ManualFormComponent
               user={user}

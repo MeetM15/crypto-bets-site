@@ -5,15 +5,15 @@ const MyBets = ({ myBets }) => {
     return (
       <div
         key={index}
-        className="flex justify-evenly items-center font-medium text-xs sm:text-sm text-gray-500">
-        <span className="w-32 p-2">{currBet.betId}</span>
-        <span className="w-38 text-center p-2 hidden xsm:block">
+        className="flex justify-evenly items-center font-medium text-xs sm:text-sm text-black">
+        <span className="w-42 h-12 bg-primary-5 px-8 p-2">{currBet.betId}</span>
+        <span className="w-42 h-12 items-center justify-center bg-primary-10 p-2 hidden xsm:flex">
           {currBet.username}
         </span>
-        <span className="w-24 text-center p-2 hidden lg:block">
+        <span className="w-32 h-12 items-center justify-center bg-primary-5 p-2 hidden lg:flex">
           {currBet.time}
         </span>
-        <span className="w-38 text-center p-2 flex items-center justify-center  hidden lg:flex">
+        <span className="w-42 h-12 bg-primary-10 p-2 flex items-center justify-center hidden lg:flex">
           {currBet.betAmt}
           {currBet.chain == "eth" ? (
             <img
@@ -29,9 +29,11 @@ const MyBets = ({ myBets }) => {
             />
           )}
         </span>
-        <span className="w-24 text-center p-2 hidden xsm:block">{`${currBet.multiplier}x`}</span>
-        <span className="w-24 text-center p-2">{currBet.result}</span>
-        <span className="w-38 text-center p-2 flex items-center justify-center">
+        <span className="w-32 h-12 items-center justify-center bg-primary-5 p-2 hidden xsm:flex">{`${currBet.multiplier}x`}</span>
+        <span className="w-32 h-12 flex items-center justify-center bg-primary-10 p-2">
+          {currBet.result}
+        </span>
+        <span className="w-42 h-12 bg-primary-5 justify-center p-2 flex items-center justify-center">
           {currBet.payout}
           {currBet.chain == "eth" ? (
             <img

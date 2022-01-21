@@ -10,17 +10,17 @@ const DepositTab = ({ user }) => {
   ]);
   return (
     <div className="flex flex-col justify-evenly items-center p-4 gap-4">
-      <span className="flex justify-center items-center">
+      <span className="flex justify-center items-center bg-inputbg py-8 px-7 rounded-lg">
         <Menu as="div" className="relative px-2 py-1 bg-secondary rounded-md">
           <div>
-            <Menu.Button className="flex items-center justify-between text-xs sm:text-sm text-white font-medium">
+            <Menu.Button className="flex items-center justify-between text-xs sm:text-sm text-black font-medium">
               {depositCurrency[0]}
               <img
                 src={depositCurrency[1]}
                 alt="logo"
                 className="md:p-1 p-0.5 w-4 sm:w-5"
               />
-              <ChevronDownIcon className="ml-1 sm:ml-2 h-6 w-6 opacity-60" />
+              <ChevronDownIcon className="p-1 m-1 ml-2 h-6 w-6 opacity-60 bg-inputbg rounded-lg" />
             </Menu.Button>
           </div>
           <Transition
@@ -30,7 +30,7 @@ const DepositTab = ({ user }) => {
             leave="transition-opacity ease-linear duration-100"
             leaveFrom="opacity-100"
             leaveTo="opacity-0">
-            <Menu.Items className="origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 ">
+            <Menu.Items className="origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg py-1 bg-secondary ring-1 ring-black ring-opacity-5 ">
               <Menu.Item as="div">
                 <span
                   className={
@@ -65,22 +65,26 @@ const DepositTab = ({ user }) => {
       </span>
       <span className="w-full">
         {user && user[0] ? (
-          <span className="flex flex-col items-center justify-center font-medium text-mdbg-secondary w-full rounded py-2">
-            <span className="text-left w-full">Wallet address :</span>
-            <span className="text-center font-medium text-md p-2 bg-secondary w-full rounded break-all md:break-none flex items-center justify-center">
+          <span className="flex flex-col items-center justify-center font-medium bg-secondary w-full rounded py-2">
+            <span className="text-left text-xs w-full font-medium text-formtext">
+              Your {depositCurrency[0]} deposit address :
+            </span>
+            <span className="text-center font-medium text-sm px-1.5 py-1 bg-inputbg shadow-inner w-full rounded break-all md:break-none flex items-center justify-between">
               {depositCurrency[0] == "ETH"
                 ? user[0].address
                 : user[0].bscAddress}
-              <DocumentDuplicateIcon
-                className="w-8 h-8 text-white ml-2 cursor-pointer hover:bg-primary rounded"
+              <button
+                type="button"
+                className="flex items-center justify-center px-2 py-1.5 bg-secondary text-btntext font-medium text-xs rounded-lg ml-2 w-20 sm:w-auto"
                 onClick={() => {
                   navigator.clipboard.writeText(
                     depositCurrency[0] == "ETH"
                       ? user[0].address
                       : user[0].bscAddress
                   );
-                }}
-              />
+                }}>
+                Copy
+              </button>
             </span>
           </span>
         ) : (

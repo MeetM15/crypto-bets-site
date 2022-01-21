@@ -1,6 +1,7 @@
 import { XIcon } from "@heroicons/react/solid";
 import { SwitchHorizontalIcon } from "@heroicons/react/solid";
 import { useEffect, useState } from "react";
+import { FiRepeat } from "react-icons/fi";
 const ChancesFields = ({
   toggleRollOver,
   sliderValue,
@@ -28,14 +29,14 @@ const ChancesFields = ({
     }
   }, [sliderValue]);
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between w-full">
-      <div className="rounded w-full md:w-48 pt-3 px-2 pb-2 flex flex-col mt-2 bg-gray-200 h-20">
-        <label htmlFor="roll" className="text-xs font-medium">
+    <div className="flex flex-col md:flex-row items-center justify-between w-full mt-7">
+      <div className="rounded-md w-full md:w-48 p-3 flex flex-col justify-center gap-2 bg-inputbg h-28">
+        <label htmlFor="roll" className="text-xs text-formtext font-medium">
           {toggleRollOver ? "Roll Over" : "Roll Under"}
         </label>
-        <div className="p-0.5 h-10 flex items-center justify-start">
+        <div className="p-0.5 h-12 flex items-center justify-start">
           <button
-            className="text-xs bg-white font-medium px-2 w-full flex items-center justify-center rounded h-full"
+            className="text-xs bg-secondary rounded-md font-medium px-2 w-full flex items-center justify-center h-full"
             type="button"
             disabled={disableClick != undefined ? disableClick : false}
             onClick={() => {
@@ -48,17 +49,22 @@ const ChancesFields = ({
             <span className="w-full h-full text-sm font-medium mr-2 flex items-center justify-center">
               {rollValue}
             </span>
-            <SwitchHorizontalIcon className="h-4 w-4" />
+            <FiRepeat
+              className="text-btntext bg-inputbg p-2.5 rounded-md"
+              size={"40px"}
+            />
           </button>
         </div>
       </div>
-      <div className="rounded w-full md:w-48 pt-3 px-2 pb-2 flex flex-col mt-2 bg-gray-200 h-20">
-        <label htmlFor="multiplier" className="text-xs font-medium">
-          Multiplier
+      <div className="rounded-md w-full md:w-48 p-3 flex flex-col justify-center gap-2 bg-inputbg h-28">
+        <label
+          htmlFor="multiplier"
+          className="text-xs text-formtext font-medium">
+          Multiplier (x)
         </label>
-        <div className="p-0.5 h-10 flex items-center justify-start">
+        <div className="p-1 h-12 flex items-center justify-start">
           <input
-            className="px-2 py-2 rounded-l font-medium text-sm w-full text-center bg-white"
+            className="px-7 py-2 h-full font-medium rounded-l-md text-sm w-full bg-secondary"
             disabled={disableClick != undefined ? disableClick : false}
             type="number"
             name="multiplier"
@@ -85,18 +91,20 @@ const ChancesFields = ({
           />
           <button
             disabled
-            className="text-xs bg-white font-medium px-2 flex items-center justify-center rounded-r h-full">
-            <XIcon className="w-4 h-4" />
+            className="text-xs bg-secondary rounded-r-md font-medium px-2 flex items-center justify-center h-full">
+            <XIcon className="w-4 h-4 text-btntext" />
           </button>
         </div>
       </div>
-      <div className="rounded w-full md:w-48 pt-3 px-2 pb-2 flex flex-col mt-2 bg-gray-200 h-20">
-        <label htmlFor="winChance" className="text-xs font-medium">
-          Win Chance
+      <div className="rounded-md w-full md:w-48 p-3 flex flex-col justify-center gap-2 bg-inputbg h-28">
+        <label
+          htmlFor="winChance"
+          className="text-xs text-formtext font-medium">
+          Win Chance (%)
         </label>
-        <div className="p-0.5 h-10 flex items-center justify-start">
+        <div className="p-1 h-12 flex items-center justify-start">
           <input
-            className="px-2 py-2 rounded-l font-medium text-sm w-full text-center bg-white"
+            className="px-7 py-2 h-full rounded-l-md font-medium text-sm w-full bg-secondary"
             disabled={disableClick != undefined ? disableClick : false}
             type="number"
             name="winChance"
@@ -122,7 +130,7 @@ const ChancesFields = ({
           />
           <button
             disabled
-            className="text-md bg-white font-bold px-2 flex items-center justify-center rounded-r h-full">
+            className="text-md text-btntext bg-secondary font-bold px-2 flex items-center justify-center rounded-r-md h-full">
             %
           </button>
         </div>

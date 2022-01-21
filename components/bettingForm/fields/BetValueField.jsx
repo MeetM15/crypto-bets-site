@@ -24,12 +24,12 @@ const BetValueField = ({
   }, [betAmt]);
   return (
     <div className="w-full md:w-1/2 md:mr-2 h-16">
-      <label htmlFor="bettingAmt" className="text-xs font-medium">
+      <label htmlFor="bettingAmt" className="text-xs text-formtext font-medium">
         Bet Amount
       </label>
-      <div className="p-0.5 bg-gray-200 rounded w-full h-10 flex items-center justify-start">
+      <div className="p-1 rounded-md shadow-inner w-full h-10 flex items-center justify-start  bg-inputbg">
         <input
-          className="px-2 py-2 rounded font-medium text-sm w-full text-center"
+          className=" px-7 py-2 bg-inputbg rounded font-medium text-sm w-full"
           disabled={disableClick != undefined ? disableClick : false}
           type="number"
           name="bettingAmt"
@@ -57,7 +57,7 @@ const BetValueField = ({
           id="betValue"
         />
         <button
-          className="text-xs font-medium px-2 border-r-2 border-gray-400 flex items-center justify-center rounded-l hover:bg-gray-300 h-full"
+          className="text-xs text-btntext font-medium p-2.5 border-r-2 flex items-center justify-center rounded-md bg-secondary h-full"
           disabled={disableClick != undefined ? disableClick : false}
           onClick={() => {
             setBetAmt((prev) => {
@@ -77,7 +77,7 @@ const BetValueField = ({
         </button>
         <button
           disabled={disableClick != undefined ? disableClick : false}
-          className="text-xs font-medium px-2 flex items-center justify-center rounded-r hover:bg-gray-300 h-full"
+          className="text-xs text-btntext font-medium p-2.5 flex items-center justify-center rounded-md ml-1 bg-secondary h-full"
           onClick={() => {
             setBetAmt((prev) => {
               const newValue = 2.0 * parseFloat(prev);
@@ -93,6 +93,23 @@ const BetValueField = ({
           }}
           type="button">
           2 <XIcon className="h-2 w-2" />
+        </button>
+        <button
+          disabled={disableClick != undefined ? disableClick : false}
+          className="text-xs text-btntext font-medium p-2.5 flex items-center justify-center rounded-md ml-1 bg-secondary h-full"
+          onClick={() => {
+            setBetAmt((prev) => {
+              var newValue;
+              if (chain == "eth") {
+                newValue = walletBalance;
+              } else {
+                newValue = bnbWalletBalance;
+              }
+              return parseFloat(Math.floor(newValue * 10000) / 10000);
+            });
+          }}
+          type="button">
+          max
         </button>
       </div>
     </div>

@@ -6,12 +6,26 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#4338CA",
-        secondary: "#3730A3",
+        primary: {
+          5: "#F4FBF9",
+          10: "#E9F7F4",
+          20: "#D3EFE9",
+          60: "#7CCEBC",
+          80: "#50BEA5",
+          100: "#24AE8F",
+        },
+        secondary: "#ffffff",
         secondaryDark: "#312E81",
         secondaryLight: "#4F46E5",
         btn1: "#f59e0b",
         btn2: "#f97316",
+        border: "#D3EFE9",
+        inputbg: "#F3F3F3",
+        formtext: "#A3A3A3",
+        btntext: "#757575",
+        earnlogo: "#83BF6E",
+        viplogo: "#FFD700",
+        logoutlogo: "#FF6A55",
       },
       width: {
         38: "9.5rem",
@@ -30,6 +44,7 @@ module.exports = {
         192: "48rem",
       },
       height: {
+        28: "7rem",
         112: "28rem",
         120: "30rem",
         128: "32rem",

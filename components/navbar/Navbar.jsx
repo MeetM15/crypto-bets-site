@@ -1,8 +1,15 @@
 import { ChevronDownIcon, UserCircleIcon } from "@heroicons/react/solid";
 import { Menu, Transition } from "@headlessui/react";
-import { RiWallet3Fill } from "react-icons/ri";
+import {
+  RiWallet3Fill,
+  RiVipCrown2Fill,
+  RiMoneyDollarCircleLine,
+  RiLogoutBoxRLine,
+} from "react-icons/ri";
+import { IoMdWallet } from "react-icons/io";
 import { useRouter } from "next/router";
 import { useState } from "react";
+
 const Navbar = ({
   user,
   setToggleLoginModalOpen,
@@ -13,6 +20,8 @@ const Navbar = ({
   setBnbWalletBalance,
   chain,
   setChain,
+  loginTab,
+  setLoginTab,
   web3,
   web3_bsc,
 }) => {
@@ -20,21 +29,21 @@ const Navbar = ({
   const [currency, setCurrency] = useState(["ETH", "/icons/eth.svg"]);
 
   return (
-    <nav className="bg-secondary fixed w-full shadow px-2 sm:px-6 lg:px-8 flex items-center justify-between h-12 text-white z-10">
+    <nav className="bg-secondary fixed w-full shadow px-2 sm:px-6 lg:px-8 flex items-center justify-between h-16 text-secondary z-10">
       <div className="flex-shrink-0 flex items-center">
         <img
-          className="block sm:hidden h-8 w-auto p-1.5"
-          src="/icons/logo_m.svg"
+          className="block sm:hidden h-8 w-auto p-1"
+          src="/icons/green_crown.svg"
           alt="logo"
         />
         <img
-          className="hidden sm:block h-8 w-auto p-1.5"
-          src="/icons/logo.svg"
+          className="hidden sm:block h-8 w-auto p-1"
+          src="/icons/logo1.svg"
           alt="logo"
         />
       </div>
       {user && user[0] && (
-        <div className="bg-secondaryLight flex items-center justify-between rounded">
+        <div className="bg-inputbg shadow-inner flex items-center justify-between rounded">
           <Menu as="div" className="relative px-2 py-1 w-full">
             <div
               onClick={() => {
@@ -66,22 +75,22 @@ const Navbar = ({
                     });
                 }
               }}>
-              <Menu.Button className="flex items-center justify-between text-xs text-white font-medium">
+              <Menu.Button className="flex items-center justify-between text-black font-medium text-xs">
                 {currency[0] && currency[1] ? (
                   <>
-                    {chain == "eth"
-                      ? parseFloat(walletBalance).toFixed(8)
-                      : parseFloat(bnbWalletBalance).toFixed(8)}
                     <img
                       src={currency[1]}
                       alt="logo"
-                      className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-1"
+                      className="sm:p-1 p-0.5 w-3 sm:w-5"
                     />
+                    <ChevronDownIcon className="ml-1 mr-2 sm:ml-2 h-7 w-7 opacity-60 text-btntext border-r-2 border-btnText" />
+                    {chain == "eth"
+                      ? parseFloat(walletBalance).toFixed(8)
+                      : parseFloat(bnbWalletBalance).toFixed(8)}
                   </>
                 ) : (
                   ""
                 )}
-                <ChevronDownIcon className="ml-1 sm:ml-2 h-6 w-6 opacity-60" />
               </Menu.Button>
             </div>
             <Transition
@@ -91,11 +100,11 @@ const Navbar = ({
               leave="transition-opacity ease-out duration-100"
               leaveFrom="opacity-100"
               leaveTo="opacity-0">
-              <Menu.Items className="origin-top-right absolute right-0 mt-2 w-full w-38 rounded-md shadow-lg p-1 bg-white ring-1 ring-black ring-opacity-5 z-10">
+              <Menu.Items className="origin-top-right absolute right-0 mt-3 w-full w-38 rounded-md shadow-lg p-1 bg-secondary ring-1 ring-black ring-opacity-5 z-10">
                 <Menu.Item>
                   <span
                     className={
-                      "px-2  py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
+                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
                     }
                     onClick={() => {
                       setChain("eth");
@@ -113,7 +122,7 @@ const Navbar = ({
                 <Menu.Item>
                   <span
                     className={
-                      "px-2  py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
+                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
                     }
                     onClick={() => {
                       setChain("bsc");
@@ -133,12 +142,12 @@ const Navbar = ({
           </Menu>
           <button
             type="button"
-            className="text-sm h-full w-full flex items-center justify-center p-3 font-medium rounded-r bg-btn1 "
+            className="text-xs h-full w-full flex items-center justify-center py-2 px-1 m-1 font-medium rounded-md bg-primary-100"
             onClick={() => {
               setShowWalletModal(true);
             }}>
             <span className="hidden sm:flex mr-1">Wallet</span>
-            <RiWallet3Fill size={"20px"} />
+            <RiWallet3Fill className="text-secondary" size={"16px"} />
           </button>
         </div>
       )}
@@ -146,9 +155,12 @@ const Navbar = ({
         <>
           <div className="hidden sm:flex items-center pr-2">
             <Menu as="div" className="mr-3 relative">
-              <Menu.Button className="flex items-center justify-between text-sm text-white">
-                <span className="text-md font-medium">{user[0].username}</span>
-                <ChevronDownIcon className="ml-2 h-6 w-6 opacity-60" />
+              <Menu.Button className="flex items-center justify-between text-sm bg-inputbg px-2 py-1 shadow-inner rounded-lg text-primary-100">
+                <UserCircleIcon className="w-8 h-8 text-primary-100" />
+                <span className="ml-2 text-md font-medium">
+                  {user[0].username}
+                </span>
+                <ChevronDownIcon className="ml-2 h-6 w-6 opacity-60 text-primary-60" />
               </Menu.Button>
 
               <Transition
@@ -158,27 +170,51 @@ const Navbar = ({
                 leave="transition ease-in duration-75"
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95">
-                <Menu.Items className="origin-top-right absolute right-0 mt-2 min-w-full w-24 rounded-md shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 flex flex-col">
+                <Menu.Items className="origin-top-right absolute right-0 mt-2 min-w-full w-36 rounded-md shadow-lg py-2 bg-secondary ring-1 ring-black ring-opacity-5 flex flex-col">
+                  <Menu.Item>
+                    <div
+                      className={
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                      }
+                      onClick={() => {
+                        setShowWalletModal(true);
+                      }}>
+                      <IoMdWallet className="w-5 h-5 mr-1 text-primary-100" />
+                      Wallet
+                    </div>
+                  </Menu.Item>
                   <Menu.Item>
                     <a
                       href="#"
                       className={
-                        "px-4 py-2 text-sm text-gray-700 font-medium flex items-center justify-center"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
                       }>
-                      {user[0].username}
+                      <RiMoneyDollarCircleLine className="w-5 h-5 mr-1 text-earnlogo" />
+                      Refer & Earn
                     </a>
                   </Menu.Item>
                   <Menu.Item>
                     <a
                       href="#"
                       className={
-                        "px-4 py-2 text-sm text-gray-700 font-medium flex items-center justify-center"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                      }>
+                      <RiVipCrown2Fill className="w-5 h-5 mr-1 text-viplogo" />
+                      VIP
+                    </a>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <a
+                      href="#"
+                      className={
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
                       }
                       onClick={() => {
                         localStorage.removeItem("token");
                         router.reload();
                       }}>
-                      Sign-out
+                      <RiLogoutBoxRLine className="w-5 h-5 mr-1 text-logoutlogo" />
+                      Logout
                     </a>
                   </Menu.Item>
                 </Menu.Items>
@@ -187,8 +223,8 @@ const Navbar = ({
           </div>
           <div className="flex sm:hidden items-center">
             <Menu as="div" className="mr-3 relative">
-              <Menu.Button className="flex items-center justify-between text-sm text-white">
-                <UserCircleIcon className="w-8 h-8" />
+              <Menu.Button className="flex items-center justify-between text-sm text-secondary">
+                <UserCircleIcon className="w-8 h-8 text-primary-100" />
               </Menu.Button>
 
               <Transition
@@ -198,27 +234,51 @@ const Navbar = ({
                 leave="transition ease-in duration-75"
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95">
-                <Menu.Items className="origin-top-right absolute right-0 mt-2 min-w-full rounded-md shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 flex flex-col w-24">
+                <Menu.Items className="origin-top-right absolute right-0 mt-2 min-w-full w-36 rounded-md shadow-lg py-2 bg-secondary ring-1 ring-black ring-opacity-5 flex flex-col">
+                  <Menu.Item>
+                    <div
+                      className={
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                      }
+                      onClick={() => {
+                        setShowWalletModal(true);
+                      }}>
+                      <IoMdWallet className="w-5 h-5 mr-1 text-primary-100" />
+                      Wallet
+                    </div>
+                  </Menu.Item>
                   <Menu.Item>
                     <a
                       href="#"
                       className={
-                        "px-4 py-2 text-sm text-gray-700 font-medium flex items-center justify-center"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start "
                       }>
-                      {user[0].username}
+                      <RiMoneyDollarCircleLine className="w-5 h-5 mr-1 text-earnlogo" />
+                      Refer & Earn
                     </a>
                   </Menu.Item>
                   <Menu.Item>
                     <a
                       href="#"
                       className={
-                        "px-4 py-2 text-sm text-gray-700 font-medium flex items-center justify-center"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                      }>
+                      <RiVipCrown2Fill className="w-5 h-5 mr-1 text-viplogo" />
+                      VIP
+                    </a>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <a
+                      href="#"
+                      className={
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
                       }
                       onClick={() => {
                         localStorage.removeItem("token");
                         router.reload();
                       }}>
-                      Sign-out
+                      <RiLogoutBoxRLine className="w-5 h-5 mr-1 text-logoutlogo" />
+                      Logout
                     </a>
                   </Menu.Item>
                 </Menu.Items>
@@ -230,14 +290,18 @@ const Navbar = ({
         <div className="flex items-center pr-2 ">
           <button
             type="button"
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white hover:bg-indigo-700 "
-            onClick={(e) => setToggleLoginModalOpen(true)}>
+            className="group relative w-full flex justify-center items-center h-9 px-6 border-border border-2 text-sm font-medium rounded-md text-primary-100 mr-2"
+            onClick={(e) => {
+              setLoginTab("login");
+              setToggleLoginModalOpen(true);
+            }}>
             Login
           </button>
           <button
             type="button"
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-btn1 focus:outline-none"
+            className="group relative w-full flex justify-center items-center h-9 px-6 border-1 text-sm font-medium rounded-md text-secondary bg-primary-100 focus:outline-none"
             onClick={() => {
+              setLoginTab("signup");
               setToggleLoginModalOpen(true);
             }}>
             Register

@@ -20,6 +20,7 @@ const socket = io("https://cryptodice1.herokuapp.com/");
 
 export default function Home() {
   const [user, setUser] = useState();
+  const [loginTab, setLoginTab] = useState("login");
   const [chain, setChain] = useState("eth");
   const [toggleLoginModalOpen, setToggleLoginModalOpen] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -200,6 +201,8 @@ export default function Home() {
       walletBalance={walletBalance}
       chain={chain}
       setChain={setChain}
+      loginTab={loginTab}
+      setLoginTab={setLoginTab}
       bnbWalletBalance={bnbWalletBalance}
       web3={web3}
       web3_bsc={web3_bsc}
@@ -208,7 +211,7 @@ export default function Home() {
       <Head>
         <title>Crypto Dice</title>
       </Head>
-      <div className="p-8 flex items-center justify-center">
+      <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
         <BettingForm
           user={user}
           walletBalance={walletBalance}
@@ -222,12 +225,13 @@ export default function Home() {
           socket={socket}
         />
       </div>
-      <div className="p-8 w-full h-screen bg-white flex">
+      <div className="p-2 md:p-7 w-11/12 bg-secondary flex rounded-2xl mb-24">
         <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
       </div>
       <Login
         toggleLoginModalOpen={toggleLoginModalOpen}
         setToggleLoginModalOpen={setToggleLoginModalOpen}
+        loginTab={loginTab}
       />
       <Wallet
         setShowWalletModal={setShowWalletModal}
@@ -244,7 +248,7 @@ export default function Home() {
     </Layout>
   ) : (
     <div className="w-screen h-screen flex items-center justify-center">
-      <MoonLoader color={"#6d28d9"} size={"50px"} />
+      <MoonLoader color={"#24AE8F"} size={"64px"} />
     </div>
   );
 }
