@@ -5,7 +5,7 @@ const MyBets = ({ myBets }) => {
     return (
       <div
         key={index}
-        className="flex justify-evenly items-center font-medium text-xs sm:text-sm text-black">
+        className="flex justify-start items-center font-medium text-xs sm:text-sm text-black">
         <span className="w-42 h-12 bg-primary-5 px-8 p-2">{currBet.betId}</span>
         <span className="w-42 h-12 items-center justify-center bg-primary-10 p-2 hidden xsm:flex">
           {currBet.username}

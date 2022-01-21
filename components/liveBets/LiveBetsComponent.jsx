@@ -23,7 +23,7 @@ const LiveBetsComponent = ({ currLiveBets, myBets }) => {
             All Bets
           </Tab>
         </Tab.List>
-        <div className="flex justify-center items-center font-medium text-xs sm:text-sm text-btntext">
+        <div className="flex justify-start items-center font-medium text-xs sm:text-sm text-btntext">
           <span className="bg-primary-5 w-42 h-12 flex items-center border-b border-#E8E8E8 px-8 p-2">
             Bet Id
           </span>
@@ -48,7 +48,9 @@ const LiveBetsComponent = ({ currLiveBets, myBets }) => {
         </div>
         <Tab.Panels className="bg-secondary rounded">
           <Tab.Panel>
-            <MyBets myBets={myBets} />
+            <div className="flex flex-col h-120">
+              <MyBets myBets={myBets} />
+            </div>
           </Tab.Panel>
           <Tab.Panel>
             <div className="flex flex-col">

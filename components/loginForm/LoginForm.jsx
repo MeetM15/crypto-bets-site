@@ -8,6 +8,8 @@ const LoginForm = ({ setToggleLoginModalOpen }) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userExist, setUserExist] = useState(true);
+  const [passwordIncorrect, setPasswordIncorrect] = useState(false);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
 
   const handleLogin = async (e) => {
@@ -16,17 +18,32 @@ const LoginForm = ({ setToggleLoginModalOpen }) => {
       email: email,
       password: password,
     };
-    try {
-      const loginRes = await axios.post("/login", data);
-      localStorage.setItem("token", loginRes.data.accessToken);
-    } catch (error) {
-      console.log("error : ", error);
-    }
-    router.reload();
-    setToggleLoginModalOpen(() => {
-      setIsLoginLoading(false);
-      return false;
-    });
+    axios
+      .post("/login", data)
+      .then((res) => {
+        if (res.data == "Password incorrect!") {
+          setPasswordIncorrect(true);
+          setIsLoginLoading(false);
+          setUserExist(true);
+        } else {
+          localStorage.setItem("token", res.data.accessToken);
+          setToggleLoginModalOpen(() => {
+            setIsLoginLoading(false);
+            return false;
+          });
+          setPasswordIncorrect(false);
+          setUserExist(true);
+          router.reload();
+        }
+      })
+      .catch((error) => {
+        if (error.response.status == 404) {
+          setUserExist(false);
+          setPasswordIncorrect(false);
+          setIsLoginLoading(false);
+        }
+        console.log("error : ", error.response);
+      });
   };
   return (
     <>
@@ -70,6 +87,16 @@ const LoginForm = ({ setToggleLoginModalOpen }) => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
+              {userExist == false && (
+                <div className="w-full font-medium text-red-800 text-sm">
+                  User does not exist!
+                </div>
+              )}
+              {passwordIncorrect == true && (
+                <div className="w-full font-medium text-red-800 text-sm">
+                  Incorrect Password!
+                </div>
+              )}
             </div>
 
             <div className="flex gap-2 items-center">

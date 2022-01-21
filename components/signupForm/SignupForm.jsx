@@ -8,6 +8,7 @@ const SignupForm = ({ setToggleLoginModalOpen }) => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [userExist, setUserExist] = useState(false);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -16,17 +17,24 @@ const SignupForm = ({ setToggleLoginModalOpen }) => {
       username: username,
       password: password,
     };
-    try {
-      const signupRes = await axios.post("/createUser", data);
-      localStorage.setItem("token", signupRes.data.accessToken);
-    } catch (error) {
-      console.log("error : ", error);
-    }
-    router.reload();
-    setToggleLoginModalOpen(() => {
-      setIsLoginLoading(false);
-      return false;
-    });
+    axios
+      .post("/createUser", data)
+      .then((res) => {
+        localStorage.setItem("token", res.data.accessToken);
+        setToggleLoginModalOpen(() => {
+          setIsLoginLoading(false);
+          return false;
+        });
+        setUserExist(false);
+        router.reload();
+      })
+      .catch((error) => {
+        if (error.response.status == 409) {
+          setUserExist(true);
+          setIsLoginLoading(false);
+        }
+        console.log("error : ", error);
+      });
   };
   return (
     <>
@@ -85,6 +93,11 @@ const SignupForm = ({ setToggleLoginModalOpen }) => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
+              {userExist == true && (
+                <div className="w-full font-medium text-red-800 text-sm">
+                  User already exists!
+                </div>
+              )}
             </div>
 
             <div className="flex items-center">

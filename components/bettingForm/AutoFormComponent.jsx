@@ -108,7 +108,7 @@ const AutoFormComponent = ({
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: betAmt.toString(),
+          betAmt: currentBet.toString(),
           profitAmt:
             parseFloat(currentProf) > 0 ? currentProf.toString() : "0.0",
         };
@@ -338,7 +338,7 @@ const AutoFormComponent = ({
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: betAmt.toString(),
+          betAmt: currentBet.toString(),
           profitAmt:
             parseFloat(currentProf) > 0 ? currentProf.toString() : "0.0",
         };

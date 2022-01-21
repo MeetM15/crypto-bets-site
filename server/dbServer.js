@@ -17,7 +17,7 @@ const io = socketIo(server, {
 //web3
 const Web3 = require("web3");
 let web3 = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/rinkeby"
+  "https://eth-rinkeby.alchemyapi.io/v2/sk88g0PfYAHxltvWlVpWWbvrXMnv22TN"
 );
 let web3_bsc = new Web3(
   "https://speedy-nodes-nyc.moralis.io/487960593a8857bde8a74862/bsc/testnet"
@@ -204,13 +204,8 @@ app.post("/bet", async (req, res) => {
   const email = req.body.email;
   const chain = req.body.chain;
   const betResult = req.body.betResult; // true:win false:lose
-  if (chain == "eth") {
-    const betAmt = await web3.utils.toWei(String(req.body.betAmt));
-    const profitAmt = await web3.utils.toWei(String(req.body.profitAmt));
-  } else {
-    const betAmt = await web3_bsc.utils.toWei(String(req.body.betAmt));
-    const profitAmt = await web3_bsc.utils.toWei(String(req.body.profitAmt));
-  }
+  const betAmt = await web3.utils.toWei(String(req.body.betAmt));
+  const profitAmt = await web3.utils.toWei(String(req.body.profitAmt));
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "Select * from userinfotable where email = ?";

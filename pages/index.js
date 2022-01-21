@@ -11,7 +11,7 @@ import { io } from "socket.io-client";
 import Web3 from "web3";
 import LiveBetsComponent from "../components/liveBets/LiveBetsComponent";
 const web3 = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/rinkeby"
+  "https://eth-rinkeby.alchemyapi.io/v2/sk88g0PfYAHxltvWlVpWWbvrXMnv22TN"
 );
 const web3_bsc = new Web3(
   "https://speedy-nodes-nyc.moralis.io/487960593a8857bde8a74862/bsc/testnet"
@@ -58,31 +58,27 @@ export default function Home() {
   useEffect(() => {
     socket.on("getMyBetData", () => {
       //get live data
-      axios
-        .post("myBets", { email: user && user[0] ? user[0].email : "" })
-        .then((res) => {
-          setMyBets(res.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      console.log("socket mybets user : ", user);
+      if (user != undefined && user[0] != undefined) {
+        console.log("socket mybets user : ", user);
+        console.log("socket mybets : ", myBets);
+        axios
+          .post("myBets", {
+            email: user[0].email,
+          })
+          .then((res) => {
+            console.log(user[0].email);
+            setMyBets(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     });
   }, [socket, user]);
   useEffect(() => {
     if (user && user[0] != undefined) {
-      //post live data
-      axios
-        .post("myBets", { email: user[0].email })
-        .then((res) => {
-          setMyBets(res.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }, []);
-  useEffect(() => {
-    if (user && user[0] != undefined) {
+      console.log("user mybets : ", myBets);
       //post live data
       axios
         .post("myBets", { email: user[0].email })
@@ -225,7 +221,7 @@ export default function Home() {
           socket={socket}
         />
       </div>
-      <div className="p-2 md:p-7 w-11/12 bg-secondary flex rounded-2xl mb-24">
+      <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
         <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
       </div>
       <Login

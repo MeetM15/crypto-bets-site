@@ -174,7 +174,7 @@ const Navbar = ({
                   <Menu.Item>
                     <div
                       className={
-                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }
                       onClick={() => {
                         setShowWalletModal(true);
@@ -184,30 +184,27 @@ const Navbar = ({
                     </div>
                   </Menu.Item>
                   <Menu.Item>
-                    <a
-                      href="#"
+                    <div
                       className={
-                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }>
                       <RiMoneyDollarCircleLine className="w-5 h-5 mr-1 text-earnlogo" />
                       Refer & Earn
-                    </a>
+                    </div>
                   </Menu.Item>
                   <Menu.Item>
-                    <a
-                      href="#"
+                    <div
                       className={
-                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }>
                       <RiVipCrown2Fill className="w-5 h-5 mr-1 text-viplogo" />
                       VIP
-                    </a>
+                    </div>
                   </Menu.Item>
                   <Menu.Item>
-                    <a
-                      href="#"
+                    <div
                       className={
-                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }
                       onClick={() => {
                         localStorage.removeItem("token");
@@ -215,7 +212,7 @@ const Navbar = ({
                       }}>
                       <RiLogoutBoxRLine className="w-5 h-5 mr-1 text-logoutlogo" />
                       Logout
-                    </a>
+                    </div>
                   </Menu.Item>
                 </Menu.Items>
               </Transition>
@@ -226,7 +223,6 @@ const Navbar = ({
               <Menu.Button className="flex items-center justify-between text-sm text-secondary">
                 <UserCircleIcon className="w-8 h-8 text-primary-100" />
               </Menu.Button>
-
               <Transition
                 enter="transition ease-out duration-100"
                 enterFrom="transform opacity-0 scale-95"
@@ -238,7 +234,7 @@ const Navbar = ({
                   <Menu.Item>
                     <div
                       className={
-                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }
                       onClick={() => {
                         setShowWalletModal(true);
@@ -248,30 +244,27 @@ const Navbar = ({
                     </div>
                   </Menu.Item>
                   <Menu.Item>
-                    <a
-                      href="#"
+                    <div
                       className={
-                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start "
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }>
                       <RiMoneyDollarCircleLine className="w-5 h-5 mr-1 text-earnlogo" />
                       Refer & Earn
-                    </a>
+                    </div>
                   </Menu.Item>
                   <Menu.Item>
-                    <a
-                      href="#"
+                    <div
                       className={
-                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }>
                       <RiVipCrown2Fill className="w-5 h-5 mr-1 text-viplogo" />
                       VIP
-                    </a>
+                    </div>
                   </Menu.Item>
                   <Menu.Item>
-                    <a
-                      href="#"
+                    <div
                       className={
-                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }
                       onClick={() => {
                         localStorage.removeItem("token");
@@ -279,7 +272,7 @@ const Navbar = ({
                       }}>
                       <RiLogoutBoxRLine className="w-5 h-5 mr-1 text-logoutlogo" />
                       Logout
-                    </a>
+                    </div>
                   </Menu.Item>
                 </Menu.Items>
               </Transition>
