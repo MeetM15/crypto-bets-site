@@ -103,8 +103,8 @@ const AutoFormComponent = ({
           result: diceValue,
           payout:
             betResult == "green"
-              ? (parseFloat(betAmt) + parseFloat(currentProf)).toFixed(8)
-              : `-${betAmt}`,
+              ? (parseFloat(currentBet) + parseFloat(currentProf)).toFixed(8)
+              : `-${currentBet}`,
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
@@ -333,8 +333,8 @@ const AutoFormComponent = ({
           result: diceValue,
           payout:
             betResult == "green"
-              ? (parseFloat(betAmt) + parseFloat(currentProf)).toFixed(8)
-              : `-${betAmt}`,
+              ? (parseFloat(currentBet) + parseFloat(currentProf)).toFixed(8)
+              : `-${currentBet}`,
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
@@ -905,7 +905,7 @@ const AutoFormComponent = ({
                     console.log("CBet : ", currentBet);
                     console.log("CProfit : ", currentProf);
                     console.log("TProfit : ", totalProf);
-                    await timer(2000); // wait between next bet
+                    await timer(3000); // wait between next bet
                   }
                 };
                 const runBets = async () => {
@@ -993,7 +993,7 @@ const AutoFormComponent = ({
                     console.log("CBet : ", currentBet);
                     console.log("CProfit : ", currentProf);
                     console.log("TProfit : ", totalProf);
-                    await timer(2000); // wait between next bet
+                    await timer(3000); // wait between next bet
                   }
                 };
                 // To prevent spamming of bets

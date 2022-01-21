@@ -53,8 +53,8 @@ const Wallet = ({
                 <button
                   type="button"
                   onClick={() => setShowWalletModal(false)}
-                  className="text-xs font-medium px-2 flex items-center justify-center rounded-r h-full">
-                  <XIcon className="w-5 h-5" />
+                  className="text-xs bg-inputbg font-medium px-2 py-1.5 flex items-center justify-center rounded-lg h-full">
+                  <XIcon className="w-4 h-4" />
                 </button>
               </div>
               <div className="rounded-md bg-secondary p-4">

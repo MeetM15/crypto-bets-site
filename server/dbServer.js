@@ -421,11 +421,7 @@ app.post("/withdraw", async (req, res) => {
   const email = req.body.email;
   const chain = req.body.chain;
   const receiver = req.body.receiver;
-  if (chain == "eth") {
-    const amt = await web3.utils.toWei(String(req.body.amt));
-  } else {
-    const amt = await web3_bsc.utils.toWei(String(req.body.amt));
-  }
+  const amt = await web3.utils.toWei(String(req.body.amt));
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "Select * from userinfotable where email = ?";
@@ -478,7 +474,6 @@ app.post("/withdraw", async (req, res) => {
               console.log(err);
             });
         } else {
-          //on Lose
           const privateKey = result[0].bscPrivateKey;
           const sender = result[0].bscAddress;
           web3_bsc.eth
@@ -488,7 +483,6 @@ app.post("/withdraw", async (req, res) => {
                 //If insufficient balance
                 res.send("Insufficient balance!");
               } else {
-                //send ether
                 return web3_bsc.eth.getTransactionCount(sender, "pending");
               }
             })

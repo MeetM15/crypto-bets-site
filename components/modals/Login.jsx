@@ -42,8 +42,8 @@ const Login = ({ toggleLoginModalOpen, setToggleLoginModalOpen, loginTab }) => {
                 <button
                   type="button"
                   onClick={() => setToggleLoginModalOpen(false)}
-                  className="text-xs font-medium px-2 flex items-center justify-center rounded-r h-full">
-                  <XIcon className="w-5 h-5" />
+                  className="text-xs bg-inputbg font-medium px-2 py-1.5 flex items-center justify-center rounded-lg h-full">
+                  <XIcon className="w-4 h-4" />
                 </button>
               </div>
               <div className="w-full h-full flex">
@@ -60,7 +60,12 @@ const Login = ({ toggleLoginModalOpen, setToggleLoginModalOpen, loginTab }) => {
                     </div>
                   </div>
                   <img
-                    className="block h-64 px-1 pt-1 mb-8"
+                    className="block absolute top-64 left-16 h-32 px-1 pt-1 mb-8"
+                    src="/ellipse.svg"
+                    alt="logo"
+                  />
+                  <img
+                    className="block h-64 px-1 pt-1 mb-8 z-10"
                     src="/login_dice.svg"
                     alt="logo"
                   />
