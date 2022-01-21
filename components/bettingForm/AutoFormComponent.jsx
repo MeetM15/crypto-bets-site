@@ -108,8 +108,9 @@ const AutoFormComponent = ({
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: betAmt,
-          profitAmt: parseFloat(currentProf) > 0 ? currentProf : 0.0,
+          betAmt: betAmt.toString(),
+          profitAmt:
+            parseFloat(currentProf) > 0 ? currentProf.toString() : "0.0",
         };
         console.log("bet data : ", betData);
         axios
@@ -139,6 +140,15 @@ const AutoFormComponent = ({
           });
         //set profitAmtAuto on win and on loss
         if (betResult == "green") {
+          currentProf = parseFloat(
+            (
+              parseFloat(multiplierValue) * parseFloat(currentBet) -
+              parseFloat(currentBet)
+            ).toFixed(6)
+          );
+          totalProf = parseFloat(
+            (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
+          );
           setWalletBalance(
             (prev) => parseFloat(prev) + parseFloat(currentProf)
           );
@@ -151,16 +161,11 @@ const AutoFormComponent = ({
               parseFloat(currentBet)
             ).toFixed(6)
           );
-          currentProf = parseFloat(
-            (
-              parseFloat(multiplierValue) * parseFloat(currentBet) -
-              parseFloat(currentBet)
-            ).toFixed(6)
-          );
-          totalProf = parseFloat(
-            (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
-          );
         } else {
+          currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
+          totalProf = parseFloat(
+            (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
+          );
           setWalletBalance((prev) =>
             parseFloat(parseFloat(prev) - parseFloat(betAmt))
           );
@@ -168,10 +173,6 @@ const AutoFormComponent = ({
             parseFloat(currBalEth.current) - parseFloat(betAmt);
           setProfitAmtAuto((prev) =>
             parseFloat((parseFloat(prev) - parseFloat(currentBet)).toFixed(6))
-          );
-          currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
-          totalProf = parseFloat(
-            (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
           );
         }
 
@@ -337,8 +338,9 @@ const AutoFormComponent = ({
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: betAmt,
-          profitAmt: parseFloat(currentProf) > 0 ? currentProf : 0.0,
+          betAmt: betAmt.toString(),
+          profitAmt:
+            parseFloat(currentProf) > 0 ? currentProf.toString() : "0.0",
         };
         console.log("bet data : ", betData);
         axios

@@ -29,7 +29,7 @@ const ChancesFields = ({
     }
   }, [sliderValue]);
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between w-full mt-7">
+    <div className="flex flex-col md:flex-row items-center justify-between w-full mt-7 gap-4">
       <div className="rounded-md w-full md:w-48 p-3 flex flex-col justify-center gap-2 bg-inputbg h-28">
         <label htmlFor="roll" className="text-xs text-formtext font-medium">
           {toggleRollOver ? "Roll Over" : "Roll Under"}

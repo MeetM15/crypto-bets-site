@@ -100,8 +100,8 @@ const ManualFormComponent = ({
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: betAmt,
-          profitAmt: profitAmt,
+          betAmt: betAmt.toString(),
+          profitAmt: profitAmt.toString(),
         };
         console.log("bet data : ", betData);
         axios
@@ -196,8 +196,8 @@ const ManualFormComponent = ({
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: betAmt,
-          profitAmt: profitAmt,
+          betAmt: betAmt.toString(),
+          profitAmt: profitAmt.toString(),
         };
         console.log("bet data : ", betData);
         axios

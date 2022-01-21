@@ -54,9 +54,6 @@ io.on("connection", (socket) => {
   socket.on("placeBet", (socket) => {
     console.log("A User Placed Bet!");
     io.emit("getLiveBetData");
-  });
-  socket.on("placeBet", (socket) => {
-    console.log("A User Placed Bet!");
     io.emit("getMyBetData");
   });
 });
