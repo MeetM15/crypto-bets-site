@@ -82,6 +82,41 @@ const AutoFormComponent = ({
       document.getElementById("dice").style.left = `calc(${Math.floor(
         diceValue
       )}% - 2rem)`;
+      //set profitAmtAuto on win and on loss
+      if (betResult == "green") {
+        currentProf = parseFloat(
+          (
+            parseFloat(multiplierValue) * parseFloat(currentBet) -
+            parseFloat(currentBet)
+          ).toFixed(6)
+        );
+        totalProf = parseFloat(
+          (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
+        );
+        setWalletBalance((prev) => parseFloat(prev) + parseFloat(currentProf));
+        currBalEth.current =
+          parseFloat(currBalEth.current) + parseFloat(currentProf);
+        setProfitAmtAuto((prev) =>
+          (
+            parseFloat(prev) +
+            parseFloat(multiplierValue) * parseFloat(currentBet) -
+            parseFloat(currentBet)
+          ).toFixed(6)
+        );
+      } else {
+        currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
+        totalProf = parseFloat(
+          (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
+        );
+        setWalletBalance((prev) =>
+          parseFloat(parseFloat(prev) - parseFloat(betAmt))
+        );
+        currBalEth.current =
+          parseFloat(currBalEth.current) - parseFloat(betAmt);
+        setProfitAmtAuto((prev) =>
+          parseFloat((parseFloat(prev) - parseFloat(currentBet)).toFixed(6))
+        );
+      }
 
       //set dice result color acc to win/loss
       document.getElementById("diceResult").style.color = betResult;
@@ -108,9 +143,8 @@ const AutoFormComponent = ({
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: currentBet.toString(),
-          profitAmt:
-            parseFloat(currentProf) > 0 ? currentProf.toString() : "0.0",
+          betAmt: currentBet,
+          profitAmt: parseFloat(currentProf) > 0 ? currentProf : "0.0",
         };
         console.log("bet data : ", betData);
         axios
@@ -138,44 +172,6 @@ const AutoFormComponent = ({
           .catch((err) => {
             console.log(err);
           });
-        //set profitAmtAuto on win and on loss
-        if (betResult == "green") {
-          currentProf = parseFloat(
-            (
-              parseFloat(multiplierValue) * parseFloat(currentBet) -
-              parseFloat(currentBet)
-            ).toFixed(6)
-          );
-          totalProf = parseFloat(
-            (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
-          );
-          setWalletBalance(
-            (prev) => parseFloat(prev) + parseFloat(currentProf)
-          );
-          currBalEth.current =
-            parseFloat(currBalEth.current) + parseFloat(currentProf);
-          setProfitAmtAuto((prev) =>
-            (
-              parseFloat(prev) +
-              parseFloat(multiplierValue) * parseFloat(currentBet) -
-              parseFloat(currentBet)
-            ).toFixed(6)
-          );
-        } else {
-          currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
-          totalProf = parseFloat(
-            (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
-          );
-          setWalletBalance((prev) =>
-            parseFloat(parseFloat(prev) - parseFloat(betAmt))
-          );
-          currBalEth.current =
-            parseFloat(currBalEth.current) - parseFloat(betAmt);
-          setProfitAmtAuto((prev) =>
-            parseFloat((parseFloat(prev) - parseFloat(currentBet)).toFixed(6))
-          );
-        }
-
         // set bet amt incr. on win/loss
         if (betResult == "green") {
           setBetAmt((prev) => {
@@ -312,7 +308,43 @@ const AutoFormComponent = ({
       document.getElementById("dice").style.left = `calc(${Math.floor(
         diceValue
       )}% - 2rem)`;
-
+      //set profitAmtAuto on win and on loss
+      if (betResult == "green") {
+        setBnbWalletBalance(
+          (prev) => parseFloat(prev) + parseFloat(currentProf)
+        );
+        currBalBnb.current =
+          parseFloat(currBalBnb.current) + parseFloat(currentProf);
+        setProfitAmtAuto((prev) =>
+          (
+            parseFloat(prev) +
+            parseFloat(multiplierValue) * parseFloat(currentBet) -
+            parseFloat(currentBet)
+          ).toFixed(6)
+        );
+        currentProf = parseFloat(
+          (
+            parseFloat(multiplierValue) * parseFloat(currentBet) -
+            parseFloat(currentBet)
+          ).toFixed(6)
+        );
+        totalProf = parseFloat(
+          (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
+        );
+      } else {
+        setBnbWalletBalance((prev) =>
+          parseFloat(parseFloat(prev) - parseFloat(betAmt))
+        );
+        currBalBnb.current =
+          parseFloat(currBalBnb.current) - parseFloat(betAmt);
+        setProfitAmtAuto((prev) =>
+          parseFloat((parseFloat(prev) - parseFloat(currentBet)).toFixed(6))
+        );
+        currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
+        totalProf = parseFloat(
+          (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
+        );
+      }
       //set dice result color acc to win/loss
       document.getElementById("diceResult").style.color = betResult;
       if (user && user[0] != undefined) {
@@ -368,43 +400,6 @@ const AutoFormComponent = ({
           .catch((err) => {
             console.log(err);
           });
-        //set profitAmtAuto on win and on loss
-        if (betResult == "green") {
-          setBnbWalletBalance(
-            (prev) => parseFloat(prev) + parseFloat(currentProf)
-          );
-          currBalBnb.current =
-            parseFloat(currBalBnb.current) + parseFloat(currentProf);
-          setProfitAmtAuto((prev) =>
-            (
-              parseFloat(prev) +
-              parseFloat(multiplierValue) * parseFloat(currentBet) -
-              parseFloat(currentBet)
-            ).toFixed(6)
-          );
-          currentProf = parseFloat(
-            (
-              parseFloat(multiplierValue) * parseFloat(currentBet) -
-              parseFloat(currentBet)
-            ).toFixed(6)
-          );
-          totalProf = parseFloat(
-            (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
-          );
-        } else {
-          setBnbWalletBalance((prev) =>
-            parseFloat(parseFloat(prev) - parseFloat(betAmt))
-          );
-          currBalBnb.current =
-            parseFloat(currBalBnb.current) - parseFloat(betAmt);
-          setProfitAmtAuto((prev) =>
-            parseFloat((parseFloat(prev) - parseFloat(currentBet)).toFixed(6))
-          );
-          currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
-          totalProf = parseFloat(
-            (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
-          );
-        }
 
         // set bet amt incr. on win/loss
         if (betResult == "green") {
