@@ -1,7 +1,7 @@
 import { Tab } from "@headlessui/react";
 import AutoFormComponent from "./AutoFormComponent";
 import ManualFormComponent from "./ManualFormComponent";
-
+import StrategyComponent from "./StrategyComponent";
 const BettingForm = ({
   user,
   walletBalance,
@@ -21,18 +21,26 @@ const BettingForm = ({
           <Tab
             className={({ selected }) =>
               selected
-                ? "w-1/2 font-medium mr-2 px-8 md:px-24 py-3 rounded-md bg-secondary text-primary-100"
-                : "w-1/2 font-medium mr-2 px-8 md:px-24 py-3 rounded-md bg-inputbg"
+                ? "w-1/3 font-medium mr-2 px-8 md:px-12 py-3 rounded-md bg-secondary text-primary-100"
+                : "w-1/3 font-medium mr-2 px-8 md:px-12 py-3 rounded-md bg-inputbg"
             }>
             Manual
           </Tab>
           <Tab
             className={({ selected }) =>
               selected
-                ? "w-1/2 font-medium mr-2 px-8 md:px-24 py-3 rounded-md bg-secondary text-primary-100"
-                : "w-1/2 font-medium mr-2 px-8 md:px-24 py-3 rounded-md bg-inputbg"
+                ? "w-1/3 font-medium mr-2 px-8 md:px-12 py-3 rounded-md bg-secondary text-primary-100"
+                : "w-1/3 font-medium mr-2 px-8 md:px-12 py-3 rounded-md bg-inputbg"
             }>
             Auto
+          </Tab>
+          <Tab
+            className={({ selected }) =>
+              selected
+                ? "w-1/3 font-medium mr-2 px-8 md:px-12 py-3 rounded-md bg-secondary text-primary-100"
+                : "w-1/3 font-medium mr-2 px-8 md:px-12 py-3 rounded-md bg-inputbg"
+            }>
+            Advanced
           </Tab>
         </Tab.List>
         <Tab.Panels className="p-4 mt-2 bg-secondary rounded">
@@ -52,6 +60,20 @@ const BettingForm = ({
           </Tab.Panel>
           <Tab.Panel>
             <AutoFormComponent
+              user={user}
+              walletBalance={walletBalance}
+              bnbWalletBalance={bnbWalletBalance}
+              web3={web3}
+              web3_bsc={web3_bsc}
+              setWalletBalance={setWalletBalance}
+              setBnbWalletBalance={setBnbWalletBalance}
+              setToggleLoginModalOpen={setToggleLoginModalOpen}
+              chain={chain}
+              socket={socket}
+            />
+          </Tab.Panel>
+          <Tab.Panel>
+            <StrategyComponent
               user={user}
               walletBalance={walletBalance}
               bnbWalletBalance={bnbWalletBalance}
