@@ -1,14 +1,11 @@
-import {
-  VariableIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
-} from "@heroicons/react/solid";
+import { VariableIcon } from "@heroicons/react/solid";
 import { useState, useEffect, useRef } from "react";
-import { Tab } from "@headlessui/react";
 import Slider from "react-input-slider";
 import BetValueField from "./fields/BetValueField";
 import ChancesFields from "./fields/ChancesFields";
 import axios from "axios";
+import { ChevronDownIcon } from "@heroicons/react/solid";
+import { Menu, Transition } from "@headlessui/react";
 
 const getRandomArbitrary = (min, max) => {
   return Math.random() * (max - min) + min;
@@ -68,7 +65,7 @@ const StrategyComponent = ({
   const [result, setResult] = useState();
   const onLoss = useRef(100.0);
   const originalBet = useRef(0.0);
-
+  const [selectedStartegy, setSelectedStartegy] = useState("Martingale");
   const handlePlaceBet = (currentBet, currentProf, totalProf) => {
     if (user && user[0]) {
       //place bet
@@ -573,6 +570,50 @@ const StrategyComponent = ({
               setMultiplierValue={setMultiplierValue}
               disableClick={disableClick}
             />
+            <div className="w-full p-2 bg-inputbg rounded-lg mt-7">
+              <label
+                htmlFor="bets"
+                className="text-xs text-formtext font-medium">
+                Select Startegy
+              </label>
+              <Menu
+                as="div"
+                className="relative px-2 py-1 bg-secondary rounded-md">
+                <div>
+                  <Menu.Button className="w-full flex items-center justify-between text-xs sm:text-sm text-black font-medium">
+                    <span className="flex items-center ml-6">
+                      {selectedStartegy}
+                    </span>
+                    <ChevronDownIcon className="p-1 m-1 ml-2 h-6 w-6 opacity-60 bg-inputbg rounded-lg" />
+                  </Menu.Button>
+                </div>
+                <Transition
+                  enter="transition-opacity ease-linear duration-100"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
+                  leave="transition-opacity ease-linear duration-100"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0">
+                  <Menu.Items className="origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg py-1 bg-secondary ring-1 ring-black ring-opacity-5 ">
+                    <Menu.Item as="div">
+                      <span
+                        className={
+                          "px-8 py-0.5 sm:py-1 text-xs sm:text-sm text-black flex flex-col cursor-pointer justify-center font-medium hover:bg-primary-20"
+                        }
+                        onClick={() => setSelectedStartegy("Martingale")}>
+                        Martingale
+                        <span className="text-xs text-formtext text-red-500">
+                          Condition 1 : OnLoss double the bet amount .
+                        </span>
+                        <span className="text-xs text-formtext text-green-500">
+                          Condition 2 : OnWin Reset the bet amount .
+                        </span>
+                      </span>
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
           </div>
           <div className="mt-12 w-full h-20 flex items-center justify-center p-2">
             <button

@@ -1,6 +1,5 @@
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import { Menu, Transition } from "@headlessui/react";
-import { DocumentDuplicateIcon } from "@heroicons/react/outline";
 
 import { useState } from "react";
 const DepositTab = ({ user }) => {
