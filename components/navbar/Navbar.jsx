@@ -9,7 +9,7 @@ import {
 import { IoMdWallet } from "react-icons/io";
 import { useRouter } from "next/router";
 import { useState } from "react";
-
+import Link from "next/link";
 const Navbar = ({
   user,
   setToggleLoginModalOpen,
@@ -29,18 +29,22 @@ const Navbar = ({
   const [currency, setCurrency] = useState(["ETH", "/icons/eth.svg"]);
 
   return (
-    <nav className="bg-secondary fixed w-full shadow px-2 sm:px-6 lg:px-8 flex items-center justify-between h-16 text-secondary z-10">
+    <nav className="bg-secondary fixed w-full shadow px-2 sm:px-6 lg:px-8 flex items-center justify-between h-14 text-secondary z-10">
       <div className="flex-shrink-0 flex items-center">
-        <img
-          className="block sm:hidden h-8 w-auto p-1"
-          src="/icons/green_crown.svg"
-          alt="logo"
-        />
-        <img
-          className="hidden sm:block h-8 w-auto p-1"
-          src="/icons/logo1.svg"
-          alt="logo"
-        />
+        <Link href="/">
+          <img
+            className="block sm:hidden h-8 w-auto p-1 cursor-pointer"
+            src="/icons/green_crown.svg"
+            alt="logo"
+          />
+        </Link>
+        <Link href="/">
+          <img
+            className="hidden sm:block h-8 w-auto p-1 cursor-pointer"
+            src="/icons/logo1.svg"
+            alt="logo"
+          />
+        </Link>
       </div>
       {user && user[0] && (
         <div className="bg-inputbg shadow-inner flex items-center justify-between rounded">
@@ -174,7 +178,7 @@ const Navbar = ({
                   <Menu.Item>
                     <div
                       className={
-                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer border-b border-formtext"
                       }
                       onClick={() => {
                         setShowWalletModal(true);

@@ -42,6 +42,10 @@ module.exports = {
         152: "38rem",
         160: "40rem",
         192: "48rem",
+        200: "50rem",
+        208: "52rem",
+        216: "54rem",
+        256: "64rem",
       },
       height: {
         28: "7rem",
@@ -60,11 +64,16 @@ module.exports = {
         152: "38rem",
         160: "40rem",
         192: "48rem",
+        200: "50rem",
+        208: "52rem",
+        216: "54rem",
+        256: "64rem",
       },
       screens: {
         xsm: "480px",
         // => @media (min-width: 540px) { ... }
       },
+      fontSize: {},
     },
   },
   plugins: [],

@@ -189,62 +189,87 @@ export default function Home() {
     }
   }, [showWalletModal]);
 
-  return user ? (
-    <Layout
-      user={user}
-      setToggleLoginModalOpen={setToggleLoginModalOpen}
-      setShowWalletModal={setShowWalletModal}
-      walletBalance={walletBalance}
-      chain={chain}
-      setChain={setChain}
-      loginTab={loginTab}
-      setLoginTab={setLoginTab}
-      bnbWalletBalance={bnbWalletBalance}
-      web3={web3}
-      web3_bsc={web3_bsc}
-      setWalletBalance={setWalletBalance}
-      setBnbWalletBalance={setBnbWalletBalance}>
+  return (
+    <>
       <Head>
-        <title>Crypto Dice</title>
+        <title>Dice Up | Home</title>
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="theme-color" content="#ffffff" />
       </Head>
-      <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
-        <BettingForm
+      {user ? (
+        <Layout
           user={user}
+          setToggleLoginModalOpen={setToggleLoginModalOpen}
+          setShowWalletModal={setShowWalletModal}
           walletBalance={walletBalance}
+          chain={chain}
+          setChain={setChain}
+          loginTab={loginTab}
+          setLoginTab={setLoginTab}
           bnbWalletBalance={bnbWalletBalance}
           web3={web3}
           web3_bsc={web3_bsc}
           setWalletBalance={setWalletBalance}
-          setBnbWalletBalance={setBnbWalletBalance}
-          setToggleLoginModalOpen={setToggleLoginModalOpen}
-          chain={chain}
-          socket={socket}
-        />
-      </div>
-      <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
-        <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
-      </div>
-      <Login
-        toggleLoginModalOpen={toggleLoginModalOpen}
-        setToggleLoginModalOpen={setToggleLoginModalOpen}
-        loginTab={loginTab}
-      />
-      <Wallet
-        setShowWalletModal={setShowWalletModal}
-        showWalletModal={showWalletModal}
-        user={user}
-        walletBalance={walletBalance}
-        bnbWalletBalance={bnbWalletBalance}
-        chain={chain}
-        web3={web3}
-        web3_bsc={web3_bsc}
-        setWalletBalance={setWalletBalance}
-        setBnbWalletBalance={setBnbWalletBalance}
-      />
-    </Layout>
-  ) : (
-    <div className="w-screen h-screen flex items-center justify-center">
-      <MoonLoader color={"#24AE8F"} size={"64px"} />
-    </div>
+          setBnbWalletBalance={setBnbWalletBalance}>
+          <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
+            <BettingForm
+              user={user}
+              walletBalance={walletBalance}
+              bnbWalletBalance={bnbWalletBalance}
+              web3={web3}
+              web3_bsc={web3_bsc}
+              setWalletBalance={setWalletBalance}
+              setBnbWalletBalance={setBnbWalletBalance}
+              setToggleLoginModalOpen={setToggleLoginModalOpen}
+              chain={chain}
+              socket={socket}
+            />
+          </div>
+          <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
+            <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
+          </div>
+          <Login
+            toggleLoginModalOpen={toggleLoginModalOpen}
+            setToggleLoginModalOpen={setToggleLoginModalOpen}
+            loginTab={loginTab}
+          />
+          <Wallet
+            setShowWalletModal={setShowWalletModal}
+            showWalletModal={showWalletModal}
+            user={user}
+            walletBalance={walletBalance}
+            bnbWalletBalance={bnbWalletBalance}
+            chain={chain}
+            web3={web3}
+            web3_bsc={web3_bsc}
+            setWalletBalance={setWalletBalance}
+            setBnbWalletBalance={setBnbWalletBalance}
+          />
+        </Layout>
+      ) : (
+        <div className="w-screen h-screen flex items-center justify-center">
+          <MoonLoader color={"#24AE8F"} size={"64px"} />
+        </div>
+      )}
+    </>
   );
 }
