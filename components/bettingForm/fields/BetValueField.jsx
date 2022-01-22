@@ -11,6 +11,27 @@ const BetValueField = ({
   chain,
 }) => {
   useEffect(() => {
+    if (chain == "eth") {
+      if (
+        parseFloat(betAmt) >
+        parseFloat(Math.floor(parseFloat(walletBalance) * 10000) / 10000)
+      ) {
+        setBetAmt(
+          parseFloat(Math.floor(parseFloat(walletBalance) * 10000) / 10000)
+        );
+      }
+    } else {
+      if (
+        parseFloat(betAmt) >
+        parseFloat(Math.floor(parseFloat(bnbWalletBalance) * 10000) / 10000)
+      ) {
+        setBetAmt(
+          parseFloat(Math.floor(parseFloat(bnbWalletBalance) * 10000) / 10000)
+        );
+      }
+    }
+  }, [chain]);
+  useEffect(() => {
     if (setProfitAmt != undefined)
       setProfitAmt(
         parseFloat(
@@ -34,8 +55,7 @@ const BetValueField = ({
           type="number"
           name="bettingAmt"
           step="0.0001"
-          min="0.0000"
-          max={chain == "eth" ? walletBalance : bnbWalletBalance}
+          min="0.0"
           onBlur={(e) => {
             if (e.target.value < 0) e.target.value = -1.0 * e.target.value;
             if (e.target.value == "") e.target.value = 0.0;
