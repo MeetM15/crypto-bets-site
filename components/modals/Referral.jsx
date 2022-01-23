@@ -54,8 +54,8 @@ const Referral = ({ showReferralModal, setShowReferralModal, user }) => {
                   </span>
                   <span className="text-center font-medium text-xs sm:text-sm px-2 py-1 bg-inputbg shadow-inner w-full rounded-lg break-all md:break-none flex items-center justify-between">
                     {user && user[0] && user[0].userId
-                      ? `https://crypto-dice-site.herokuapp.com?refer=${user[0].userId}`
-                      : "https://crypto-dice-site.herokuapp.com?refer=0"}
+                      ? `https://crypto-dice-site.herokuapp.com/?refer=${user[0].userId}`
+                      : "https://crypto-dice-site.herokuapp.com/?refer=0"}
                     <button
                       type="button"
                       className="flex items-center justify-center px-0.5 md:px-1 py-1.5 bg-secondary text-btntext font-medium text-xs rounded-lg ml-2 w-12 sm:w-16"

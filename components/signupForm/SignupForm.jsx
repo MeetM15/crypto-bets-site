@@ -1,4 +1,3 @@
-import { LockClosedIcon } from "@heroicons/react/solid";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -16,6 +15,10 @@ const SignupForm = ({ setToggleLoginModalOpen }) => {
       email: email,
       username: username,
       password: password,
+      referredById: localStorage.getItem("referredById")
+        ? parseInt(localStorage.getItem("referredById"))
+        : 0,
+      points: 0,
     };
     axios
       .post("/createUser", data)

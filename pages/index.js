@@ -12,6 +12,7 @@ import Web3 from "web3";
 import LiveBetsComponent from "../components/liveBets/LiveBetsComponent";
 import Referral from "../components/modals/Referral";
 import Logout from "../components/modals/Logout";
+import { useRouter } from "next/router";
 const web3 = new Web3(
   "https://eth-rinkeby.alchemyapi.io/v2/sk88g0PfYAHxltvWlVpWWbvrXMnv22TN"
 );
@@ -21,6 +22,7 @@ const web3_bsc = new Web3(
 const socket = io("https://cryptodice1.herokuapp.com/");
 
 export default function Home() {
+  const router = useRouter();
   const [user, setUser] = useState();
   const [loginTab, setLoginTab] = useState("login");
   const [chain, setChain] = useState("eth");
@@ -32,6 +34,18 @@ export default function Home() {
   const [bnbWalletBalance, setBnbWalletBalance] = useState(0.0);
   const [currLiveBets, setCurrLiveBets] = useState([]);
   const [myBets, setMyBets] = useState([]);
+
+  //referral
+  useEffect(() => {
+    if (!localStorage.getItem("referredById") && router.query["refer"]) {
+      console.log("referred By Id : ", parseInt(router.query.refer));
+      localStorage.setItem("referredById", router.query.refer);
+      console.log(
+        "referred By Id : ",
+        parseInt(localStorage.getItem("referredById"))
+      );
+    }
+  }, [router]);
 
   //Live bets
   useEffect(() => {
