@@ -26,6 +26,8 @@ module.exports = {
         earnlogo: "#83BF6E",
         viplogo: "#FFD700",
         logoutlogo: "#FF6A55",
+        logoutBtn: "#FFE6E2",
+        logoutBtnText: "#FF472D",
       },
       width: {
         38: "9.5rem",

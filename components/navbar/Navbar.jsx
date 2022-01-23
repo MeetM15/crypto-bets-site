@@ -24,6 +24,9 @@ const Navbar = ({
   setLoginTab,
   web3,
   web3_bsc,
+  setShowReferralModal,
+  showLogoutModal,
+  setShowLogoutModal,
 }) => {
   const router = useRouter();
   const [currency, setCurrency] = useState(["ETH", "/icons/eth.svg"]);
@@ -178,7 +181,7 @@ const Navbar = ({
                   <Menu.Item>
                     <div
                       className={
-                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer border-b border-formtext"
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }
                       onClick={() => {
                         setShowWalletModal(true);
@@ -191,7 +194,10 @@ const Navbar = ({
                     <div
                       className={
                         "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
-                      }>
+                      }
+                      onClick={() => {
+                        setShowReferralModal(true);
+                      }}>
                       <RiMoneyDollarCircleLine className="w-5 h-5 mr-1 text-earnlogo" />
                       Refer & Earn
                     </div>
@@ -211,8 +217,7 @@ const Navbar = ({
                         "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }
                       onClick={() => {
-                        localStorage.removeItem("token");
-                        router.reload();
+                        setShowLogoutModal(true);
                       }}>
                       <RiLogoutBoxRLine className="w-5 h-5 mr-1 text-logoutlogo" />
                       Logout
@@ -251,7 +256,10 @@ const Navbar = ({
                     <div
                       className={
                         "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
-                      }>
+                      }
+                      onClick={() => {
+                        setShowReferralModal(true);
+                      }}>
                       <RiMoneyDollarCircleLine className="w-5 h-5 mr-1 text-earnlogo" />
                       Refer & Earn
                     </div>
@@ -271,8 +279,7 @@ const Navbar = ({
                         "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }
                       onClick={() => {
-                        localStorage.removeItem("token");
-                        router.reload();
+                        setShowLogoutModal(true);
                       }}>
                       <RiLogoutBoxRLine className="w-5 h-5 mr-1 text-logoutlogo" />
                       Logout

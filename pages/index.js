@@ -10,6 +10,8 @@ import { MoonLoader } from "react-spinners";
 import { io } from "socket.io-client";
 import Web3 from "web3";
 import LiveBetsComponent from "../components/liveBets/LiveBetsComponent";
+import Referral from "../components/modals/Referral";
+import Logout from "../components/modals/Logout";
 const web3 = new Web3(
   "https://eth-rinkeby.alchemyapi.io/v2/sk88g0PfYAHxltvWlVpWWbvrXMnv22TN"
 );
@@ -24,6 +26,8 @@ export default function Home() {
   const [chain, setChain] = useState("eth");
   const [toggleLoginModalOpen, setToggleLoginModalOpen] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0.0);
   const [bnbWalletBalance, setBnbWalletBalance] = useState(0.0);
   const [currLiveBets, setCurrLiveBets] = useState([]);
@@ -229,7 +233,10 @@ export default function Home() {
           web3={web3}
           web3_bsc={web3_bsc}
           setWalletBalance={setWalletBalance}
-          setBnbWalletBalance={setBnbWalletBalance}>
+          setBnbWalletBalance={setBnbWalletBalance}
+          setShowReferralModal={setShowReferralModal}
+          showLogoutModal={showLogoutModal}
+          setShowLogoutModal={setShowLogoutModal}>
           <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
             <BettingForm
               user={user}
@@ -263,6 +270,15 @@ export default function Home() {
             web3_bsc={web3_bsc}
             setWalletBalance={setWalletBalance}
             setBnbWalletBalance={setBnbWalletBalance}
+          />
+          <Referral
+            showReferralModal={showReferralModal}
+            setShowReferralModal={setShowReferralModal}
+            user={user}
+          />
+          <Logout
+            showLogoutModal={showLogoutModal}
+            setShowLogoutModal={setShowLogoutModal}
           />
         </Layout>
       ) : (

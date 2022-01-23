@@ -70,12 +70,14 @@ app.post("/createUser", async (req, res) => {
   const privateKey = wallet.privateKey;
   const bscAddress = bscwallet.address;
   const bscPrivateKey = bscwallet.privateKey;
-
+  const referredById =
+    req.body.referredById != undefined ? req.body.referredById : 0;
+  const points = req.body.points != undefined ? req.body.points : 0;
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "SELECT * FROM userinfotable WHERE email = ?";
     const search_query = mysql.format(sqlSearch, [email]);
-    const sqlInsert = "INSERT INTO userinfotable VALUES (0,?,?,?,?,?,?,?)";
+    const sqlInsert = "INSERT INTO userinfotable VALUES (0,?,?,?,?,?,?,?,?,?)";
     const insert_query = mysql.format(sqlInsert, [
       username,
       email,
@@ -84,6 +86,8 @@ app.post("/createUser", async (req, res) => {
       bscAddress,
       privateKey,
       bscPrivateKey,
+      referredById,
+      points,
     ]);
     // ? will be replaced by values
     // ?? will be replaced by string
@@ -96,21 +100,31 @@ app.post("/createUser", async (req, res) => {
         console.log("------> User already exists");
         res.sendStatus(409);
       } else {
-        await connection.query(insert_query, (err, result) => {
-          connection.release();
+        await connection.query(insert_query, async (err, insertResult) => {
           if (err) throw err;
           console.log("--------> Created new User");
-          console.log("---------> Generating accessToken");
-          const token = generateAccessToken({
-            email: email,
-            username: username,
-            address: address,
-            bscAddress: bscAddress,
+          await connection.query(search_query, async (err, result) => {
+            if (err) throw err;
+            console.log("------> Search Results");
+            console.log(result.length);
+            if (result.length != 0) {
+              connection.release();
+              console.log("---------> Generating accessToken");
+              const token = generateAccessToken({
+                userId: result[0].userId,
+                email: email,
+                username: result[0].username,
+                address: result[0].address,
+                bscAddress: result[0].bscAddress,
+                referredById: result[0].referredById,
+                points: result[0].points,
+              });
+              console.log(token);
+              res.json({ accessToken: token });
+              console.log(insertResult.insertId);
+              res.sendStatus(201);
+            }
           });
-          console.log(token);
-          res.json({ accessToken: token });
-          console.log(result.insertId);
-          res.sendStatus(201);
         });
       }
     }); //end of connection.query()
@@ -144,10 +158,13 @@ app.post("/login", (req, res) => {
           console.log("---------> Login Successful");
           console.log("---------> Generating accessToken");
           const token = generateAccessToken({
+            userId: result[0].userId,
             email: email,
             username: result[0].username,
             address: result[0].address,
             bscAddress: result[0].bscAddress,
+            referredById: result[0].referredById,
+            points: result[0].points,
           });
           console.log(token);
           res.json({ accessToken: token });

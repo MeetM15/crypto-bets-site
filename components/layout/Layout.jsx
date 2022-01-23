@@ -15,6 +15,9 @@ const Layout = ({
   setLoginTab,
   web3,
   web3_bsc,
+  setShowReferralModal,
+  showLogoutModal,
+  setShowLogoutModal,
 }) => {
   return (
     <div className="bg-primary-5 min-h-screen">
@@ -32,6 +35,9 @@ const Layout = ({
         web3_bsc={web3_bsc}
         setWalletBalance={setWalletBalance}
         setBnbWalletBalance={setBnbWalletBalance}
+        setShowReferralModal={setShowReferralModal}
+        showLogoutModal={showLogoutModal}
+        setShowLogoutModal={setShowLogoutModal}
       />
       <div className="flex flex-col items-center">{children}</div>
     </div>
