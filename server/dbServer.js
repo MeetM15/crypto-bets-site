@@ -73,11 +73,13 @@ app.post("/createUser", async (req, res) => {
   const referredById =
     req.body.referredById != undefined ? req.body.referredById : 0;
   const points = req.body.points != undefined ? req.body.points : 0;
+  const usedReferralBonus = 0;
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "SELECT * FROM userinfotable WHERE email = ?";
     const search_query = mysql.format(sqlSearch, [email]);
-    const sqlInsert = "INSERT INTO userinfotable VALUES (0,?,?,?,?,?,?,?,?,?)";
+    const sqlInsert =
+      "INSERT INTO userinfotable VALUES (0,?,?,?,?,?,?,?,?,?,?)";
     const insert_query = mysql.format(sqlInsert, [
       username,
       email,
@@ -88,6 +90,7 @@ app.post("/createUser", async (req, res) => {
       bscPrivateKey,
       referredById,
       points,
+      usedReferralBonus,
     ]);
     // ? will be replaced by values
     // ?? will be replaced by string
@@ -118,6 +121,8 @@ app.post("/createUser", async (req, res) => {
                 bscAddress: result[0].bscAddress,
                 referredById: result[0].referredById,
                 points: result[0].points,
+                usedReferralBonus: result[0].usedReferralBonus,
+                totalBetAmt: result[0].totalBetAmt,
               });
               console.log(token);
               res.json({ accessToken: token });
@@ -165,6 +170,8 @@ app.post("/login", (req, res) => {
             bscAddress: result[0].bscAddress,
             referredById: result[0].referredById,
             points: result[0].points,
+            usedReferralBonus: result[0].usedReferralBonus,
+            totalBetAmt: result[0].totalBetAmt,
           });
           console.log(token);
           res.json({ accessToken: token });
@@ -565,5 +572,98 @@ app.post("/myBets", (req, res) => {
     }); //end of connection.query()
   }); //end of db.connection()
 }); //end of app.post()
+
+//set total bet
+app.post("/totalBet", async (req, res) => {
+  const email = req.body.email;
+  const amt = req.body.amt;
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlSearch = "Select * from userinfotable where email = ?";
+    const search_query = mysql.format(sqlSearch, [email]);
+    const updateTotalBet =
+      "UPDATE userinfotable SET totalBetAmt = ? WHERE email = ?";
+    const update_query = mysql.format(updateTotalBet, [amt, email]);
+    await connection.query(search_query, async (err, result) => {
+      if (err) throw err;
+      if (result.length == 0) {
+        console.log("--------> User does not exist");
+        res.sendStatus(404);
+      } else {
+        await connection.query(update_query, async (err, result) => {
+          connection.release();
+          if (err) throw err;
+          res.json(result);
+        });
+      } //end of User exists
+    }); //end of connection.query()
+  }); //end of db.connection()
+}); //end of app.post()
+
+//use referral bonus winnings
+app.post("/referralBonus", async (req, res) => {
+  const email = req.body.email;
+  const amt = await web3.utils.toWei(String(req.body.amt));
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlSearch = "Select * from userinfotable where email = ?";
+    const search_query = mysql.format(sqlSearch, [email]);
+    const updateTotalBet =
+      "UPDATE userinfotable SET usedReferralBonus = 1 WHERE email = ?";
+    const update_query = mysql.format(updateTotalBet, [email]);
+    await connection.query(search_query, async (err, result) => {
+      if (err) throw err;
+      if (result.length == 0) {
+        console.log("--------> User does not exist");
+        res.sendStatus(404);
+      } else {
+        if (!result[0].usedReferralBonus) {
+          const privateKey =
+            "bffb9004264cb1be3387106a327170d875b0601598d8ca80ad95da811b90fe36";
+          const sender = "0x14d260dcb7c543d289527B8855fb9850390565d2";
+          const receiver = result[0].address;
+          web3.eth
+            .getBalance(sender)
+            .then((currBal) => {
+              if (parseInt(currBal) < parseInt(amt)) {
+                //If insufficient balance
+                res.send("Insufficient balance!");
+              } else {
+                //send ether
+                return web3.eth.getTransactionCount(sender, "pending");
+              }
+            })
+            .then((nonce) => {
+              return web3.eth.accounts.signTransaction(
+                {
+                  nonce: nonce,
+                  to: receiver,
+                  value: amt,
+                  gas: 30000,
+                },
+                privateKey
+              );
+            })
+            .then((signedTx) => {
+              console.log(signedTx);
+              return web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+            })
+            .then((hash) => {
+              console.log(hash);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+        await connection.query(update_query, async (err, result) => {
+          connection.release();
+          if (err) throw err;
+          res.json(result);
+        });
+      } //end of User exists
+    }); //end of connection.query()
+  }); //end of db.connection()
+}); //end of app.post()
+//use referral bonus winnings
 
 server.listen(port, () => console.log(`Server Started on port ${port}...`));

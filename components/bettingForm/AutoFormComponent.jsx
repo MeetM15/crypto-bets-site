@@ -47,6 +47,10 @@ const AutoFormComponent = ({
   setToggleLoginModalOpen,
   chain,
   socket,
+  etherPrice,
+  setEtherPrice,
+  binancePrice,
+  setBinancePrice,
 }) => {
   const btnRef = useRef(false);
   const isBetting = useRef(false);
@@ -151,12 +155,25 @@ const AutoFormComponent = ({
           .post("/bet", betData)
           .then((res) => {
             console.log("bet res : ", res);
-          })
-          .then((res) => {
-            console.log(res);
             return socket.emit("placeBet");
           })
           .then((res) => {
+            return axios.post("/totalBet", {
+              email: user[0].email,
+              amt:
+                parseFloat(user[0].totalBetAmt) +
+                parseFloat(etherPrice) * parseFloat(currentBet),
+            });
+          })
+          .then((res) => {
+            return axios.get("user", {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            });
+          })
+          .then((res) => {
+            setUser([res.data.authorizedData]);
             return web3.eth.getBalance(user[0].address);
           })
           .then((res) => {
@@ -378,14 +395,27 @@ const AutoFormComponent = ({
         axios
           .post("/bet", betData)
           .then((res) => {
-            console.log("bet res : ", res);
-          })
-          .then((res) => {
             console.log(res);
             return socket.emit("placeBet");
           })
           .then((res) => {
-            return web3_bsc.eth.getBalance(user[0].bscAddress);
+            return axios.post("/totalBet", {
+              email: user[0].email,
+              amt:
+                parseFloat(user[0].totalBetAmt) +
+                parseFloat(binancePrice) * parseFloat(currentBet),
+            });
+          })
+          .then((res) => {
+            return axios.get("user", {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            });
+          })
+          .then((res) => {
+            setUser([res.data.authorizedData]);
+            return web3.eth.getBalance(user[0].address);
           })
           .then((res) => {
             return web3_bsc.utils.fromWei(res);

@@ -21,6 +21,10 @@ const web3_bsc = new Web3(
 );
 const socket = io("https://cryptodice1.herokuapp.com/");
 
+const coingeckoUrl = () => {
+  return `https://api.coingecko.com/api/v3/simple/price?ids=ethereum%2Cbinancecoin&vs_currencies=usd`;
+};
+
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState();
@@ -34,6 +38,22 @@ export default function Home() {
   const [bnbWalletBalance, setBnbWalletBalance] = useState(0.0);
   const [currLiveBets, setCurrLiveBets] = useState([]);
   const [myBets, setMyBets] = useState([]);
+  const [etherPrice, setEtherPrice] = useState(0.0);
+  const [binancePrice, setBinancePrice] = useState(0.0);
+
+  //fetch prices
+  useEffect(() => {
+    const fetchPrices = async () => {
+      fetch(coingeckoUrl()).then((response) =>
+        response.json().then((jsonData) => {
+          console.log(jsonData);
+          setEtherPrice(jsonData.ethereum.usd);
+          setBinancePrice(jsonData.binancecoin.usd);
+        })
+      );
+    };
+    fetchPrices();
+  }, []);
 
   //referral
   useEffect(() => {
@@ -102,6 +122,7 @@ export default function Home() {
         .post("myBets", { email: user[0].email })
         .then((res) => {
           setMyBets(res.data);
+          console.log(user[0].totalBetAmt);
         })
         .catch((error) => {
           console.log(error);
@@ -263,6 +284,10 @@ export default function Home() {
               setToggleLoginModalOpen={setToggleLoginModalOpen}
               chain={chain}
               socket={socket}
+              etherPrice={etherPrice}
+              setEtherPrice={setEtherPrice}
+              binancePrice={binancePrice}
+              setBinancePrice={setBinancePrice}
             />
           </div>
           <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">

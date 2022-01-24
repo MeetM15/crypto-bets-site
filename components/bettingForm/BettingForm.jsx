@@ -13,6 +13,10 @@ const BettingForm = ({
   setBnbWalletBalance,
   chain,
   socket,
+  etherPrice,
+  setEtherPrice,
+  binancePrice,
+  setBinancePrice,
 }) => {
   return (
     <div className="bg-secondary p-2 md:p-7 rounded-2xl mt-12">
@@ -56,6 +60,10 @@ const BettingForm = ({
               setToggleLoginModalOpen={setToggleLoginModalOpen}
               chain={chain}
               socket={socket}
+              etherPrice={etherPrice}
+              setEtherPrice={setEtherPrice}
+              binancePrice={binancePrice}
+              setBinancePrice={setBinancePrice}
             />
           </Tab.Panel>
           <Tab.Panel>
@@ -70,6 +78,10 @@ const BettingForm = ({
               setToggleLoginModalOpen={setToggleLoginModalOpen}
               chain={chain}
               socket={socket}
+              etherPrice={etherPrice}
+              setEtherPrice={setEtherPrice}
+              binancePrice={binancePrice}
+              setBinancePrice={setBinancePrice}
             />
           </Tab.Panel>
           <Tab.Panel>
