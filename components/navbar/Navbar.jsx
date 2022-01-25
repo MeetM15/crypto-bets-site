@@ -6,6 +6,7 @@ import {
   RiMoneyDollarCircleLine,
   RiLogoutBoxRLine,
 } from "react-icons/ri";
+import { GiDiamondTrophy } from "react-icons/gi";
 import { IoMdWallet } from "react-icons/io";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -27,6 +28,8 @@ const Navbar = ({
   setShowReferralModal,
   showLogoutModal,
   setShowLogoutModal,
+  lvl,
+  totalBetAmt,
 }) => {
   const router = useRouter();
   const [currency, setCurrency] = useState(["ETH", "/icons/eth.svg"]);
@@ -162,10 +165,17 @@ const Navbar = ({
         <>
           <div className="hidden sm:flex items-center pr-2">
             <Menu as="div" className="mr-3 relative">
-              <Menu.Button className="flex items-center justify-between text-sm bg-inputbg px-2 py-1 shadow-inner rounded-lg text-primary-100">
-                <UserCircleIcon className="w-8 h-8 text-primary-100" />
-                <span className="ml-2 text-md font-medium">
+              <Menu.Button className="flex items-center justify-between text-sm bg-inputbg px-6 py-1 shadow-inner rounded-lg text-primary-100">
+                <UserCircleIcon className="w-10 h-10 text-primary-100" />
+                <span className="ml-2 text-md font-medium flex flex-col">
                   {user[0].username}
+                  <span className="text-xxs font-bold">
+                    {Math.floor(parseFloat(totalBetAmt) * 100)} Points
+                  </span>
+                  <span className="text-xxxs text-black font-bold absolute h-4 flex left-[1.35rem] bottom-0.5 px-2 bg-secondary opacity-95 rounded flex items-center justify-center">
+                    <RiVipCrown2Fill className="h-full mr-0.5 text-viplogo" />
+                    LvL {lvl}
+                  </span>
                 </span>
                 <ChevronDownIcon className="ml-2 h-6 w-6 opacity-60 text-primary-60" />
               </Menu.Button>
@@ -231,6 +241,10 @@ const Navbar = ({
             <Menu as="div" className="mr-3 relative">
               <Menu.Button className="flex items-center justify-between text-sm text-secondary">
                 <UserCircleIcon className="w-8 h-8 text-primary-100" />
+                <span className="text-xxxs font-bold absolute h-4 flex items-center justify-center w-12 text-black text-center -left-2 px-2 -bottom-1 bg-secondary opacity-95 rounded w-full">
+                  <RiVipCrown2Fill className="h-full mr-1 text-viplogo" />
+                  LvL 1
+                </span>
               </Menu.Button>
               <Transition
                 enter="transition ease-out duration-100"
@@ -271,6 +285,18 @@ const Navbar = ({
                       }>
                       <RiVipCrown2Fill className="w-5 h-5 mr-1 text-viplogo" />
                       VIP
+                    </div>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <div
+                      className={
+                        "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
+                      }
+                      onClick={() => {
+                        console.log(user[0]);
+                      }}>
+                      <GiDiamondTrophy className="w-5 h-5 mr-1 text-lvllogo" />
+                      {Math.floor(parseFloat(user[0].totalBetAmt) * 100)} Points
                     </div>
                   </Menu.Item>
                   <Menu.Item>

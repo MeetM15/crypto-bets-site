@@ -32,6 +32,7 @@ const placeBet = (sliderValue, rollType) => {
 
 const ManualFormComponent = ({
   user,
+  setUser,
   walletBalance,
   bnbWalletBalance,
   web3,
@@ -45,6 +46,9 @@ const ManualFormComponent = ({
   setEtherPrice,
   binancePrice,
   setBinancePrice,
+  totalBetAmt,
+  setTotalBetAmt,
+  setMyBets,
 }) => {
   const [betAmt, setBetAmt] = useState(0.0);
   const [profitAmt, setProfitAmt] = useState(0.0);
@@ -60,7 +64,7 @@ const ManualFormComponent = ({
   const [result, setResult] = useState();
 
   const handlePlaceBetBnb = () => {
-    if (user && user[0]) {
+    if (user && user[0] && parseFloat(betAmt) > 0.0) {
       const result = placeBet(sliderValue, toggleRollOver);
       const betResult = result[0];
       const diceValue = result[1];
@@ -115,23 +119,30 @@ const ManualFormComponent = ({
             return socket.emit("placeBet");
           })
           .then((res) => {
+            return axios.post("myBets", {
+              email: user[0].email,
+            });
+          })
+          .then((res) => {
+            setMyBets(res.data);
+            return res;
+          })
+          .then((res) => {
             return axios.post("/totalBet", {
               email: user[0].email,
               amt:
                 parseFloat(user[0].totalBetAmt) +
-                parseFloat(binancePrice) * parseFloat(currentBet),
+                parseFloat(binancePrice) * parseFloat(betAmt),
             });
           })
           .then((res) => {
-            return axios.get("user", {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
+            return axios.post("getTotalBet", {
+              email: user[0].email,
             });
           })
           .then((res) => {
-            setUser([res.data.authorizedData]);
-            return web3.eth.getBalance(user[0].address);
+            setTotalBetAmt(res.data[0].totalBetAmt);
+            return web3_bsc.eth.getBalance(user[0].bscAddress);
           })
           .then((res) => {
             return web3_bsc.utils.fromWei(res);
@@ -173,7 +184,7 @@ const ManualFormComponent = ({
     }
   };
   const handlePlaceBet = () => {
-    if (user && user[0]) {
+    if (user && user[0] && parseFloat(betAmt) > 0.0) {
       const result = placeBet(sliderValue, toggleRollOver);
       const betResult = result[0];
       const diceValue = result[1];
@@ -227,22 +238,29 @@ const ManualFormComponent = ({
             return socket.emit("placeBet");
           })
           .then((res) => {
+            return axios.post("myBets", {
+              email: user[0].email,
+            });
+          })
+          .then((res) => {
+            setMyBets(res.data);
+            return res;
+          })
+          .then((res) => {
             return axios.post("/totalBet", {
               email: user[0].email,
               amt:
                 parseFloat(user[0].totalBetAmt) +
-                parseFloat(etherPrice) * parseFloat(currentBet),
+                parseFloat(etherPrice) * parseFloat(betAmt),
             });
           })
           .then((res) => {
-            return axios.get("user", {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
+            return axios.post("getTotalBet", {
+              email: user[0].email,
             });
           })
           .then((res) => {
-            setUser([res.data.authorizedData]);
+            setTotalBetAmt(res.data[0].totalBetAmt);
             return web3.eth.getBalance(user[0].address);
           })
           .then((res) => {

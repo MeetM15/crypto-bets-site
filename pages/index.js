@@ -25,6 +25,13 @@ const coingeckoUrl = () => {
   return `https://api.coingecko.com/api/v3/simple/price?ids=ethereum%2Cbinancecoin&vs_currencies=usd`;
 };
 
+const l1 = 1000;
+const l2 = 5000;
+const l3 = 10000;
+const l4 = 20000;
+const l5 = 30000;
+const l6 = 40000;
+
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState();
@@ -40,6 +47,36 @@ export default function Home() {
   const [myBets, setMyBets] = useState([]);
   const [etherPrice, setEtherPrice] = useState(0.0);
   const [binancePrice, setBinancePrice] = useState(0.0);
+  const [totalBetAmt, setTotalBetAmt] = useState(0.0);
+  const [isRewarded, setIsRewarded] = useState(1);
+  const [lvl, setLvl] = useState(1);
+  //total bet amt
+  useEffect(() => {
+    console.log("total bet: ", totalBetAmt * 100);
+    if (!isRewarded && user && user[0] != undefined) {
+      if (parseFloat(totalBetAmt) > 10.0) {
+        axios
+          .post("/referralBonus", {
+            email: user[0].email,
+            amt: parseFloat(10.0 / parseFloat(etherPrice)),
+          })
+          .then((res) => {
+            setIsRewarded(1);
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }
+    if (totalBetAmt >= 0 && totalBetAmt < l1) setLvl(1);
+    else if (totalBetAmt >= l1 && totalBetAmt < l2) setLvl(2);
+    else if (totalBetAmt >= l2 && totalBetAmt < l3) setLvl(3);
+    else if (totalBetAmt >= l3 && totalBetAmt < l4) setLvl(4);
+    else if (totalBetAmt >= l4 && totalBetAmt < l5) setLvl(5);
+    else if (totalBetAmt >= l5 && totalBetAmt < l6) setLvl(6);
+    else if (totalBetAmt >= l6) setLvl(7);
+  }, [totalBetAmt, user]);
 
   //fetch prices
   useEffect(() => {
@@ -94,38 +131,33 @@ export default function Home() {
 
   //My bets
   useEffect(() => {
-    socket.on("getMyBetData", () => {
-      //get live data
-      console.log("socket mybets user : ", user);
-      if (user != undefined && user[0] != undefined) {
-        console.log("socket mybets user : ", user);
-        console.log("socket mybets : ", myBets);
-        axios
-          .post("myBets", {
-            email: user[0].email,
-          })
-          .then((res) => {
-            console.log(user[0].email);
-            setMyBets(res.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    });
-  }, [socket, user]);
-  useEffect(() => {
     if (user && user[0] != undefined) {
-      console.log("user mybets : ", myBets);
-      //post live data
+      //get live data
       axios
         .post("myBets", { email: user[0].email })
         .then((res) => {
           setMyBets(res.data);
-          console.log(user[0].totalBetAmt);
         })
         .catch((error) => {
           console.log(error);
+        });
+    }
+  }, [user]);
+
+  //set totalBet and isRewarded
+  useEffect(() => {
+    if (user && user[0] != undefined) {
+      axios
+        .post("/getTotalBet", {
+          email: user[0].email,
+        })
+        .then((res) => {
+          setTotalBetAmt(parseFloat(res.data[0].totalBetAmt));
+          setIsRewarded(parseFloat(res.data[0].usedReferralBonus));
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
         });
     }
   }, [user]);
@@ -257,6 +289,8 @@ export default function Home() {
       {user ? (
         <Layout
           user={user}
+          lvl={lvl}
+          totalBetAmt={totalBetAmt}
           setToggleLoginModalOpen={setToggleLoginModalOpen}
           setShowWalletModal={setShowWalletModal}
           walletBalance={walletBalance}
@@ -288,6 +322,11 @@ export default function Home() {
               setEtherPrice={setEtherPrice}
               binancePrice={binancePrice}
               setBinancePrice={setBinancePrice}
+              setUser={setUser}
+              totalBetAmt={totalBetAmt}
+              setTotalBetAmt={setTotalBetAmt}
+              setMyBets={setMyBets}
+              myBets={myBets}
             />
           </div>
           <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">

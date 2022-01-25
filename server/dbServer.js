@@ -54,7 +54,6 @@ io.on("connection", (socket) => {
   socket.on("placeBet", (socket) => {
     console.log("A User Placed Bet!");
     io.emit("getLiveBetData");
-    io.emit("getMyBetData");
   });
 });
 
@@ -247,8 +246,6 @@ app.post("/bet", async (req, res) => {
       email,
     ]);
     await connection.query(search_query, async (err, result) => {
-      connection.release();
-
       if (err) throw err;
       if (result.length == 0) {
         console.log("--------> User does not exist");
@@ -600,6 +597,20 @@ app.post("/totalBet", async (req, res) => {
   }); //end of db.connection()
 }); //end of app.post()
 
+app.post("/getTotalBet", (req, res) => {
+  const email = req.body.email;
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlSearch = "Select * from userinfotable where email = ?";
+    const search_query = mysql.format(sqlSearch, [email]);
+    await connection.query(search_query, async (err, result) => {
+      connection.release();
+      if (err) throw err;
+      else res.json(result);
+    }); //end of connection.query()
+  }); //end of db.connection()
+}); //end of app.post()
+
 //use referral bonus winnings
 app.post("/referralBonus", async (req, res) => {
   const email = req.body.email;
@@ -611,56 +622,173 @@ app.post("/referralBonus", async (req, res) => {
     const updateTotalBet =
       "UPDATE userinfotable SET usedReferralBonus = 1 WHERE email = ?";
     const update_query = mysql.format(updateTotalBet, [email]);
-    await connection.query(search_query, async (err, result) => {
+    await connection.query(search_query, async (err, searchResult) => {
       if (err) throw err;
-      if (result.length == 0) {
+      if (searchResult.length == 0) {
         console.log("--------> User does not exist");
         res.sendStatus(404);
       } else {
-        if (!result[0].usedReferralBonus) {
-          const privateKey =
-            "bffb9004264cb1be3387106a327170d875b0601598d8ca80ad95da811b90fe36";
-          const sender = "0x14d260dcb7c543d289527B8855fb9850390565d2";
-          const receiver = result[0].address;
-          web3.eth
-            .getBalance(sender)
-            .then((currBal) => {
-              if (parseInt(currBal) < parseInt(amt)) {
-                //If insufficient balance
-                res.send("Insufficient balance!");
+        if (
+          !searchResult[0].usedReferralBonus &&
+          searchResult.referredById != 0
+        ) {
+          const sqlSearchRefer = "Select * from userinfotable where userId = ?";
+          const search_query_refer = mysql.format(sqlSearchRefer, [
+            searchResult.referredById,
+          ]);
+          await connection.query(
+            search_query_refer,
+            async (err, referResult) => {
+              if (err) throw err;
+              if (referResult.length == 0) {
+                connection.release();
+                console.log("Not Referred by anyone!");
+                res.json({
+                  message: "noReferral",
+                });
               } else {
-                //send ether
-                return web3.eth.getTransactionCount(sender, "pending");
+                const privateKey =
+                  "bffb9004264cb1be3387106a327170d875b0601598d8ca80ad95da811b90fe36";
+                const sender = "0x14d260dcb7c543d289527B8855fb9850390565d2";
+                const receiver = referResult[0].address;
+                web3.eth
+                  .getBalance(sender)
+                  .then((currBal) => {
+                    if (parseInt(currBal) < parseInt(amt)) {
+                      //If insufficient balance
+                      res.send("Insufficient balance!");
+                    } else {
+                      //send ether
+                      return web3.eth.getTransactionCount(sender, "pending");
+                    }
+                  })
+                  .then((nonce) => {
+                    return web3.eth.accounts.signTransaction(
+                      {
+                        nonce: nonce,
+                        to: receiver,
+                        value: amt,
+                        gas: 30000,
+                      },
+                      privateKey
+                    );
+                  })
+                  .then((signedTx) => {
+                    console.log(signedTx);
+                    return web3.eth.sendSignedTransaction(
+                      signedTx.rawTransaction
+                    );
+                  })
+                  .then((hash) => {
+                    console.log(hash);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+                await connection.query(update_query, async (err, result) => {
+                  connection.release();
+                  if (err) throw err;
+
+                  const privateKey =
+                    "bffb9004264cb1be3387106a327170d875b0601598d8ca80ad95da811b90fe36";
+                  const sender = "0x14d260dcb7c543d289527B8855fb9850390565d2";
+                  const receiver = searchResult[0].address;
+                  web3.eth
+                    .getBalance(sender)
+                    .then((currBal) => {
+                      if (parseInt(currBal) < parseInt(amt)) {
+                        //If insufficient balance
+                        res.send("Insufficient balance!");
+                      } else {
+                        //send ether
+                        return web3.eth.getTransactionCount(sender, "pending");
+                      }
+                    })
+                    .then((nonce) => {
+                      return web3.eth.accounts.signTransaction(
+                        {
+                          nonce: nonce,
+                          to: receiver,
+                          value: amt,
+                          gas: 30000,
+                        },
+                        privateKey
+                      );
+                    })
+                    .then((signedTx) => {
+                      console.log(signedTx);
+                      return web3.eth.sendSignedTransaction(
+                        signedTx.rawTransaction
+                      );
+                    })
+                    .then((hash) => {
+                      console.log(hash);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                });
               }
-            })
-            .then((nonce) => {
-              return web3.eth.accounts.signTransaction(
-                {
-                  nonce: nonce,
-                  to: receiver,
-                  value: amt,
-                  gas: 30000,
-                },
-                privateKey
-              );
-            })
-            .then((signedTx) => {
-              console.log(signedTx);
-              return web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-            })
-            .then((hash) => {
-              console.log(hash);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+            }
+          );
         }
-        await connection.query(update_query, async (err, result) => {
-          connection.release();
-          if (err) throw err;
-          res.json(result);
-        });
+        res.sendStatus(400);
       } //end of User exists
+    }); //end of connection.query()
+  }); //end of db.connection()
+}); //end of app.post()
+//use referral bonus winnings
+//use referral bonus winnings
+app.post("/vipLevelUp", async (req, res) => {
+  const email = req.body.email;
+  const amt = await web3.utils.toWei(String(req.body.amt));
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlSearch = "Select * from userinfotable where email = ?";
+    const search_query = mysql.format(sqlSearch, [email]);
+    await connection.query(search_query, async (err, searchResult) => {
+      if (err) throw err;
+      if (searchResult.length == 0) {
+        console.log("--------> User does not exist");
+        res.sendStatus(404);
+      } else {
+        const privateKey =
+          "bffb9004264cb1be3387106a327170d875b0601598d8ca80ad95da811b90fe36";
+        const sender = "0x14d260dcb7c543d289527B8855fb9850390565d2";
+        const receiver = searchResult[0].address;
+        web3.eth
+          .getBalance(sender)
+          .then((currBal) => {
+            if (parseInt(currBal) < parseInt(amt)) {
+              //If insufficient balance
+              res.send("Insufficient balance!");
+            } else {
+              //send ether
+              return web3.eth.getTransactionCount(sender, "pending");
+            }
+          })
+          .then((nonce) => {
+            return web3.eth.accounts.signTransaction(
+              {
+                nonce: nonce,
+                to: receiver,
+                value: amt,
+                gas: 30000,
+              },
+              privateKey
+            );
+          })
+          .then((signedTx) => {
+            console.log(signedTx);
+            return web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+          })
+          .then((hash) => {
+            console.log(hash);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }); //end of connection.query()
   }); //end of db.connection()
 }); //end of app.post()

@@ -25,6 +25,7 @@ module.exports = {
         btntext: "#757575",
         earnlogo: "#83BF6E",
         viplogo: "#FFD700",
+        lvllogo: "#b9f2ff",
         logoutlogo: "#FF6A55",
         logoutBtn: "#FFE6E2",
         logoutBtnText: "#FF472D",
@@ -75,7 +76,10 @@ module.exports = {
         xsm: "480px",
         // => @media (min-width: 540px) { ... }
       },
-      fontSize: {},
+      fontSize: {
+        xxxs: "0.5rem",
+        xxs: "0.65rem",
+      },
     },
   },
   plugins: [],

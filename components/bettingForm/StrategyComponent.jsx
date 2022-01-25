@@ -35,6 +35,7 @@ const placeBet = (sliderValue, rollType) => {
 
 const StrategyComponent = ({
   user,
+  setUser,
   walletBalance,
   bnbWalletBalance,
   web3,
@@ -44,6 +45,13 @@ const StrategyComponent = ({
   setToggleLoginModalOpen,
   chain,
   socket,
+  etherPrice,
+  setEtherPrice,
+  binancePrice,
+  setBinancePrice,
+  totalBetAmt,
+  setTotalBetAmt,
+  setMyBets,
 }) => {
   const btnRef = useRef(false);
   const isBetting = useRef(false);
@@ -66,8 +74,9 @@ const StrategyComponent = ({
   const onLoss = useRef(100.0);
   const originalBet = useRef(0.0);
   const [selectedStartegy, setSelectedStartegy] = useState("Martingale");
+
   const handlePlaceBet = (currentBet, currentProf, totalProf) => {
-    if (user && user[0]) {
+    if (user && user[0] && currentBet > 0.0) {
       //place bet
       const result = placeBet(sliderValue, toggleRollOver);
       const betResult = result[0];
@@ -147,12 +156,32 @@ const StrategyComponent = ({
           .post("/bet", betData)
           .then((res) => {
             console.log("bet res : ", res);
-          })
-          .then((res) => {
-            console.log(res);
             return socket.emit("placeBet");
           })
           .then((res) => {
+            return axios.post("myBets", {
+              email: user[0].email,
+            });
+          })
+          .then((res) => {
+            setMyBets(res.data);
+            return res;
+          })
+          .then((res) => {
+            return axios.post("/totalBet", {
+              email: user[0].email,
+              amt:
+                parseFloat(user[0].totalBetAmt) +
+                parseFloat(etherPrice) * parseFloat(currentBet),
+            });
+          })
+          .then((res) => {
+            return axios.post("getTotalBet", {
+              email: user[0].email,
+            });
+          })
+          .then((res) => {
+            setTotalBetAmt(res.data[0].totalBetAmt);
             return web3.eth.getBalance(user[0].address);
           })
           .then((res) => {
@@ -278,7 +307,7 @@ const StrategyComponent = ({
     }
   };
   const handlePlaceBetBnb = (currentBet, currentProf, totalProf) => {
-    if (user && user[0]) {
+    if (user && user[0] && currentBet > 0.0) {
       //place bet
       const result = placeBet(sliderValue, toggleRollOver);
       const betResult = result[0];
@@ -359,12 +388,32 @@ const StrategyComponent = ({
           .post("/bet", betData)
           .then((res) => {
             console.log("bet res : ", res);
-          })
-          .then((res) => {
-            console.log(res);
             return socket.emit("placeBet");
           })
           .then((res) => {
+            return axios.post("myBets", {
+              email: user[0].email,
+            });
+          })
+          .then((res) => {
+            setMyBets(res.data);
+            return res;
+          })
+          .then((res) => {
+            return axios.post("/totalBet", {
+              email: user[0].email,
+              amt:
+                parseFloat(user[0].totalBetAmt) +
+                parseFloat(binancePrice) * parseFloat(currentBet),
+            });
+          })
+          .then((res) => {
+            return axios.post("getTotalBet", {
+              email: user[0].email,
+            });
+          })
+          .then((res) => {
+            setTotalBetAmt(res.data[0].totalBetAmt);
             return web3_bsc.eth.getBalance(user[0].bscAddress);
           })
           .then((res) => {

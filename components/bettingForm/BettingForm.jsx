@@ -4,6 +4,7 @@ import ManualFormComponent from "./ManualFormComponent";
 import StrategyComponent from "./StrategyComponent";
 const BettingForm = ({
   user,
+  setUser,
   walletBalance,
   web3,
   web3_bsc,
@@ -17,6 +18,10 @@ const BettingForm = ({
   setEtherPrice,
   binancePrice,
   setBinancePrice,
+  totalBetAmt,
+  setTotalBetAmt,
+  setMyBets,
+  myBets,
 }) => {
   return (
     <div className="bg-secondary p-2 md:p-7 rounded-2xl mt-12">
@@ -64,6 +69,11 @@ const BettingForm = ({
               setEtherPrice={setEtherPrice}
               binancePrice={binancePrice}
               setBinancePrice={setBinancePrice}
+              setUser={setUser}
+              totalBetAmt={totalBetAmt}
+              setTotalBetAmt={setTotalBetAmt}
+              setMyBets={setMyBets}
+              myBets={myBets}
             />
           </Tab.Panel>
           <Tab.Panel>
@@ -82,6 +92,11 @@ const BettingForm = ({
               setEtherPrice={setEtherPrice}
               binancePrice={binancePrice}
               setBinancePrice={setBinancePrice}
+              setUser={setUser}
+              totalBetAmt={totalBetAmt}
+              setTotalBetAmt={setTotalBetAmt}
+              setMyBets={setMyBets}
+              myBets={myBets}
             />
           </Tab.Panel>
           <Tab.Panel>
@@ -96,6 +111,15 @@ const BettingForm = ({
               setToggleLoginModalOpen={setToggleLoginModalOpen}
               chain={chain}
               socket={socket}
+              etherPrice={etherPrice}
+              setEtherPrice={setEtherPrice}
+              binancePrice={binancePrice}
+              setBinancePrice={setBinancePrice}
+              setUser={setUser}
+              totalBetAmt={totalBetAmt}
+              setTotalBetAmt={setTotalBetAmt}
+              setMyBets={setMyBets}
+              myBets={myBets}
             />
           </Tab.Panel>
         </Tab.Panels>

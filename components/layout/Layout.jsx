@@ -18,11 +18,15 @@ const Layout = ({
   setShowReferralModal,
   showLogoutModal,
   setShowLogoutModal,
+  lvl,
+  totalBetAmt,
 }) => {
   return (
     <div className="bg-primary-5 min-h-screen">
       <Navbar
         user={user}
+        lvl={lvl}
+        totalBetAmt={totalBetAmt}
         chain={chain}
         setChain={setChain}
         loginTab={loginTab}

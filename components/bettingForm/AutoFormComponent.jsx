@@ -38,6 +38,7 @@ const placeBet = (sliderValue, rollType) => {
 
 const AutoFormComponent = ({
   user,
+  setUser,
   walletBalance,
   bnbWalletBalance,
   web3,
@@ -51,6 +52,9 @@ const AutoFormComponent = ({
   setEtherPrice,
   binancePrice,
   setBinancePrice,
+  totalBetAmt,
+  setTotalBetAmt,
+  setMyBets,
 }) => {
   const btnRef = useRef(false);
   const isBetting = useRef(false);
@@ -76,7 +80,7 @@ const AutoFormComponent = ({
   const [stopLoss, setStopLoss] = useState(-1);
 
   const handlePlaceBet = (currentBet, currentProf, totalProf) => {
-    if (user && user[0]) {
+    if (user && user[0] && currentBet > 0.0) {
       //place bet
       const result = placeBet(sliderValue, toggleRollOver);
       const betResult = result[0];
@@ -158,6 +162,15 @@ const AutoFormComponent = ({
             return socket.emit("placeBet");
           })
           .then((res) => {
+            return axios.post("myBets", {
+              email: user[0].email,
+            });
+          })
+          .then((res) => {
+            setMyBets(res.data);
+            return res;
+          })
+          .then((res) => {
             return axios.post("/totalBet", {
               email: user[0].email,
               amt:
@@ -166,14 +179,12 @@ const AutoFormComponent = ({
             });
           })
           .then((res) => {
-            return axios.get("user", {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
+            return axios.post("getTotalBet", {
+              email: user[0].email,
             });
           })
           .then((res) => {
-            setUser([res.data.authorizedData]);
+            setTotalBetAmt(res.data[0].totalBetAmt);
             return web3.eth.getBalance(user[0].address);
           })
           .then((res) => {
@@ -315,7 +326,7 @@ const AutoFormComponent = ({
     }
   };
   const handlePlaceBetBnb = (currentBet, currentProf, totalProf) => {
-    if (user && user[0]) {
+    if (user && user[0] && currentBet > 0.0) {
       //place bet
       const result = placeBet(sliderValue, toggleRollOver);
       const betResult = result[0];
@@ -399,6 +410,15 @@ const AutoFormComponent = ({
             return socket.emit("placeBet");
           })
           .then((res) => {
+            return axios.post("myBets", {
+              email: user[0].email,
+            });
+          })
+          .then((res) => {
+            setMyBets(res.data);
+            return res;
+          })
+          .then((res) => {
             return axios.post("/totalBet", {
               email: user[0].email,
               amt:
@@ -407,15 +427,13 @@ const AutoFormComponent = ({
             });
           })
           .then((res) => {
-            return axios.get("user", {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
+            return axios.post("getTotalBet", {
+              email: user[0].email,
             });
           })
           .then((res) => {
-            setUser([res.data.authorizedData]);
-            return web3.eth.getBalance(user[0].address);
+            setTotalBetAmt(res.data[0].totalBetAmt);
+            return web3_bsc.eth.getBalance(user[0].bscAddress);
           })
           .then((res) => {
             return web3_bsc.utils.fromWei(res);
@@ -930,7 +948,7 @@ const AutoFormComponent = ({
                     console.log("CBet : ", currentBet);
                     console.log("CProfit : ", currentProf);
                     console.log("TProfit : ", totalProf);
-                    await timer(3000); // wait between next bet
+                    await timer(1000); // wait between next bet
                   }
                 };
                 const runBets = async () => {
@@ -1018,7 +1036,7 @@ const AutoFormComponent = ({
                     console.log("CBet : ", currentBet);
                     console.log("CProfit : ", currentProf);
                     console.log("TProfit : ", totalProf);
-                    await timer(3000); // wait between next bet
+                    await timer(1000); // wait between next bet
                   }
                 };
                 // To prevent spamming of bets
