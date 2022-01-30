@@ -70,7 +70,7 @@ const DepositTab = ({ user }) => {
             </span>
             <span className="text-center font-medium text-sm px-1.5 py-1 bg-inputbg shadow-inner w-full rounded break-all md:break-none flex items-center justify-between">
               {depositCurrency[0] == "ETH"
-                ? user[0].address
+                ? user[0].ethAddress
                 : user[0].bscAddress}
               <button
                 type="button"
@@ -78,7 +78,7 @@ const DepositTab = ({ user }) => {
                 onClick={() => {
                   navigator.clipboard.writeText(
                     depositCurrency[0] == "ETH"
-                      ? user[0].address
+                      ? user[0].ethAddress
                       : user[0].bscAddress
                   );
                 }}>

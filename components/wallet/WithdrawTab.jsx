@@ -110,10 +110,6 @@ const WithdrawTab = ({
           withdrawChain={withdrawChain}
           amount={amount}
           setAmount={setAmount}
-          web3={web3}
-          web3_bsc={web3_bsc}
-          setWalletBalance={setWalletBalance}
-          setBnbWalletBalance={setBnbWalletBalance}
         />
       </span>
       <div className="font-medium text-xs px-4 text-btntext text-center">

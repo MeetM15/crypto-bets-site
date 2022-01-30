@@ -10,16 +10,11 @@ const WithdrawForm = ({
   withdrawChain,
   amount,
   setAmount,
-  web3,
-  web3_bsc,
-  setWalletBalance,
-  setBnbWalletBalance,
 }) => {
   const [withdrawAddress, setWithdrawAddress] = useState("");
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const handleWithdraw = (e) => {
     e.preventDefault();
-    const currChain = withdrawChain;
     if (user && user[0]) {
       const data = {
         email: user[0].email,
@@ -33,26 +28,6 @@ const WithdrawForm = ({
         .then((withdrawRes) => {
           setIsWithdrawing(false);
           console.log(withdrawRes);
-          if (currChain == "eth") return web3.eth.getBalance(user[0].address);
-          else return web3_bsc.eth.getBalance(user[0].bscAddress);
-        })
-        .then((res) => {
-          if (currChain == "eth") return web3.utils.fromWei(res);
-          else return web3_bsc.utils.fromWei(res);
-        })
-        .then((res) => {
-          if (currChain == "eth")
-            setWalletBalance(
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-            );
-          else
-            setBnbWalletBalance(
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-            );
-
-          console.log("enable click");
-          if (document.getElementById("rollBtn").hasAttribute("disabled"))
-            document.getElementById("rollBtn").removeAttribute("disabled");
         })
         .catch((error) => {
           console.log("error : ", error);

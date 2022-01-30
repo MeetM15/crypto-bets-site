@@ -35,6 +35,7 @@ const l6 = 40000;
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState();
+  const [userEmail, setUserEmail] = useState();
   const [loginTab, setLoginTab] = useState("login");
   const [chain, setChain] = useState("eth");
   const [toggleLoginModalOpen, setToggleLoginModalOpen] = useState(false);
@@ -49,7 +50,8 @@ export default function Home() {
   const [binancePrice, setBinancePrice] = useState(0.0);
   const [totalBetAmt, setTotalBetAmt] = useState(0.0);
   const [isRewarded, setIsRewarded] = useState(1);
-  const [lvl, setLvl] = useState(1);
+  const [lvl, setLvl] = useState(0);
+  const [vipReward, setVipReward] = useState(0);
   //total bet amt
   useEffect(() => {
     console.log("total bet: ", totalBetAmt * 100);
@@ -69,13 +71,13 @@ export default function Home() {
           });
       }
     }
-    if (totalBetAmt >= 0 && totalBetAmt < l1) setLvl(1);
-    else if (totalBetAmt >= l1 && totalBetAmt < l2) setLvl(2);
-    else if (totalBetAmt >= l2 && totalBetAmt < l3) setLvl(3);
-    else if (totalBetAmt >= l3 && totalBetAmt < l4) setLvl(4);
-    else if (totalBetAmt >= l4 && totalBetAmt < l5) setLvl(5);
-    else if (totalBetAmt >= l5 && totalBetAmt < l6) setLvl(6);
-    else if (totalBetAmt >= l6) setLvl(7);
+    if (totalBetAmt >= 0 && totalBetAmt < l1) setLvl(0);
+    else if (totalBetAmt >= l1 && totalBetAmt < l2) setLvl(1);
+    else if (totalBetAmt >= l2 && totalBetAmt < l3) setLvl(2);
+    else if (totalBetAmt >= l3 && totalBetAmt < l4) setLvl(3);
+    else if (totalBetAmt >= l4 && totalBetAmt < l5) setLvl(4);
+    else if (totalBetAmt >= l5 && totalBetAmt < l6) setLvl(5);
+    else if (totalBetAmt >= l6) setLvl(6);
   }, [totalBetAmt, user]);
 
   //fetch prices
@@ -147,22 +149,15 @@ export default function Home() {
   //set totalBet and isRewarded
   useEffect(() => {
     if (user && user[0] != undefined) {
-      axios
-        .post("/getTotalBet", {
-          email: user[0].email,
-        })
-        .then((res) => {
-          setTotalBetAmt(parseFloat(res.data[0].totalBetAmt));
-          setIsRewarded(parseFloat(res.data[0].usedReferralBonus));
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      setTotalBetAmt(parseFloat(user[0].totalBetAmt));
+      setVipReward(parseFloat(user[0].usedVipBonus));
+      setIsRewarded(parseFloat(user[0].usedReferralBonus));
+      setWalletBalance(user[0].availableBalanceEth);
+      setBnbWalletBalance(user[0].availableBalanceBsc);
     }
   }, [user]);
 
-  //get user details
+  //get user email
   useEffect(() => {
     if (localStorage.getItem("token")) {
       axios
@@ -172,93 +167,29 @@ export default function Home() {
           },
         })
         .then((res) => {
-          setUser([res.data.authorizedData]);
+          setUserEmail(res.data.authorizedData.email);
         })
         .catch((error) => {
-          setUser([]);
           console.log(error);
         });
-    } else {
-      setUser([]);
     }
   }, []);
-
-  //get balance
+  //get user details
   useEffect(() => {
-    if (user && user[0] != undefined) {
-      web3.eth
-        .getBalance(user[0].address)
-        .then((res) => {
-          return web3.utils.fromWei(res);
-        })
-        .then((res) => {
-          setWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
-        });
-      web3_bsc.eth
-        .getBalance(user[0].bscAddress)
-        .then((res) => {
-          return web3_bsc.utils.fromWei(res);
-        })
-        .then((res) => {
-          setBnbWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
-        });
-    }
-  }, []);
-  useEffect(() => {
-    console.log(user);
-    if (user && user[0] != undefined) {
-      web3.eth
-        .getBalance(user[0].address)
-        .then((res) => {
-          return web3.utils.fromWei(res);
-        })
-        .then((res) => {
-          setWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
-        });
-      web3_bsc.eth
-        .getBalance(user[0].bscAddress)
-        .then((res) => {
-          return web3_bsc.utils.fromWei(res);
-        })
-        .then((res) => {
-          setBnbWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
-        });
-    }
-  }, [user]);
-  useEffect(() => {
-    if (user && user[0] != undefined) {
-      web3.eth
-        .getBalance(user[0].address)
-        .then((res) => {
-          return web3.utils.fromWei(res);
+    if (userEmail) {
+      axios
+        .post("/getUserData", {
+          email: userEmail,
         })
         .then((res) => {
           console.log(res);
-          setWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
-        });
-      web3_bsc.eth
-        .getBalance(user[0].bscAddress)
-        .then((res) => {
-          return web3_bsc.utils.fromWei(res);
+          setUser([res.data]);
         })
-        .then((res) => {
-          console.log(res);
-          setBnbWalletBalance(
-            parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-          );
+        .catch((error) => {
+          console.log(error);
         });
     }
-  }, [showWalletModal]);
+  }, [userEmail]);
 
   return (
     <>
@@ -293,18 +224,12 @@ export default function Home() {
           totalBetAmt={totalBetAmt}
           setToggleLoginModalOpen={setToggleLoginModalOpen}
           setShowWalletModal={setShowWalletModal}
-          walletBalance={walletBalance}
           chain={chain}
           setChain={setChain}
-          loginTab={loginTab}
           setLoginTab={setLoginTab}
+          walletBalance={walletBalance}
           bnbWalletBalance={bnbWalletBalance}
-          web3={web3}
-          web3_bsc={web3_bsc}
-          setWalletBalance={setWalletBalance}
-          setBnbWalletBalance={setBnbWalletBalance}
           setShowReferralModal={setShowReferralModal}
-          showLogoutModal={showLogoutModal}
           setShowLogoutModal={setShowLogoutModal}>
           <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
             <BettingForm

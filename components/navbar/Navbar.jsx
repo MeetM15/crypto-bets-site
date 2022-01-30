@@ -17,16 +17,10 @@ const Navbar = ({
   setShowWalletModal,
   walletBalance,
   bnbWalletBalance,
-  setWalletBalance,
-  setBnbWalletBalance,
   chain,
   setChain,
-  loginTab,
   setLoginTab,
-  web3,
-  web3_bsc,
   setShowReferralModal,
-  showLogoutModal,
   setShowLogoutModal,
   lvl,
   totalBetAmt,
@@ -55,36 +49,7 @@ const Navbar = ({
       {user && user[0] && (
         <div className="bg-inputbg shadow-inner flex items-center justify-between rounded">
           <Menu as="div" className="relative px-2 py-1 w-full">
-            <div
-              onClick={() => {
-                if (user && user[0] != undefined) {
-                  web3.eth
-                    .getBalance(user[0].address)
-                    .then((res) => {
-                      return web3.utils.fromWei(res);
-                    })
-                    .then((res) => {
-                      setWalletBalance(
-                        parseFloat(res) > 0.00003
-                          ? parseFloat(res) - 0.00003
-                          : 0.0
-                      );
-                    });
-                  web3_bsc.eth
-                    .getBalance(user[0].bscAddress)
-                    .then((res) => {
-                      return web3_bsc.utils.fromWei(res);
-                    })
-                    .then((res) => {
-                      console.log(res);
-                      setBnbWalletBalance(
-                        parseFloat(res) > 0.00003
-                          ? parseFloat(res) - 0.00003
-                          : 0.0
-                      );
-                    });
-                }
-              }}>
+            <div>
               <Menu.Button className="flex items-center justify-between text-black font-medium text-xs">
                 {currency[0] && currency[1] ? (
                   <>
@@ -243,7 +208,7 @@ const Navbar = ({
                 <UserCircleIcon className="w-8 h-8 text-primary-100" />
                 <span className="text-xxxs font-bold absolute h-4 flex items-center justify-center w-12 text-black text-center -left-2 px-2 -bottom-1 bg-secondary opacity-95 rounded w-full">
                   <RiVipCrown2Fill className="h-full mr-1 text-viplogo" />
-                  LvL 1
+                  LvL {lvl}
                 </span>
               </Menu.Button>
               <Transition
@@ -296,7 +261,7 @@ const Navbar = ({
                         console.log(user[0]);
                       }}>
                       <GiDiamondTrophy className="w-5 h-5 mr-1 text-lvllogo" />
-                      {Math.floor(parseFloat(user[0].totalBetAmt) * 100)} Points
+                      {Math.floor(parseFloat(totalBetAmt) * 100)} Points
                     </div>
                   </Menu.Item>
                   <Menu.Item>

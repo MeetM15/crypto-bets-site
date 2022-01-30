@@ -35,19 +35,14 @@ const ManualFormComponent = ({
   setUser,
   walletBalance,
   bnbWalletBalance,
-  web3,
-  web3_bsc,
   setWalletBalance,
   setBnbWalletBalance,
-  setToggleLoginModalOpen,
   chain,
   socket,
   etherPrice,
-  setEtherPrice,
   binancePrice,
-  setBinancePrice,
-  totalBetAmt,
   setTotalBetAmt,
+  totalBetAmt,
   setMyBets,
 }) => {
   const [betAmt, setBetAmt] = useState(0.0);
@@ -81,7 +76,7 @@ const ManualFormComponent = ({
       setShowDice("flex");
       setTimeout(() => {
         setShowDice("hidden");
-      }, 3000);
+      }, 2000);
       setResult(parseFloat(diceValue.toFixed(2)));
       document.getElementById("diceResult").style.color = betResult;
       if (user && user[0] != undefined) {
@@ -108,8 +103,10 @@ const ManualFormComponent = ({
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: betAmt.toString(),
-          profitAmt: profitAmt.toString(),
+          betAmt: betAmt,
+          profitAmt: profitAmt,
+          totalBetAmt:
+            parseFloat(totalBetAmt) + parseFloat(binancePrice) * betAmt,
         };
         console.log("bet data : ", betData);
         axios
@@ -128,29 +125,6 @@ const ManualFormComponent = ({
             return res;
           })
           .then((res) => {
-            return axios.post("/totalBet", {
-              email: user[0].email,
-              amt:
-                parseFloat(user[0].totalBetAmt) +
-                parseFloat(binancePrice) * parseFloat(betAmt),
-            });
-          })
-          .then((res) => {
-            return axios.post("getTotalBet", {
-              email: user[0].email,
-            });
-          })
-          .then((res) => {
-            setTotalBetAmt(res.data[0].totalBetAmt);
-            return web3_bsc.eth.getBalance(user[0].bscAddress);
-          })
-          .then((res) => {
-            return web3_bsc.utils.fromWei(res);
-          })
-          .then((res) => {
-            setBnbWalletBalance(
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-            );
             console.log("enable click");
             if (document.getElementById("rollBtn").hasAttribute("disabled"))
               document.getElementById("rollBtn").removeAttribute("disabled");
@@ -201,83 +175,62 @@ const ManualFormComponent = ({
       setShowDice("flex");
       setTimeout(() => {
         setShowDice("hidden");
-      }, 3000);
+      }, 2000);
       setResult(parseFloat(diceValue.toFixed(2)));
       document.getElementById("diceResult").style.color = betResult;
-      if (user && user[0] != undefined) {
-        var d = new Date(); // for curr time
-        const betTime = `${
-          String(d.getHours().toString()).length == 1
-            ? "0" + Number(d.getHours()).toString()
-            : Number(d.getHours()).toString()
-        }:${
-          String(d.getMinutes().toString()).length == 1
-            ? "0" + Number(d.getMinutes()).toString()
-            : Number(d.getMinutes()).toString()
-        }`;
-        const betData = {
-          username: user[0].username,
-          multiplier: multiplierValue,
-          betTime: betTime,
-          result: diceValue,
-          payout:
-            betResult == "green"
-              ? (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(8)
-              : `-${betAmt}`,
-          email: user[0].email,
-          chain: chain,
-          betResult: betResult == "green" ? true : false,
-          betAmt: betAmt.toString(),
-          profitAmt: profitAmt.toString(),
-        };
-        console.log("bet data : ", betData);
-        axios
-          .post("/bet", betData)
-          .then((res) => {
-            console.log(res);
-            return socket.emit("placeBet");
-          })
-          .then((res) => {
-            return axios.post("myBets", {
-              email: user[0].email,
-            });
-          })
-          .then((res) => {
-            setMyBets(res.data);
-            return res;
-          })
-          .then((res) => {
-            return axios.post("/totalBet", {
-              email: user[0].email,
-              amt:
-                parseFloat(user[0].totalBetAmt) +
-                parseFloat(etherPrice) * parseFloat(betAmt),
-            });
-          })
-          .then((res) => {
-            return axios.post("getTotalBet", {
-              email: user[0].email,
-            });
-          })
-          .then((res) => {
-            setTotalBetAmt(res.data[0].totalBetAmt);
-            return web3.eth.getBalance(user[0].address);
-          })
-          .then((res) => {
-            return web3.utils.fromWei(res);
-          })
-          .then((res) => {
-            setWalletBalance(
-              parseFloat(res) > 0.00003 ? parseFloat(res) - 0.00003 : 0.0
-            );
-            console.log("enable click");
-            if (document.getElementById("rollBtn").hasAttribute("disabled"))
-              document.getElementById("rollBtn").removeAttribute("disabled");
-          })
-          .catch((err) => {
-            console.log(err);
+      var d = new Date(); // for curr time
+      const betTime = `${
+        String(d.getHours().toString()).length == 1
+          ? "0" + Number(d.getHours()).toString()
+          : Number(d.getHours()).toString()
+      }:${
+        String(d.getMinutes().toString()).length == 1
+          ? "0" + Number(d.getMinutes()).toString()
+          : Number(d.getMinutes()).toString()
+      }`;
+      const betData = {
+        username: user[0].username,
+        betTime: betTime,
+        betAmt: betAmt,
+        multiplier: multiplierValue,
+        result: diceValue,
+        payout:
+          betResult == "green"
+            ? (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(8)
+            : `-${betAmt}`,
+        betResult: betResult == "green" ? true : false,
+        chain: chain,
+        email: user[0].email,
+        profitAmt: profitAmt,
+        totalBetAmt: parseFloat(totalBetAmt) + parseFloat(etherPrice) * betAmt,
+      };
+      setTotalBetAmt(
+        (prev) => parseFloat(prev) + parseFloat(etherPrice) * betAmt
+      );
+      console.log("bet data : ", betData);
+      axios
+        .post("/bet", betData)
+        .then((res) => {
+          console.log(res);
+          return socket.emit("placeBet");
+        })
+        .then((res) => {
+          return axios.post("myBets", {
+            email: user[0].email,
           });
-      }
+        })
+        .then((res) => {
+          setMyBets(res.data);
+          return res;
+        })
+        .then((res) => {
+          console.log("enable click");
+          if (document.getElementById("rollBtn").hasAttribute("disabled"))
+            document.getElementById("rollBtn").removeAttribute("disabled");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else {
       const result = placeBet(sliderValue, toggleRollOver);
       const betResult = result[0];
@@ -294,7 +247,7 @@ const ManualFormComponent = ({
       setShowDice("flex");
       setTimeout(() => {
         setShowDice("hidden");
-      }, 3000);
+      }, 2000);
       setResult(parseFloat(diceValue.toFixed(2)));
       document.getElementById("diceResult").style.color = betResult;
       console.log("enable click");
@@ -302,17 +255,6 @@ const ManualFormComponent = ({
         document.getElementById("rollBtn").removeAttribute("disabled");
     }
   };
-
-  useEffect(() => {
-    console.log("enable click");
-    if (document.getElementById("rollBtn").hasAttribute("disabled"))
-      document.getElementById("rollBtn").removeAttribute("disabled");
-  }, [walletBalance]);
-  useEffect(() => {
-    console.log("enable click");
-    if (document.getElementById("rollBtn").hasAttribute("disabled"))
-      document.getElementById("rollBtn").removeAttribute("disabled");
-  }, [bnbWalletBalance]);
 
   useEffect(() => {
     setProfitAmt(
@@ -391,10 +333,6 @@ const ManualFormComponent = ({
               className="text-md font-medium rounded-md bg-primary-100 text-secondary px-28 py-3 rounded"
               id="rollBtn"
               onClick={() => {
-                console.log("disable click");
-                document
-                  .getElementById("rollBtn")
-                  .setAttribute("disabled", "true");
                 if (chain == "eth") handlePlaceBet();
                 else handlePlaceBetBnb();
               }}>

@@ -58,22 +58,16 @@ const BettingForm = ({
               user={user}
               walletBalance={walletBalance}
               bnbWalletBalance={bnbWalletBalance}
-              web3={web3}
-              web3_bsc={web3_bsc}
               setWalletBalance={setWalletBalance}
               setBnbWalletBalance={setBnbWalletBalance}
-              setToggleLoginModalOpen={setToggleLoginModalOpen}
               chain={chain}
               socket={socket}
               etherPrice={etherPrice}
-              setEtherPrice={setEtherPrice}
               binancePrice={binancePrice}
-              setBinancePrice={setBinancePrice}
               setUser={setUser}
-              totalBetAmt={totalBetAmt}
               setTotalBetAmt={setTotalBetAmt}
+              totalBetAmt={totalBetAmt}
               setMyBets={setMyBets}
-              myBets={myBets}
             />
           </Tab.Panel>
           <Tab.Panel>
@@ -81,22 +75,16 @@ const BettingForm = ({
               user={user}
               walletBalance={walletBalance}
               bnbWalletBalance={bnbWalletBalance}
-              web3={web3}
-              web3_bsc={web3_bsc}
               setWalletBalance={setWalletBalance}
               setBnbWalletBalance={setBnbWalletBalance}
-              setToggleLoginModalOpen={setToggleLoginModalOpen}
               chain={chain}
               socket={socket}
               etherPrice={etherPrice}
-              setEtherPrice={setEtherPrice}
               binancePrice={binancePrice}
-              setBinancePrice={setBinancePrice}
               setUser={setUser}
               totalBetAmt={totalBetAmt}
               setTotalBetAmt={setTotalBetAmt}
               setMyBets={setMyBets}
-              myBets={myBets}
             />
           </Tab.Panel>
           <Tab.Panel>
@@ -104,22 +92,16 @@ const BettingForm = ({
               user={user}
               walletBalance={walletBalance}
               bnbWalletBalance={bnbWalletBalance}
-              web3={web3}
-              web3_bsc={web3_bsc}
               setWalletBalance={setWalletBalance}
               setBnbWalletBalance={setBnbWalletBalance}
-              setToggleLoginModalOpen={setToggleLoginModalOpen}
               chain={chain}
               socket={socket}
               etherPrice={etherPrice}
-              setEtherPrice={setEtherPrice}
               binancePrice={binancePrice}
-              setBinancePrice={setBinancePrice}
               setUser={setUser}
               totalBetAmt={totalBetAmt}
               setTotalBetAmt={setTotalBetAmt}
               setMyBets={setMyBets}
-              myBets={myBets}
             />
           </Tab.Panel>
         </Tab.Panels>
