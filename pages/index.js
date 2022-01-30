@@ -217,7 +217,7 @@ export default function Home() {
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
       </Head>
-      {localStorage.getItem("token") ? (
+      {userEmail ? (
         user ? (
           <Layout
             user={user}
