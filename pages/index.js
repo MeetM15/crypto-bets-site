@@ -217,7 +217,80 @@ export default function Home() {
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
       </Head>
-      {user ? (
+      {localStorage.getItem("token") ? (
+        user ? (
+          <Layout
+            user={user}
+            lvl={lvl}
+            totalBetAmt={totalBetAmt}
+            setToggleLoginModalOpen={setToggleLoginModalOpen}
+            setShowWalletModal={setShowWalletModal}
+            chain={chain}
+            setChain={setChain}
+            setLoginTab={setLoginTab}
+            walletBalance={walletBalance}
+            bnbWalletBalance={bnbWalletBalance}
+            setShowReferralModal={setShowReferralModal}
+            setShowLogoutModal={setShowLogoutModal}>
+            <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
+              <BettingForm
+                user={user}
+                walletBalance={walletBalance}
+                bnbWalletBalance={bnbWalletBalance}
+                web3={web3}
+                web3_bsc={web3_bsc}
+                setWalletBalance={setWalletBalance}
+                setBnbWalletBalance={setBnbWalletBalance}
+                setToggleLoginModalOpen={setToggleLoginModalOpen}
+                chain={chain}
+                socket={socket}
+                etherPrice={etherPrice}
+                setEtherPrice={setEtherPrice}
+                binancePrice={binancePrice}
+                setBinancePrice={setBinancePrice}
+                setUser={setUser}
+                totalBetAmt={totalBetAmt}
+                setTotalBetAmt={setTotalBetAmt}
+                setMyBets={setMyBets}
+                myBets={myBets}
+              />
+            </div>
+            <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
+              <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
+            </div>
+            <Login
+              toggleLoginModalOpen={toggleLoginModalOpen}
+              setToggleLoginModalOpen={setToggleLoginModalOpen}
+              loginTab={loginTab}
+            />
+            <Wallet
+              setShowWalletModal={setShowWalletModal}
+              showWalletModal={showWalletModal}
+              user={user}
+              walletBalance={walletBalance}
+              bnbWalletBalance={bnbWalletBalance}
+              chain={chain}
+              web3={web3}
+              web3_bsc={web3_bsc}
+              setWalletBalance={setWalletBalance}
+              setBnbWalletBalance={setBnbWalletBalance}
+            />
+            <Referral
+              showReferralModal={showReferralModal}
+              setShowReferralModal={setShowReferralModal}
+              user={user}
+            />
+            <Logout
+              showLogoutModal={showLogoutModal}
+              setShowLogoutModal={setShowLogoutModal}
+            />
+          </Layout>
+        ) : (
+          <div className="w-screen h-screen flex items-center justify-center">
+            <MoonLoader color={"#24AE8F"} size={"64px"} />
+          </div>
+        )
+      ) : (
         <Layout
           user={user}
           lvl={lvl}
@@ -284,10 +357,6 @@ export default function Home() {
             setShowLogoutModal={setShowLogoutModal}
           />
         </Layout>
-      ) : (
-        <div className="w-screen h-screen flex items-center justify-center">
-          <MoonLoader color={"#24AE8F"} size={"64px"} />
-        </div>
       )}
     </>
   );
