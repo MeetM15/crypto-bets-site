@@ -172,6 +172,8 @@ export default function Home() {
         .catch((error) => {
           console.log(error);
         });
+    } else {
+      setUserEmail("notConnected");
     }
   }, []);
   //get user details
@@ -217,7 +219,7 @@ export default function Home() {
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
       </Head>
-      {userEmail ? (
+      {userEmail && userEmail == "notConnected" ? (
         user ? (
           <Layout
             user={user}
