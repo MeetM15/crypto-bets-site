@@ -63,10 +63,6 @@ export default function Home() {
             email: userEmail,
             amt: parseFloat(100.0 / parseFloat(etherPrice)),
           })
-          .then((res) => {
-            console.log(res);
-            setUser([res.data]);
-          })
           .catch((error) => {
             console.log(error);
           });
