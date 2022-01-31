@@ -53,6 +53,27 @@ export default function Home() {
   const [lvl, setLvl] = useState(0);
   const [vipReward, setVipReward] = useState(0);
   //total bet amt
+
+  useEffect(() => {
+    if (user && user[0] && userEmail) {
+      if (lvl > vipReward) {
+        console.log(`vip updated from ${vipReward} to ${lvl} !`);
+        axios
+          .post("/vipLevelUp", {
+            email: userEmail,
+            amt: parseFloat(100.0 / parseFloat(etherPrice)),
+          })
+          .then((res) => {
+            console.log(res);
+            setUser([res.data]);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    }
+  }, [lvl]);
+
   useEffect(() => {
     console.log("total bet: ", totalBetAmt * 100);
     if (!isRewarded && user && user[0] != undefined) {
@@ -71,13 +92,37 @@ export default function Home() {
           });
       }
     }
-    if (totalBetAmt >= 0 && totalBetAmt < l1) setLvl(0);
-    else if (totalBetAmt >= l1 && totalBetAmt < l2) setLvl(1);
-    else if (totalBetAmt >= l2 && totalBetAmt < l3) setLvl(2);
-    else if (totalBetAmt >= l3 && totalBetAmt < l4) setLvl(3);
-    else if (totalBetAmt >= l4 && totalBetAmt < l5) setLvl(4);
-    else if (totalBetAmt >= l5 && totalBetAmt < l6) setLvl(5);
-    else if (totalBetAmt >= l6) setLvl(6);
+    if (
+      Math.floor(parseFloat(totalBetAmt) * 100) >= 0 &&
+      Math.floor(parseFloat(totalBetAmt) * 100) < l1
+    )
+      setLvl(0);
+    else if (
+      Math.floor(parseFloat(totalBetAmt) * 100) >= l1 &&
+      Math.floor(parseFloat(totalBetAmt) * 100) < l2
+    )
+      setLvl(1);
+    else if (
+      Math.floor(parseFloat(totalBetAmt) * 100) >= l2 &&
+      Math.floor(parseFloat(totalBetAmt) * 100) < l3
+    )
+      setLvl(2);
+    else if (
+      Math.floor(parseFloat(totalBetAmt) * 100) >= l3 &&
+      Math.floor(parseFloat(totalBetAmt) * 100) < l4
+    )
+      setLvl(3);
+    else if (
+      Math.floor(parseFloat(totalBetAmt) * 100) >= l4 &&
+      Math.floor(parseFloat(totalBetAmt) * 100) < l5
+    )
+      setLvl(4);
+    else if (
+      Math.floor(parseFloat(totalBetAmt) * 100) >= l5 &&
+      Math.floor(parseFloat(totalBetAmt) * 100) < l6
+    )
+      setLvl(5);
+    else if (Math.floor(parseFloat(totalBetAmt) * 100) >= l6) setLvl(6);
   }, [totalBetAmt, user]);
 
   //fetch prices
@@ -85,7 +130,6 @@ export default function Home() {
     const fetchPrices = async () => {
       fetch(coingeckoUrl()).then((response) =>
         response.json().then((jsonData) => {
-          console.log(jsonData);
           setEtherPrice(jsonData.ethereum.usd);
           setBinancePrice(jsonData.binancecoin.usd);
         })
@@ -152,8 +196,8 @@ export default function Home() {
       setTotalBetAmt(parseFloat(user[0].totalBetAmt));
       setVipReward(parseFloat(user[0].usedVipBonus));
       setIsRewarded(parseFloat(user[0].usedReferralBonus));
-      setWalletBalance(user[0].availableBalanceEth);
-      setBnbWalletBalance(user[0].availableBalanceBsc);
+      setWalletBalance(parseFloat(user[0].availableBalanceEth));
+      setBnbWalletBalance(parseFloat(user[0].availableBalanceBsc));
     }
   }, [user]);
 
@@ -184,7 +228,6 @@ export default function Home() {
           email: userEmail,
         })
         .then((res) => {
-          console.log(res);
           setUser([res.data]);
         })
         .catch((error) => {
@@ -220,79 +263,6 @@ export default function Home() {
         <meta name="theme-color" content="#ffffff" />
       </Head>
       {userEmail && userEmail == "notConnected" ? (
-        user ? (
-          <Layout
-            user={user}
-            lvl={lvl}
-            totalBetAmt={totalBetAmt}
-            setToggleLoginModalOpen={setToggleLoginModalOpen}
-            setShowWalletModal={setShowWalletModal}
-            chain={chain}
-            setChain={setChain}
-            setLoginTab={setLoginTab}
-            walletBalance={walletBalance}
-            bnbWalletBalance={bnbWalletBalance}
-            setShowReferralModal={setShowReferralModal}
-            setShowLogoutModal={setShowLogoutModal}>
-            <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
-              <BettingForm
-                user={user}
-                walletBalance={walletBalance}
-                bnbWalletBalance={bnbWalletBalance}
-                web3={web3}
-                web3_bsc={web3_bsc}
-                setWalletBalance={setWalletBalance}
-                setBnbWalletBalance={setBnbWalletBalance}
-                setToggleLoginModalOpen={setToggleLoginModalOpen}
-                chain={chain}
-                socket={socket}
-                etherPrice={etherPrice}
-                setEtherPrice={setEtherPrice}
-                binancePrice={binancePrice}
-                setBinancePrice={setBinancePrice}
-                setUser={setUser}
-                totalBetAmt={totalBetAmt}
-                setTotalBetAmt={setTotalBetAmt}
-                setMyBets={setMyBets}
-                myBets={myBets}
-              />
-            </div>
-            <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
-              <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
-            </div>
-            <Login
-              toggleLoginModalOpen={toggleLoginModalOpen}
-              setToggleLoginModalOpen={setToggleLoginModalOpen}
-              loginTab={loginTab}
-            />
-            <Wallet
-              setShowWalletModal={setShowWalletModal}
-              showWalletModal={showWalletModal}
-              user={user}
-              walletBalance={walletBalance}
-              bnbWalletBalance={bnbWalletBalance}
-              chain={chain}
-              web3={web3}
-              web3_bsc={web3_bsc}
-              setWalletBalance={setWalletBalance}
-              setBnbWalletBalance={setBnbWalletBalance}
-            />
-            <Referral
-              showReferralModal={showReferralModal}
-              setShowReferralModal={setShowReferralModal}
-              user={user}
-            />
-            <Logout
-              showLogoutModal={showLogoutModal}
-              setShowLogoutModal={setShowLogoutModal}
-            />
-          </Layout>
-        ) : (
-          <div className="w-screen h-screen flex items-center justify-center">
-            <MoonLoader color={"#24AE8F"} size={"64px"} />
-          </div>
-        )
-      ) : (
         <Layout
           user={user}
           lvl={lvl}
@@ -359,6 +329,77 @@ export default function Home() {
             setShowLogoutModal={setShowLogoutModal}
           />
         </Layout>
+      ) : user ? (
+        <Layout
+          user={user}
+          lvl={lvl}
+          totalBetAmt={totalBetAmt}
+          setToggleLoginModalOpen={setToggleLoginModalOpen}
+          setShowWalletModal={setShowWalletModal}
+          chain={chain}
+          setChain={setChain}
+          setLoginTab={setLoginTab}
+          walletBalance={walletBalance}
+          bnbWalletBalance={bnbWalletBalance}
+          setShowReferralModal={setShowReferralModal}
+          setShowLogoutModal={setShowLogoutModal}>
+          <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
+            <BettingForm
+              user={user}
+              walletBalance={walletBalance}
+              bnbWalletBalance={bnbWalletBalance}
+              web3={web3}
+              web3_bsc={web3_bsc}
+              setWalletBalance={setWalletBalance}
+              setBnbWalletBalance={setBnbWalletBalance}
+              setToggleLoginModalOpen={setToggleLoginModalOpen}
+              chain={chain}
+              socket={socket}
+              etherPrice={etherPrice}
+              setEtherPrice={setEtherPrice}
+              binancePrice={binancePrice}
+              setBinancePrice={setBinancePrice}
+              setUser={setUser}
+              totalBetAmt={totalBetAmt}
+              setTotalBetAmt={setTotalBetAmt}
+              setMyBets={setMyBets}
+              myBets={myBets}
+            />
+          </div>
+          <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
+            <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
+          </div>
+          <Login
+            toggleLoginModalOpen={toggleLoginModalOpen}
+            setToggleLoginModalOpen={setToggleLoginModalOpen}
+            loginTab={loginTab}
+          />
+          <Wallet
+            setShowWalletModal={setShowWalletModal}
+            showWalletModal={showWalletModal}
+            user={user}
+            walletBalance={walletBalance}
+            bnbWalletBalance={bnbWalletBalance}
+            chain={chain}
+            web3={web3}
+            web3_bsc={web3_bsc}
+            setWalletBalance={setWalletBalance}
+            setBnbWalletBalance={setBnbWalletBalance}
+          />
+          <Referral
+            showReferralModal={showReferralModal}
+            setShowReferralModal={setShowReferralModal}
+            user={user}
+          />
+          <Logout
+            showLogoutModal={showLogoutModal}
+            setShowLogoutModal={setShowLogoutModal}
+          />
+        </Layout>
+      ) : (
+        <div className="w-screen h-screen flex items-center justify-center">
+          <MoonLoader color={"#24AE8F"} size={"64px"} />
+        </div>
       )}
     </>
   );

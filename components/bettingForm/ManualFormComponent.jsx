@@ -59,7 +59,7 @@ const ManualFormComponent = ({
   const [result, setResult] = useState();
 
   const handlePlaceBetBnb = () => {
-    if (user && user[0] && parseFloat(betAmt) > 0.0) {
+    if (user && user[0]) {
       const result = placeBet(sliderValue, toggleRollOver);
       const betResult = result[0];
       const diceValue = result[1];
@@ -113,7 +113,8 @@ const ManualFormComponent = ({
           .post("/bet", betData)
           .then((res) => {
             console.log(res);
-            return socket.emit("placeBet");
+            if (parseFloat(betAmt) > 0.0) return socket.emit("placeBet");
+            else return res;
           })
           .then((res) => {
             return axios.post("myBets", {
@@ -158,7 +159,7 @@ const ManualFormComponent = ({
     }
   };
   const handlePlaceBet = () => {
-    if (user && user[0] && parseFloat(betAmt) > 0.0) {
+    if (user && user[0]) {
       const result = placeBet(sliderValue, toggleRollOver);
       const betResult = result[0];
       const diceValue = result[1];
@@ -212,7 +213,8 @@ const ManualFormComponent = ({
         .post("/bet", betData)
         .then((res) => {
           console.log(res);
-          return socket.emit("placeBet");
+          if (parseFloat(betAmt) > 0.0) return socket.emit("placeBet");
+          else return res;
         })
         .then((res) => {
           return axios.post("myBets", {

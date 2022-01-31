@@ -81,7 +81,7 @@ function update_query_eth(depositAmt, availableBalance, address) {
     });
   });
 }
-function update_query_bsc(depositAmt, availableBalance, address) {
+function update_query_bsc(depositAmt, availableBalance, address, res) {
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlUpdate =
@@ -95,10 +95,11 @@ function update_query_bsc(depositAmt, availableBalance, address) {
       connection.release();
       if (err) throw err;
       console.log("updates bsc : ", update_result);
+      res.sendStatus(201);
     });
   });
 }
-function search_query_address_eth(balances, currAddBal) {
+function search_query_address_eth(balances, currAddBal, k) {
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "SELECT * FROM user_table WHERE ethAddress = ?";
@@ -123,7 +124,7 @@ function search_query_address_eth(balances, currAddBal) {
     );
   });
 }
-function search_query_address_bsc(balancesBsc, currAddBal) {
+function search_query_address_bsc(balancesBsc, currAddBal, k, res) {
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "SELECT * FROM user_table WHERE bscAddress = ?";
@@ -142,7 +143,8 @@ function search_query_address_bsc(balancesBsc, currAddBal) {
           parseFloat(currAddBal) +
             search_add_result[0].winAmtBsc -
             search_add_result[0].lossAmtBsc,
-          balancesBsc.result[k].account
+          balancesBsc.result[k].account,
+          res
         );
       }
     );
@@ -216,7 +218,7 @@ app.post("/updateBalance", async (req, res) => {
                   const currAddBal = await web3.utils.fromWei(
                     balances.result[k].balance
                   );
-                  search_query_address_eth(balances, currAddBal);
+                  search_query_address_eth(balances, currAddBal, k);
                 }
               }
             })
@@ -235,7 +237,7 @@ app.post("/updateBalance", async (req, res) => {
                   const currAddBal = await web3_bsc.utils.fromWei(
                     balancesBsc.result[k].balance
                   );
-                  search_query_address_bsc(balancesBsc, currAddBal);
+                  search_query_address_bsc(balancesBsc, currAddBal, k, res);
                 }
               }
             })
@@ -243,7 +245,7 @@ app.post("/updateBalance", async (req, res) => {
         }
       }
     }); //end of connection.query()
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }); //end of app.post()
 
 //middleware to read req.body.<params>
@@ -416,7 +418,7 @@ app.post("/login", (req, res) => {
         } //end of Password incorrect
       } //end of User exists
     }); //end of connection.query()
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }); //end of app.post()
 
 app.post("/getUserData", (req, res) => {
@@ -435,7 +437,7 @@ app.post("/getUserData", (req, res) => {
         res.json(result[0]);
       } //end of User exists
     }); //end of connection.query()
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }); //end of app.post()
 
 //Check to make sure header is not undefined, if so, return Forbidden (403)***
@@ -555,7 +557,7 @@ function update_user_bet(
         }); //end of bet details connection.query()
       }
     }
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }
 function insert_user_bet(
   username,
@@ -591,7 +593,7 @@ function insert_user_bet(
       console.log(result.insertId);
       res.sendStatus(201);
     }); //end of bet details connection.query()
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }
 
 app.post("/bet", async (req, res) => {
@@ -641,7 +643,7 @@ app.post("/bet", async (req, res) => {
       email,
       res
     );
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }); //end of app.post()
 //Reward on win bet
 
@@ -1156,7 +1158,7 @@ app.post("/withdraw", async (req, res) => {
         }
       } //end of User exists
     }); //end of connection.query()
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }); //end of app.post()
 //withdraw winnings
 //Store bet details
@@ -1171,7 +1173,7 @@ app.get("/liveBets", (req, res) => {
       if (err) throw err;
       else res.json(result);
     }); //end of connection.query()
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }); //end of app.post()
 
 //my bets ***
@@ -1187,7 +1189,7 @@ app.post("/myBets", (req, res) => {
       if (err) throw err;
       else res.json(result);
     }); //end of connection.query()
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }); //end of app.post()
 
 //get total bet ***
@@ -1202,13 +1204,13 @@ app.post("/getTotalBet", (req, res) => {
       if (err) throw err;
       else res.json(result);
     }); //end of connection.query()
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }); //end of app.post()
 
 //use referral bonus winnings ***
 //reffered by user
 function ref_user_update(referResult, amt, email, res) {
-  db.connection(async (err, connection) => {
+  db.getConnection(async (err, connection) => {
     if (err) throw err;
     const updateWinAmtEthRef =
       "UPDATE user_table SET winAmtEth = ? , availableBalanceEth = ? WHERE email = ?";
@@ -1231,7 +1233,7 @@ function ref_user_update(referResult, amt, email, res) {
 }
 //reffered by user
 function ref_user_search(searchResult, amt, email, res) {
-  db.connection(async (err, connection) => {
+  db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearchRefer = "Select * from user_table where id = ?";
     const search_query_refer = mysql.format(sqlSearchRefer, [
@@ -1253,7 +1255,7 @@ function ref_user_search(searchResult, amt, email, res) {
 }
 //reffered user
 function reffered_user_win(searchResult, amt, email, res) {
-  db.connection(async (err, connection) => {
+  db.getConnection(async (err, connection) => {
     if (err) throw err;
     const updateWinAmtEth =
       "UPDATE user_table SET usedReferralBonus = ? , winAmtEth = ? , availableBalanceEth = ? WHERE email = ?";
@@ -1294,14 +1296,14 @@ app.post("/referralBonus", async (req, res) => {
         ref_user_search(searchResult, amt, email, res);
       } //end of User exists
     }); //end of connection.query()
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }); //end of app.post()
 //use referral bonus winnings
 
 //use vip bonus winnings ***
 
 function vip_update(searchResult, amt, email, res) {
-  db.connection(async (err, connection) => {
+  db.getConnection(async (err, connection) => {
     if (err) throw err;
     const updateWinAmtEth =
       "UPDATE user_table SET usedVipBonus = ? , winAmtEth = ? , availableBalanceEth = ? WHERE email = ?";
@@ -1345,7 +1347,7 @@ app.post("/vipLevelUp", async (req, res) => {
         vip_update(searchResult, amt, email, res);
       }
     }); //end of connection.query()
-  }); //end of db.connection()
+  }); //end of db.getConnection()
 }); //end of app.post()
 //use vip bonus winnings
 

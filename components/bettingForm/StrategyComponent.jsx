@@ -179,7 +179,7 @@ const StrategyComponent = ({
         setShowDice("flex");
         setTimeout(() => {
           setShowDice("hidden");
-        }, 2000);
+        }, 3000);
         setResult(parseFloat(diceValue.toFixed(2)));
         return {
           currentBet: currentBet,
@@ -242,7 +242,7 @@ const StrategyComponent = ({
       setShowDice("flex");
       setTimeout(() => {
         setShowDice("hidden");
-      }, 2000);
+      }, 3000);
       setResult(parseFloat(diceValue.toFixed(2)));
 
       //set dice result color acc to win/loss
@@ -280,9 +280,7 @@ const StrategyComponent = ({
           (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
         );
       } else {
-        setBnbWalletBalance((prev) =>
-          parseFloat(parseFloat(prev) - parseFloat(betAmt))
-        );
+        setBnbWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
         currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
         totalProf = parseFloat(
           (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
@@ -313,9 +311,9 @@ const StrategyComponent = ({
           email: user[0].email,
           chain: chain,
           betResult: betResult == "green" ? true : false,
-          betAmt: currentBet.toString(),
+          betAmt: parseFloat(currentBet),
           profitAmt:
-            parseFloat(currentProf) > 0 ? currentProf.toString() : "0.0",
+            parseFloat(currentProf) > 0 ? parseFloat(currentProf) : "0.0",
           totalBetAmt:
             parseFloat(totalBetAmt) +
             parseFloat(binancePrice) * parseFloat(currentBet),
@@ -364,7 +362,7 @@ const StrategyComponent = ({
         setShowDice("flex");
         setTimeout(() => {
           setShowDice("hidden");
-        }, 2000);
+        }, 3000);
         setResult(parseFloat(diceValue.toFixed(2)));
         return {
           currentBet: currentBet,
@@ -427,7 +425,7 @@ const StrategyComponent = ({
       setShowDice("flex");
       setTimeout(() => {
         setShowDice("hidden");
-      }, 2000);
+      }, 3000);
       setResult(parseFloat(diceValue.toFixed(2)));
 
       //set dice result color acc to win/loss
@@ -610,7 +608,7 @@ const StrategyComponent = ({
                     console.log("CBet : ", currentBet);
                     console.log("CProfit : ", currentProf);
                     console.log("TProfit : ", totalProf);
-                    await timer(2000); // wait between next bet
+                    await timer(1000); // wait between next bet
                   }
                 };
                 const runBets = async () => {
@@ -669,7 +667,7 @@ const StrategyComponent = ({
                     console.log("CBet : ", currentBet);
                     console.log("CProfit : ", currentProf);
                     console.log("TProfit : ", totalProf);
-                    await timer(2000); // wait between next bet
+                    await timer(1000); // wait between next bet
                   }
                 };
                 // To prevent spamming of bets
