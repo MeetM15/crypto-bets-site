@@ -2,17 +2,20 @@ import Head from "next/head";
 import BettingForm from "../components/bettingForm/BettingForm";
 import Layout from "../components/layout/Layout";
 import styles from "../styles/Home.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Login from "../components/modals/Login";
-import axios from "axios";
 import Wallet from "../components/modals/Wallet";
+import Referral from "../components/modals/Referral";
+import Logout from "../components/modals/Logout";
+import axios from "axios";
 import { MoonLoader } from "react-spinners";
 import { io } from "socket.io-client";
 import Web3 from "web3";
 import LiveBetsComponent from "../components/liveBets/LiveBetsComponent";
-import Referral from "../components/modals/Referral";
-import Logout from "../components/modals/Logout";
 import { useRouter } from "next/router";
+import Link from "next/link";
+import { Menu, Transition } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/solid";
 const web3 = new Web3(
   "https://eth-rinkeby.alchemyapi.io/v2/sk88g0PfYAHxltvWlVpWWbvrXMnv22TN"
 );
@@ -34,6 +37,7 @@ const l6 = 40000;
 
 export default function Home() {
   const router = useRouter();
+  const myInterval = useRef(null);
   const [user, setUser] = useState();
   const [userEmail, setUserEmail] = useState();
   const [loginTab, setLoginTab] = useState("login");
@@ -49,11 +53,37 @@ export default function Home() {
   const [etherPrice, setEtherPrice] = useState(0.0);
   const [binancePrice, setBinancePrice] = useState(0.0);
   const [totalBetAmt, setTotalBetAmt] = useState(0.0);
-  const [isRewarded, setIsRewarded] = useState(1);
   const [lvl, setLvl] = useState(0);
+  const [isRewarded, setIsRewarded] = useState(1);
   const [vipReward, setVipReward] = useState(0);
-  //total bet amt
+  const [isFetchingUser, setIsFetchingUser] = useState(false);
 
+  //fetch user every minute
+  useEffect(() => {
+    myInterval.current = setInterval(() => {
+      setIsFetchingUser(true);
+    }, 60000);
+    return () => clearInterval(myInterval.current);
+  }, []);
+  useEffect(() => {
+    if (userEmail && isFetchingUser) {
+      console.log("fetched user!");
+      axios
+        .post("/getUserData", {
+          email: userEmail,
+        })
+        .then((res) => {
+          setUser([res.data]);
+        })
+        .catch((error) => {
+          setUser([]);
+          console.log(error);
+        });
+      setIsFetchingUser(false);
+    }
+  }, [isFetchingUser]);
+
+  //total bet amt
   useEffect(() => {
     if (user && user[0] && userEmail) {
       if (lvl > vipReward) {
@@ -131,7 +161,7 @@ export default function Home() {
         })
       );
     };
-    fetchPrices();
+    fetchPrices().catch((err) => console.log(err));
   }, []);
 
   //referral
@@ -227,6 +257,7 @@ export default function Home() {
           setUser([res.data]);
         })
         .catch((error) => {
+          setUser([]);
           console.log(error);
         });
     }
@@ -298,6 +329,99 @@ export default function Home() {
           <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
             <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
           </div>
+          <div className="p-8 md:py-7 md:px-32 w-full bg-secondary flex justify-between">
+            <div className="flex flex-col items-start gap-2 w-1/2 md:w-1/4 p-2">
+              <Link href="/">
+                <img
+                  className="h-6 sm:h-8 w-auto p-1 cursor-pointer"
+                  src="/icons/logo1.svg"
+                  alt="logo"
+                />
+              </Link>
+              <div className="font-medium text-xs text-btntext">
+                © 2022 diceup.com
+              </div>
+              <div className="font-medium text-xs text-btntext">
+                All Rights Reserved.
+              </div>
+              <div className="font-medium text-xs text-btntext">
+                Primedice is owned and operated by Slice Media N.V.,
+                registration number: 145203
+              </div>
+              <div className="font-medium text-xs text-btntext">
+                <Menu
+                  as="div"
+                  className="relative px-2 py-1 w-full flex items-start justify-start">
+                  <Menu.Button className="flex items-center w-full justify-center text-btnText font-medium text-xs">
+                    <img
+                      src="/icons/usa.svg"
+                      alt="logo"
+                      className="p-0.5 w-4 sm:w-6"
+                    />
+                    <ChevronDownIcon className="mr-1 sm:mr-2 h-5 w-5 opacity-60 text-btntext " />
+                    English
+                  </Menu.Button>
+                </Menu>
+              </div>
+              <div className="font-medium text-xs text-black">
+                1 ETH = ${etherPrice}
+              </div>
+              <div className="font-medium text-xs text-black">
+                1 BNB = ${binancePrice}
+              </div>
+            </div>
+            <div className="flex flex-wrap w-3/4 justify-evenly">
+              <div className="flex flex-col items-start justify-between md:w-auto p-2">
+                <div className="flex flex-col gap-2">
+                  <div className="text-xs font-medium text-black">Support</div>
+                  <div className="font-medium text-xs text-btntext">
+                    Live Support
+                  </div>
+                  <div className="font-medium text-xs text-btntext">
+                    Affiliate
+                  </div>
+                  <div className="font-medium text-xs text-btntext">
+                    Probably Fair
+                  </div>
+                  <div className="font-medium text-xs text-btntext">
+                    Gamble Aware
+                  </div>
+                </div>
+                <img
+                  className="h-10 sm:h-16 w-auto p-1 cursor-pointer"
+                  src="/icons/gambling.svg"
+                  alt="logo"
+                />
+              </div>
+              <div className="flex flex-col items-start justify-between md:w-auto p-2">
+                <div className="flex flex-col gap-2">
+                  <div className="text-xs font-medium text-black">About Us</div>
+                  <Link href="/vip-club">
+                    <div className="font-medium text-xs text-btntext">
+                      VIP Club
+                    </div>
+                  </Link>
+                </div>
+              </div>
+              <div className="flex flex-col items-start justify-between md:w-auto p-2">
+                <div className="flex flex-col gap-2">
+                  <div className="text-xs font-medium text-black">
+                    Community
+                  </div>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext">
+                      Telegram
+                    </div>
+                  </a>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext">
+                      Twitter
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
           <Login
             toggleLoginModalOpen={toggleLoginModalOpen}
             setToggleLoginModalOpen={setToggleLoginModalOpen}
@@ -364,6 +488,99 @@ export default function Home() {
           </div>
           <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
             <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
+          </div>
+          <div className="p-8 md:py-7 md:px-32 w-full bg-secondary flex justify-between">
+            <div className="flex flex-col items-start gap-2 w-1/2 md:w-1/4 p-2">
+              <Link href="/">
+                <img
+                  className="h-6 sm:h-8 w-auto p-1 cursor-pointer"
+                  src="/icons/logo1.svg"
+                  alt="logo"
+                />
+              </Link>
+              <div className="font-medium text-xs text-btntext">
+                © 2022 diceup.com
+              </div>
+              <div className="font-medium text-xs text-btntext">
+                All Rights Reserved.
+              </div>
+              <div className="font-medium text-xs text-btntext">
+                Primedice is owned and operated by Slice Media N.V.,
+                registration number: 145203
+              </div>
+              <div className="font-medium text-xs text-btntext">
+                <Menu
+                  as="div"
+                  className="relative px-2 py-1 w-full flex items-start justify-start">
+                  <Menu.Button className="flex items-center w-full justify-center text-btnText font-medium text-xs">
+                    <img
+                      src="/icons/usa.svg"
+                      alt="logo"
+                      className="p-0.5 w-4 sm:w-6"
+                    />
+                    <ChevronDownIcon className="mr-1 sm:mr-2 h-5 w-5 opacity-60 text-btntext " />
+                    English
+                  </Menu.Button>
+                </Menu>
+              </div>
+              <div className="font-medium text-xs text-black">
+                1 ETH = ${etherPrice}
+              </div>
+              <div className="font-medium text-xs text-black">
+                1 BNB = ${binancePrice}
+              </div>
+            </div>
+            <div className="flex flex-wrap w-3/4 justify-evenly">
+              <div className="flex flex-col items-start justify-between md:w-auto p-2">
+                <div className="flex flex-col gap-2">
+                  <div className="text-xs font-medium text-black">Support</div>
+                  <div className="font-medium text-xs text-btntext">
+                    Live Support
+                  </div>
+                  <div className="font-medium text-xs text-btntext">
+                    Affiliate
+                  </div>
+                  <div className="font-medium text-xs text-btntext">
+                    Probably Fair
+                  </div>
+                  <div className="font-medium text-xs text-btntext">
+                    Gamble Aware
+                  </div>
+                </div>
+                <img
+                  className="h-10 sm:h-16 w-auto p-1 cursor-pointer"
+                  src="/icons/gambling.svg"
+                  alt="logo"
+                />
+              </div>
+              <div className="flex flex-col items-start justify-between md:w-auto p-2">
+                <div className="flex flex-col gap-2">
+                  <div className="text-xs font-medium text-black">About Us</div>
+                  <Link href="/vip-club">
+                    <div className="font-medium text-xs text-btntext">
+                      VIP Club
+                    </div>
+                  </Link>
+                </div>
+              </div>
+              <div className="flex flex-col items-start justify-between md:w-auto p-2">
+                <div className="flex flex-col gap-2">
+                  <div className="text-xs font-medium text-black">
+                    Community
+                  </div>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext">
+                      Telegram
+                    </div>
+                  </a>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext">
+                      Twitter
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
           <Login
             toggleLoginModalOpen={toggleLoginModalOpen}

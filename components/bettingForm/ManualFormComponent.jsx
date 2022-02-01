@@ -379,11 +379,11 @@ const ManualFormComponent = ({
               }}
               styles={{
                 track: {
-                  backgroundColor: `${toggleRollOver ? "#24AE8F" : "#F3F3F3"}`,
+                  backgroundColor: `${toggleRollOver ? "#24AE8F" : "#FF7878"}`,
                   width: "100%",
                 },
                 active: {
-                  backgroundColor: `${toggleRollOver ? "#F3F3F3" : "#24AE8F"}`,
+                  backgroundColor: `${toggleRollOver ? "#FF7878" : "#24AE8F"}`,
                 },
                 thumb: {
                   width: 28,
