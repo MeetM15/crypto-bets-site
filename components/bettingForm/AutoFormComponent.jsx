@@ -99,7 +99,7 @@ const AutoFormComponent = ({
           (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
         );
         setWalletBalance((prev) =>
-          parseFloat(parseFloat(prev) - parseFloat(betAmt))
+          parseFloat(parseFloat(prev) - parseFloat(currentBet))
         );
       }
 
@@ -224,7 +224,7 @@ const AutoFormComponent = ({
         );
       } else {
         setWalletBalance((prev) =>
-          parseFloat(parseFloat(prev) - parseFloat(betAmt))
+          parseFloat(parseFloat(prev) - parseFloat(currentBet))
         );
         currentProf = (-parseFloat(currentBet)).toFixed(6);
         totalProf = (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(
@@ -296,7 +296,7 @@ const AutoFormComponent = ({
         );
       } else {
         setBnbWalletBalance((prev) =>
-          parseFloat(parseFloat(prev) - parseFloat(betAmt))
+          parseFloat(parseFloat(prev) - parseFloat(currentBet))
         );
         currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
         totalProf = parseFloat(
@@ -426,7 +426,9 @@ const AutoFormComponent = ({
           6
         );
       } else {
-        setBnbWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+        setBnbWalletBalance(
+          (prev) => parseFloat(prev) - parseFloat(currentBet)
+        );
         currentProf = (-parseFloat(currentBet)).toFixed(6);
         totalProf = (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(
           6

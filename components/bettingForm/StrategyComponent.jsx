@@ -99,7 +99,7 @@ const StrategyComponent = ({
           (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
         );
         setWalletBalance((prev) =>
-          parseFloat(parseFloat(prev) - parseFloat(betAmt))
+          parseFloat(parseFloat(prev) - parseFloat(currentBet))
         );
       }
 
@@ -216,7 +216,7 @@ const StrategyComponent = ({
         );
       } else {
         setWalletBalance((prev) =>
-          parseFloat(parseFloat(prev) - parseFloat(betAmt))
+          parseFloat(parseFloat(prev) - parseFloat(currentBet))
         );
         currentProf = (-parseFloat(currentBet)).toFixed(6);
         totalProf = (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(
@@ -280,7 +280,9 @@ const StrategyComponent = ({
           (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
         );
       } else {
-        setBnbWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+        setBnbWalletBalance(
+          (prev) => parseFloat(prev) - parseFloat(currentBet)
+        );
         currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
         totalProf = parseFloat(
           (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
@@ -400,7 +402,9 @@ const StrategyComponent = ({
           6
         );
       } else {
-        setBnbWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+        setBnbWalletBalance(
+          (prev) => parseFloat(prev) - parseFloat(currentBet)
+        );
         currentProf = (-parseFloat(currentBet)).toFixed(6);
         totalProf = (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(
           6

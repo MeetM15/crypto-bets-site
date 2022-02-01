@@ -505,7 +505,7 @@ function update_user_bet(
         result[0].availableBalanceEth - betAmt,
         email,
       ]);
-      if (betResult == true) {
+      if (betResult === true) {
         //Store bet details
         await connection.query(update_query_win, async (err, result) => {
           connection.release();
@@ -539,7 +539,7 @@ function update_user_bet(
         result[0].availableBalanceBsc - betAmt,
         email,
       ]);
-      if (betResult == true) {
+      if (betResult === true) {
         //Store bet details
         await connection.query(update_query_win, async (err, result) => {
           connection.release();
@@ -1280,7 +1280,7 @@ function reffered_user_win(searchResult, amt, email, res) {
 
 app.post("/referralBonus", async (req, res) => {
   const email = req.body.email;
-  const amt = req.body.amt;
+  const amt = parseFloat(req.body.amt);
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "Select * from user_table where email = ?";
@@ -1332,7 +1332,7 @@ function vip_update(searchResult, amt, email, res) {
 
 app.post("/vipLevelUp", async (req, res) => {
   const email = req.body.email;
-  const amt = await web3.utils.toWei(String(req.body.amt));
+  const amt = parseFloat(req.body.amt);
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "Select * from user_table where email = ?";
