@@ -26,10 +26,18 @@ const WithdrawForm = ({
       axios
         .post("/withdraw", data)
         .then((withdrawRes) => {
+          console.log(withdrawRes);
+          return axios.post("/getUserData", {
+            email: userEmail,
+          });
+        })
+        .then((res) => {
+          setUser([res.data]);
           setIsWithdrawing(false);
           console.log(withdrawRes);
         })
         .catch((error) => {
+          setUser([]);
           console.log("error : ", error);
         });
     }
