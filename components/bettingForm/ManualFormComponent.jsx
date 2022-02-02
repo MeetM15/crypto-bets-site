@@ -104,7 +104,7 @@ const ManualFormComponent = ({
           chain: chain,
           betResult: betResult == "green" ? true : false,
           betAmt: betAmt,
-          profitAmt: profitAmt,
+          profitAmt: betResult == "green" ? parseFloat(profitAmt) : 0.0,
           totalBetAmt:
             parseFloat(totalBetAmt) + parseFloat(binancePrice) * betAmt,
         };
@@ -202,7 +202,7 @@ const ManualFormComponent = ({
         betResult: betResult == "green" ? true : false,
         chain: chain,
         email: user[0].email,
-        profitAmt: profitAmt,
+        profitAmt: betResult == "green" ? parseFloat(profitAmt) : 0.0,
         totalBetAmt: parseFloat(totalBetAmt) + parseFloat(etherPrice) * betAmt,
       };
       setTotalBetAmt(
