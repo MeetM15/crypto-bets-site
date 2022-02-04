@@ -20,10 +20,10 @@ const io = socketIo(server, {
 // bsc api key : DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY
 const Web3 = require("web3");
 let web3 = new Web3(
-  "https://eth-rinkeby.alchemyapi.io/v2/sk88g0PfYAHxltvWlVpWWbvrXMnv22TN"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/mainnet"
 );
 let web3_bsc = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/487960593a8857bde8a74862/bsc/testnet"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/bsc/mainnet"
 );
 const mainWallet = "0x14d260dcb7c543d289527B8855fb9850390565d2";
 const mainPrivateKey =

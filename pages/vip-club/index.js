@@ -25,10 +25,10 @@ const l5 = 30000;
 const l6 = 40000;
 
 const web3 = new Web3(
-  "https://eth-rinkeby.alchemyapi.io/v2/sk88g0PfYAHxltvWlVpWWbvrXMnv22TN"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/mainnet"
 );
 const web3_bsc = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/487960593a8857bde8a74862/bsc/testnet"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/bsc/mainnet"
 );
 
 const VipClub = () => {
