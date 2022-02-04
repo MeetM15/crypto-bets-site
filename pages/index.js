@@ -345,10 +345,6 @@ export default function Home() {
                 All Rights Reserved.
               </div>
               <div className="font-medium text-xs text-btntext">
-                Primedice is owned and operated by Slice Media N.V.,
-                registration number: 145203
-              </div>
-              <div className="font-medium text-xs text-btntext">
                 <Menu
                   as="div"
                   className="relative px-2 py-1 w-full flex items-start justify-start">
@@ -374,18 +370,26 @@ export default function Home() {
               <div className="flex flex-col items-start justify-between md:w-auto p-2">
                 <div className="flex flex-col gap-2">
                   <div className="text-xs font-medium text-black">Support</div>
-                  <div className="font-medium text-xs text-btntext">
-                    Live Support
-                  </div>
-                  <div className="font-medium text-xs text-btntext">
-                    Affiliate
-                  </div>
-                  <div className="font-medium text-xs text-btntext">
-                    Probably Fair
-                  </div>
-                  <div className="font-medium text-xs text-btntext">
-                    Gamble Aware
-                  </div>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
+                      Live Support
+                    </div>
+                  </a>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
+                      Affiliate
+                    </div>
+                  </a>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
+                      Probably Fair
+                    </div>
+                  </a>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
+                      Gamble Aware
+                    </div>
+                  </a>
                 </div>
                 <img
                   className="h-10 sm:h-16 w-auto p-1 cursor-pointer"
@@ -397,7 +401,7 @@ export default function Home() {
                 <div className="flex flex-col gap-2">
                   <div className="text-xs font-medium text-black">About Us</div>
                   <Link href="/vip-club">
-                    <div className="font-medium text-xs text-btntext">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
                       VIP Club
                     </div>
                   </Link>
@@ -409,12 +413,12 @@ export default function Home() {
                     Community
                   </div>
                   <a href="#">
-                    <div className="font-medium text-xs text-btntext">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
                       Telegram
                     </div>
                   </a>
                   <a href="#">
-                    <div className="font-medium text-xs text-btntext">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
                       Twitter
                     </div>
                   </a>
@@ -505,10 +509,6 @@ export default function Home() {
                 All Rights Reserved.
               </div>
               <div className="font-medium text-xs text-btntext">
-                Primedice is owned and operated by Slice Media N.V.,
-                registration number: 145203
-              </div>
-              <div className="font-medium text-xs text-btntext">
                 <Menu
                   as="div"
                   className="relative px-2 py-1 w-full flex items-start justify-start">
@@ -534,18 +534,26 @@ export default function Home() {
               <div className="flex flex-col items-start justify-between md:w-auto p-2">
                 <div className="flex flex-col gap-2">
                   <div className="text-xs font-medium text-black">Support</div>
-                  <div className="font-medium text-xs text-btntext">
-                    Live Support
-                  </div>
-                  <div className="font-medium text-xs text-btntext">
-                    Affiliate
-                  </div>
-                  <div className="font-medium text-xs text-btntext">
-                    Probably Fair
-                  </div>
-                  <div className="font-medium text-xs text-btntext">
-                    Gamble Aware
-                  </div>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
+                      Live Support
+                    </div>
+                  </a>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
+                      Affiliate
+                    </div>
+                  </a>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
+                      Probably Fair
+                    </div>
+                  </a>
+                  <a href="#">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
+                      Gamble Aware
+                    </div>
+                  </a>
                 </div>
                 <img
                   className="h-10 sm:h-16 w-auto p-1 cursor-pointer"
@@ -557,7 +565,7 @@ export default function Home() {
                 <div className="flex flex-col gap-2">
                   <div className="text-xs font-medium text-black">About Us</div>
                   <Link href="/vip-club">
-                    <div className="font-medium text-xs text-btntext">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
                       VIP Club
                     </div>
                   </Link>
@@ -569,12 +577,12 @@ export default function Home() {
                     Community
                   </div>
                   <a href="#">
-                    <div className="font-medium text-xs text-btntext">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
                       Telegram
                     </div>
                   </a>
                   <a href="#">
-                    <div className="font-medium text-xs text-btntext">
+                    <div className="font-medium text-xs text-btntext cursor-pointer">
                       Twitter
                     </div>
                   </a>
