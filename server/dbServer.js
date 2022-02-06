@@ -100,7 +100,6 @@ function update_query_bsc(depositAmt, availableBalance, address, res) {
       connection.release();
       if (err) throw err;
       console.log("updates bsc : ", update_result);
-      res.sendStatus(201);
     });
   });
 }
@@ -118,7 +117,6 @@ function update_query_poly(depositAmt, availableBalance, address, res) {
       connection.release();
       if (err) throw err;
       console.log("updates poly : ", update_result);
-      res.sendStatus(201);
     });
   });
 }
@@ -210,21 +208,25 @@ app.post("/updateBalance", async (req, res) => {
       if (err) throw err;
       console.log("user search data : ", result);
       if (result.length != 0) {
-        const calls = (result.length - 1) / 20;
+        const calls = parseInt((result.length - 1) / 20);
         for (let i = 0; i < calls + 1; i++) {
+          console.log("i : ", i);
+          console.log("calls : ", calls);
           //mainnet
-          var urlEth = `https://api.etherscan.io/api?module=account&action=balancemulti&address=`;
-          var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
-          var urlBsc = `https://api.bscscan.com/api?module=account&action=balancemulti&address=`;
-          var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
-          var urlPoly = `https://api.polygonscan.com/api?module=account&action=balancemulti&address=`;
-          var urlPolyTag = `&tag=latest&apikey=C3VF6A6Q93Z3PXM27YB7KJZKBYVXCEI9MI`;
+          // var urlEth = `https://api.etherscan.io/api?module=account&action=balancemulti&address=`;
+          // var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
+          // var urlBsc = `https://api.bscscan.com/api?module=account&action=balancemulti&address=`;
+          // var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
+          // var urlPoly = `https://api.polygonscan.com/api?module=account&action=balancemulti&address=`;
+          // var urlPolyTag = `&tag=latest&apikey=C3VF6A6Q93Z3PXM27YB7KJZKBYVXCEI9MI`;
 
           //testnet
-          // var urlEth = `https://api-rinkeby.etherscan.io/api?module=account&action=balancemulti&address=`;
-          // var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
-          // var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
-          // var urlBsc = `https://api-testnet.bscscan.com/api?module=account&action=balancemulti&address=`;
+          var urlEth = `https://api-rinkeby.etherscan.io/api?module=account&action=balancemulti&address=`;
+          var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
+          var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
+          var urlBsc = `https://api-testnet.bscscan.com/api?module=account&action=balancemulti&address=`;
+          var urlPoly = `https://api-testnet.polygonscan.com/api?module=account&action=balancemulti&address=`;
+          var urlPolyTag = `&tag=latest&apikey=C3VF6A6Q93Z3PXM27YB7KJZKBYVXCEI9MI`;
 
           var currArrEth = [];
           var currArrBsc = [];
