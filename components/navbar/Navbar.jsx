@@ -82,7 +82,7 @@ const Navbar = ({
                 <Menu.Item>
                   <span
                     className={
-                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
+                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium"
                     }
                     onClick={() => {
                       setChain("eth");
@@ -100,7 +100,7 @@ const Navbar = ({
                 <Menu.Item>
                   <span
                     className={
-                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
+                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium"
                     }
                     onClick={() => {
                       setChain("bsc");
@@ -118,7 +118,7 @@ const Navbar = ({
                 <Menu.Item>
                   <span
                     className={
-                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
+                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium"
                     }
                     onClick={() => {
                       setChain("poly");

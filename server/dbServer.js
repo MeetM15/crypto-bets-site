@@ -22,13 +22,13 @@ const io = socketIo(server, {
 
 const Web3 = require("web3");
 let web3 = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/mainnet"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/rinkeby"
 );
 let web3_bsc = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/bsc/mainnet"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/bsc/testnet"
 );
 let web3_poly = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/polygon/mainnet"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/polygon/mumbai"
 );
 const mainWallet = "0x14d260dcb7c543d289527B8855fb9850390565d2";
 const mainPrivateKey =
