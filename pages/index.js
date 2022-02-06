@@ -368,22 +368,7 @@ export default function Home() {
               <div className="flex flex-col items-start justify-between md:w-auto p-2">
                 <div className="flex flex-col gap-2">
                   <div className="text-xs font-medium text-black">Support</div>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Live Support
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Affiliate
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Probably Fair
-                    </div>
-                  </a>
-                  <a href="#">
+                  <a href="https://www.begambleaware.org/" target="_blank">
                     <div className="font-medium text-xs text-btntext cursor-pointer">
                       Gamble Aware
                     </div>
@@ -572,16 +557,7 @@ export default function Home() {
                   <div className="text-xs font-medium text-black">
                     Community
                   </div>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Telegram
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Twitter
-                    </div>
-                  </a>
+                 
                 </div>
               </div>
             </div>
