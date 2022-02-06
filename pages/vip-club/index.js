@@ -6,17 +6,16 @@ import { useEffect, useState, useRef } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import axios from "axios";
-import Web3 from "web3";
 import Login from "../../components/modals/Login";
 import Wallet from "../../components/modals/Wallet";
 import Referral from "../../components/modals/Referral";
 import Logout from "../../components/modals/Logout";
+import { useRouter } from "next/router";
 import { MoonLoader } from "react-spinners";
 
 const coingeckoUrl = () => {
-  return `https://api.coingecko.com/api/v3/simple/price?ids=ethereum%2Cbinancecoin&vs_currencies=usd`;
+  return `https://api.coingecko.com/api/v3/simple/price?ids=ethereum%2Cbinancecoin%2Cmatic-network&vs_currencies=usd`;
 };
-
 const l1 = 1000;
 const l2 = 5000;
 const l3 = 10000;
@@ -24,21 +23,11 @@ const l4 = 20000;
 const l5 = 30000;
 const l6 = 40000;
 
-const web3 = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/mainnet"
-);
-const web3_bsc = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/bsc/mainnet"
-);
-
 const VipClub = () => {
+  const router = useRouter();
   const myInterval = useRef(null);
-  const [etherPrice, setEtherPrice] = useState(0.0);
-  const [binancePrice, setBinancePrice] = useState(0.0);
   const [user, setUser] = useState();
   const [userEmail, setUserEmail] = useState();
-  const [totalBetAmt, setTotalBetAmt] = useState(0.0);
-  const [lvl, setLvl] = useState(0);
   const [loginTab, setLoginTab] = useState("login");
   const [chain, setChain] = useState("eth");
   const [toggleLoginModalOpen, setToggleLoginModalOpen] = useState(false);
@@ -47,9 +36,16 @@ const VipClub = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0.0);
   const [bnbWalletBalance, setBnbWalletBalance] = useState(0.0);
+  const [polyWalletBalance, setPolyWalletBalance] = useState(0.0);
+  const [etherPrice, setEtherPrice] = useState(0.0);
+  const [binancePrice, setBinancePrice] = useState(0.0);
+  const [maticPrice, setMaticPrice] = useState(0.0);
+  const [totalBetAmt, setTotalBetAmt] = useState(0.0);
+  const [lvl, setLvl] = useState(0);
   const [isRewarded, setIsRewarded] = useState(1);
   const [vipReward, setVipReward] = useState(0);
   const [isFetchingUser, setIsFetchingUser] = useState(false);
+
   //fetch user every minute
   useEffect(() => {
     myInterval.current = setInterval(() => {
@@ -142,6 +138,7 @@ const VipClub = () => {
       setLvl(5);
     else if (Math.floor(parseFloat(totalBetAmt) * 100) >= l6) setLvl(6);
   }, [totalBetAmt, user]);
+
   //fetch prices
   useEffect(() => {
     const fetchPrices = async () => {
@@ -149,11 +146,24 @@ const VipClub = () => {
         response.json().then((jsonData) => {
           setEtherPrice(jsonData.ethereum.usd);
           setBinancePrice(jsonData.binancecoin.usd);
+          setMaticPrice(jsonData["matic-network"].usd);
         })
       );
     };
     fetchPrices().catch((err) => console.log(err));
   }, []);
+
+  //referral
+  useEffect(() => {
+    if (!localStorage.getItem("referredById") && router.query["refer"]) {
+      console.log("referred By Id : ", parseInt(router.query.refer));
+      localStorage.setItem("referredById", router.query.refer);
+      console.log(
+        "referred By Id : ",
+        parseInt(localStorage.getItem("referredById"))
+      );
+    }
+  }, [router]);
   //set totalBet and isRewarded
   useEffect(() => {
     if (user && user[0] != undefined) {
@@ -162,8 +172,10 @@ const VipClub = () => {
       setIsRewarded(parseFloat(user[0].usedReferralBonus));
       setWalletBalance(parseFloat(user[0].availableBalanceEth));
       setBnbWalletBalance(parseFloat(user[0].availableBalanceBsc));
+      setPolyWalletBalance(parseFloat(user[0].availableBalancePoly));
     }
   }, [user]);
+
   //get user email
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -199,7 +211,6 @@ const VipClub = () => {
         });
     }
   }, [userEmail]);
-
   return (
     <>
       <Head>
@@ -238,6 +249,7 @@ const VipClub = () => {
           setLoginTab={setLoginTab}
           walletBalance={walletBalance}
           bnbWalletBalance={bnbWalletBalance}
+          polyWalletBalance={polyWalletBalance}
           setShowReferralModal={setShowReferralModal}
           setShowLogoutModal={setShowLogoutModal}>
           <div className="w-11/12 xl:w-256 flex flex-col gap-8 py-8">
@@ -255,15 +267,12 @@ const VipClub = () => {
                 VIP Club - Exclusive <br /> Player Benefits
               </div>
               <div className="w-full lg:w-3/5 flex items-center justify-center text-md font-medium text-btntext">
-                Primedice is where you come to get the most out of your gambling
-                experience.Why would you settle for anything less? Our "players
-                are treated like royalty from the minute they step onto the
-                site, with loyalty programs that are the best in the world" of
-                crypto gambling. "Whether you are a long-time Primedice member
-                or you have just joined the site, you are important to us! We
-                are focused on" enhancing your gambling experience and committed
-                to offering exclusive benefits to all of our players - like no
-                other website can.
+                In order to give back to our players, we have set up a unique
+                VIP club for those who play the most. As you rank higher in
+                level, you gain additional benefits along with a $100 in eth.
+                Dice up members old and new are both important and will be able
+                to gain different rewards as they continue to wager. We will
+                continue to release new rewards and benefits for our members.
               </div>
             </div>
             <div className="flex flex-col w-full gap-4 bg-secondary p-12 rounded-2xl">
@@ -272,16 +281,10 @@ const VipClub = () => {
               </div>
               <div className="w-32 h-1 bg-primary-100 rounded-2xl"></div>
               <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                "Our players also have the chance to progress their rank all the
-                way to Diamond,which comes with inherent player benefits. Your
-                involvement in the Primedice community and"
-              </div>
-              <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                "the amount you wager within all our games come with rewards and
-                certainly some recognition.We value all of our players, and we'd
-                love to see even our newest players progress all the way to
-                Diamond!We are all about giving the absolute best to our
-                players."
+                "You gain points as you wager, and each point allows for you to
+                reach new levels that unlock additional benefits. Wager only
+                $1,000 worth of ETH, BNB, or MATIC to hit the first level and
+                unlock these perks below."
               </div>
             </div>
             <div className="flex items-center text-center justify-center text-5xl leading-tight w-full font-bold text-black">
@@ -298,10 +301,10 @@ const VipClub = () => {
                   Personal VIP
                 </div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  Receive personal VIP treatment from our "support team,with
-                  one-on-one chats and personal support that is unique to you!
-                  Don't be satisfied with automated messages,you are" important
-                  to us.
+                  As you rank up in VIP levels, you will have access to our
+                  personal concierge. Here you will be able to have input on our
+                  future games and communicate directly one on one with our team
+                  members.
                 </div>
               </div>
               <div className="flex flex-col items-start justify-evenly w-80 h-80 rounded-2xl bg-secondary p-5">
@@ -312,10 +315,9 @@ const VipClub = () => {
                 />
                 <div className="w-full font-bold text-xl mt-4">Rakeback</div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  Rakeback is also a limitless possibility to our "loyal
-                  members, with no restriction on when you can claim rakeback
-                  into your account. We are committed to giving back to our
-                  loyal" players.
+                  You will have the ability to rakeback some of the house edge
+                  as loyal members. Once you hit our top tier VIP level you will
+                  see additional money returned to your account.
                 </div>
               </div>
               <div className="flex flex-col items-start justify-evenly w-80 h-80 rounded-2xl bg-secondary p-5">
@@ -328,9 +330,8 @@ const VipClub = () => {
                   Exclusive Bonuses
                 </div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  Loyal members also have access to exclusive bonuses that you
-                  will not get on other websites - make the most of your
-                  importance!
+                  From time to time, we will send out emails to our NEW and VIP
+                  members with exclusive bonus offerings.
                 </div>
               </div>
               <div className="flex flex-col items-start justify-evenly w-80 h-80 rounded-2xl bg-secondary p-5">
@@ -343,8 +344,8 @@ const VipClub = () => {
                   Speciality Challenges
                 </div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  Take on challenges unique to you, where only you can win! more
-                  could you want?
+                  New challenges will be released every month to certain
+                  members, providing additional bonuses & $$.
                 </div>
               </div>
               <div className="flex flex-col items-start justify-evenly w-80 h-80 rounded-2xl bg-secondary p-5">
@@ -355,8 +356,8 @@ const VipClub = () => {
                 />
                 <div className="w-full font-bold text-xl mt-4">And More!</div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  If you feel like we are missin something, let us know! We are
-                  more than willing to cater to any player needs or requests.
+                  We are constantly building more games, and will continue to
+                  update our members.
                 </div>
               </div>
               <div className="flex flex-col items-start justify-evenly w-80 h-80 rounded-2xl bg-secondary p-5">
@@ -369,10 +370,8 @@ const VipClub = () => {
                   Gifts & Rewards
                 </div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  Receive gifts and rewards that have no boundaries - the sky is
-                  the limit. This doesn't just include virtual gifts, but
-                  physial also. Who knows what kind of things Diceup.com will
-                  have you doing!
+                  Our members will have a chance to win virtual gifts and
+                  rewards, such as rare NFTs, alongside some physical gifts.
                 </div>
               </div>
             </div>
@@ -413,27 +412,18 @@ const VipClub = () => {
               <div className="font-medium text-xs text-black">
                 1 BNB = ${binancePrice}
               </div>
+              <div className="font-medium text-xs text-black">
+                1 MATIC = ${maticPrice}
+              </div>
             </div>
             <div className="flex flex-wrap w-3/4 justify-evenly">
               <div className="flex flex-col items-start justify-between md:w-auto p-2">
                 <div className="flex flex-col gap-2">
                   <div className="text-xs font-medium text-black">Support</div>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Live Support
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Affiliate
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Probably Fair
-                    </div>
-                  </a>
-                  <a href="#">
+                  <a
+                    href="https://www.begambleaware.org/"
+                    target="_blank"
+                    rel="noreferrer">
                     <div className="font-medium text-xs text-btntext cursor-pointer">
                       Gamble Aware
                     </div>
@@ -455,23 +445,6 @@ const VipClub = () => {
                   </Link>
                 </div>
               </div>
-              <div className="flex flex-col items-start justify-between md:w-auto p-2">
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs font-medium text-black">
-                    Community
-                  </div>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Telegram
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Twitter
-                    </div>
-                  </a>
-                </div>
-              </div>
             </div>
           </div>
           <Login
@@ -486,10 +459,7 @@ const VipClub = () => {
             walletBalance={walletBalance}
             bnbWalletBalance={bnbWalletBalance}
             chain={chain}
-            web3={web3}
-            web3_bsc={web3_bsc}
-            setWalletBalance={setWalletBalance}
-            setBnbWalletBalance={setBnbWalletBalance}
+            polyWalletBalance={polyWalletBalance}
           />
           <Referral
             showReferralModal={showReferralModal}
@@ -513,6 +483,7 @@ const VipClub = () => {
           setLoginTab={setLoginTab}
           walletBalance={walletBalance}
           bnbWalletBalance={bnbWalletBalance}
+          polyWalletBalance={polyWalletBalance}
           setShowReferralModal={setShowReferralModal}
           setShowLogoutModal={setShowLogoutModal}>
           <div className="w-11/12 xl:w-256 flex flex-col gap-8 py-8">
@@ -530,15 +501,12 @@ const VipClub = () => {
                 VIP Club - Exclusive <br /> Player Benefits
               </div>
               <div className="w-full lg:w-3/5 flex items-center justify-center text-md font-medium text-btntext">
-                Primedice is where you come to get the most out of your gambling
-                experience.Why would you settle for anything less? Our "players
-                are treated like royalty from the minute they step onto the
-                site, with loyalty programs that are the best in the world" of
-                crypto gambling. "Whether you are a long-time Primedice member
-                or you have just joined the site, you are important to us! We
-                are focused on" enhancing your gambling experience and committed
-                to offering exclusive benefits to all of our players - like no
-                other website can.
+                In order to give back to our players, we have set up a unique
+                VIP club for those who play the most. As you rank higher in
+                level, you gain additional benefits along with a $100 in eth.
+                Dice up members old and new are both important and will be able
+                to gain different rewards as they continue to wager. We will
+                continue to release new rewards and benefits for our members.
               </div>
             </div>
             <div className="flex flex-col w-full gap-4 bg-secondary p-12 rounded-2xl">
@@ -547,16 +515,10 @@ const VipClub = () => {
               </div>
               <div className="w-32 h-1 bg-primary-100 rounded-2xl"></div>
               <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                "Our players also have the chance to progress their rank all the
-                way to Diamond,which comes with inherent player benefits. Your
-                involvement in the Primedice community and"
-              </div>
-              <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                "the amount you wager within all our games come with rewards and
-                certainly some recognition.We value all of our players, and we'd
-                love to see even our newest players progress all the way to
-                Diamond!We are all about giving the absolute best to our
-                players."
+                "You gain points as you wager, and each point allows for you to
+                reach new levels that unlock additional benefits. Wager only
+                $1,000 worth of ETH, BNB, or MATIC to hit the first level and
+                unlock these perks below."
               </div>
             </div>
             <div className="flex items-center text-center justify-center text-5xl leading-tight w-full font-bold text-black">
@@ -573,10 +535,10 @@ const VipClub = () => {
                   Personal VIP
                 </div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  Receive personal VIP treatment from our "support team,with
-                  one-on-one chats and personal support that is unique to you!
-                  Don't be satisfied with automated messages,you are" important
-                  to us.
+                  As you rank up in VIP levels, you will have access to our
+                  personal concierge. Here you will be able to have input on our
+                  future games and communicate directly one on one with our team
+                  members.
                 </div>
               </div>
               <div className="flex flex-col items-start justify-evenly w-80 h-80 rounded-2xl bg-secondary p-5">
@@ -587,10 +549,9 @@ const VipClub = () => {
                 />
                 <div className="w-full font-bold text-xl mt-4">Rakeback</div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  Rakeback is also a limitless possibility to our "loyal
-                  members, with no restriction on when you can claim rakeback
-                  into your account. We are committed to giving back to our
-                  loyal" players.
+                  You will have the ability to rakeback some of the house edge
+                  as loyal members. Once you hit our top tier VIP level you will
+                  see additional money returned to your account.
                 </div>
               </div>
               <div className="flex flex-col items-start justify-evenly w-80 h-80 rounded-2xl bg-secondary p-5">
@@ -603,9 +564,8 @@ const VipClub = () => {
                   Exclusive Bonuses
                 </div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  Loyal members also have access to exclusive bonuses that you
-                  will not get on other websites - make the most of your
-                  importance!
+                  From time to time, we will send out emails to our NEW and VIP
+                  members with exclusive bonus offerings.
                 </div>
               </div>
               <div className="flex flex-col items-start justify-evenly w-80 h-80 rounded-2xl bg-secondary p-5">
@@ -618,8 +578,8 @@ const VipClub = () => {
                   Speciality Challenges
                 </div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  Take on challenges unique to you, where only you can win! more
-                  could you want?
+                  New challenges will be released every month to certain
+                  members, providing additional bonuses & $$.
                 </div>
               </div>
               <div className="flex flex-col items-start justify-evenly w-80 h-80 rounded-2xl bg-secondary p-5">
@@ -630,8 +590,8 @@ const VipClub = () => {
                 />
                 <div className="w-full font-bold text-xl mt-4">And More!</div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  If you feel like we are missin something, let us know! We are
-                  more than willing to cater to any player needs or requests.
+                  We are constantly building more games, and will continue to
+                  update our members.
                 </div>
               </div>
               <div className="flex flex-col items-start justify-evenly w-80 h-80 rounded-2xl bg-secondary p-5">
@@ -644,10 +604,8 @@ const VipClub = () => {
                   Gifts & Rewards
                 </div>
                 <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                  Receive gifts and rewards that have no boundaries - the sky is
-                  the limit. This doesn't just include virtual gifts, but
-                  physial also. Who knows what kind of things Diceup.com will
-                  have you doing!
+                  Our members will have a chance to win virtual gifts and
+                  rewards, such as rare NFTs, alongside some physical gifts.
                 </div>
               </div>
             </div>
@@ -688,27 +646,18 @@ const VipClub = () => {
               <div className="font-medium text-xs text-black">
                 1 BNB = ${binancePrice}
               </div>
+              <div className="font-medium text-xs text-black">
+                1 MATIC = ${maticPrice}
+              </div>
             </div>
             <div className="flex flex-wrap w-3/4 justify-evenly">
               <div className="flex flex-col items-start justify-between md:w-auto p-2">
                 <div className="flex flex-col gap-2">
                   <div className="text-xs font-medium text-black">Support</div>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Live Support
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Affiliate
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Probably Fair
-                    </div>
-                  </a>
-                  <a href="#">
+                  <a
+                    href="https://www.begambleaware.org/"
+                    target="_blank"
+                    rel="noreferrer">
                     <div className="font-medium text-xs text-btntext cursor-pointer">
                       Gamble Aware
                     </div>
@@ -730,23 +679,6 @@ const VipClub = () => {
                   </Link>
                 </div>
               </div>
-              <div className="flex flex-col items-start justify-between md:w-auto p-2">
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs font-medium text-black">
-                    Community
-                  </div>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Telegram
-                    </div>
-                  </a>
-                  <a href="#">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Twitter
-                    </div>
-                  </a>
-                </div>
-              </div>
             </div>
           </div>
           <Login
@@ -761,10 +693,7 @@ const VipClub = () => {
             walletBalance={walletBalance}
             bnbWalletBalance={bnbWalletBalance}
             chain={chain}
-            web3={web3}
-            web3_bsc={web3_bsc}
-            setWalletBalance={setWalletBalance}
-            setBnbWalletBalance={setBnbWalletBalance}
+            polyWalletBalance={polyWalletBalance}
           />
           <Referral
             showReferralModal={showReferralModal}

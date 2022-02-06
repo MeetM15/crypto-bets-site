@@ -53,10 +53,10 @@ const Login = ({ toggleLoginModalOpen, setToggleLoginModalOpen, loginTab }) => {
                       Dice Up.
                     </div>
                     <div className="font-medium text-center text-xs p-4 text-secondary mt-2">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Deserunt autem ipsam fugiat magni impedit ducimus ut hic
-                      ea cum veniam illo, iusto voluptate tempore cumque
-                      temporibus maxime quas vero provident.
+                      Dice up is the first casino game that focuses on building
+                      a gambling site on the Ethereum chain. Supporting ETH,
+                      BNB, & MATIC, along with the lowest house edge with a
+                      provably fair model in place.
                     </div>
                   </div>
                   <img
