@@ -6,6 +6,7 @@ import { BsCashStack } from "react-icons/bs";
 const WithdrawForm = ({
   walletBalance,
   bnbWalletBalance,
+  polyWalletBalance,
   user,
   withdrawChain,
   amount,
@@ -75,7 +76,13 @@ const WithdrawForm = ({
                 type="number"
                 step="0.000001"
                 min="0.000000"
-                max={withdrawChain == "eth" ? walletBalance : bnbWalletBalance}
+                max={
+                  withdrawChain == "eth"
+                    ? walletBalance
+                    : withdrawChain == "bsc"
+                    ? bnbWalletBalance
+                    : polyWalletBalance
+                }
                 onBlur={(e) => {
                   if (e.target.value < 0)
                     e.target.value = -1.0 * e.target.value;
@@ -84,9 +91,12 @@ const WithdrawForm = ({
                     if (withdrawChain == "eth") {
                       if (parseFloat(e.target.value) > walletBalance)
                         e.target.value = walletBalance;
-                    } else {
+                    } else if (withdrawChain == "bsc") {
                       if (parseFloat(e.target.value) > bnbWalletBalance)
                         e.target.value = bnbWalletBalance;
+                    } else {
+                      if (parseFloat(e.target.value) > polyWalletBalance)
+                        e.target.value = polyWalletBalance;
                     }
                     return parseFloat(
                       Math.floor(e.target.value * 1000000) / 1000000
@@ -111,8 +121,10 @@ const WithdrawForm = ({
                     var newValue;
                     if (withdrawChain == "eth") {
                       newValue = walletBalance;
-                    } else {
+                    } else if (withdrawChain == "bsc") {
                       newValue = bnbWalletBalance;
+                    } else {
+                      newValue = polyWalletBalance;
                     }
                     return parseFloat(Math.floor(newValue * 1000000) / 1000000);
                   });

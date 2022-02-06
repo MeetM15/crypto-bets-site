@@ -8,6 +8,7 @@ const BetValueField = ({
   walletBalance,
   disableClick,
   bnbWalletBalance,
+  polyWalletBalance,
   chain,
 }) => {
   useEffect(() => {
@@ -20,13 +21,22 @@ const BetValueField = ({
           parseFloat(Math.floor(parseFloat(walletBalance) * 10000) / 10000)
         );
       }
-    } else {
+    } else if (chain == "bsc") {
       if (
         parseFloat(betAmt) >
         parseFloat(Math.floor(parseFloat(bnbWalletBalance) * 10000) / 10000)
       ) {
         setBetAmt(
           parseFloat(Math.floor(parseFloat(bnbWalletBalance) * 10000) / 10000)
+        );
+      }
+    } else {
+      if (
+        parseFloat(betAmt) >
+        parseFloat(Math.floor(parseFloat(polyWalletBalance) * 10000) / 10000)
+      ) {
+        setBetAmt(
+          parseFloat(Math.floor(parseFloat(polyWalletBalance) * 10000) / 10000)
         );
       }
     }
@@ -54,8 +64,8 @@ const BetValueField = ({
           disabled={disableClick != undefined ? disableClick : false}
           type="number"
           name="bettingAmt"
-          step="0.0001"
-          min="0.0"
+          step={0.0001}
+          min={0.0}
           onBlur={(e) => {
             if (e.target.value < 0) e.target.value = -1.0 * e.target.value;
             if (e.target.value == "") e.target.value = 0.0;
@@ -63,9 +73,12 @@ const BetValueField = ({
               if (chain == "eth") {
                 if (parseFloat(e.target.value) > walletBalance)
                   e.target.value = walletBalance;
-              } else {
+              } else if (chain == "bsc") {
                 if (parseFloat(e.target.value) > bnbWalletBalance)
                   e.target.value = bnbWalletBalance;
+              } else {
+                if (parseFloat(e.target.value) > polyWalletBalance)
+                  e.target.value = polyWalletBalance;
               }
               return parseFloat(Math.floor(e.target.value * 10000) / 10000);
             });
@@ -85,9 +98,12 @@ const BetValueField = ({
               if (chain == "eth") {
                 if (parseFloat(newValue) > walletBalance)
                   newValue = walletBalance;
-              } else {
+              } else if (chain == "bsc") {
                 if (parseFloat(newValue) > bnbWalletBalance)
                   newValue = bnbWalletBalance;
+              } else {
+                if (parseFloat(newValue) > polyWalletBalance)
+                  newValue = polyWalletBalance;
               }
               return parseFloat(Math.floor(newValue * 10000) / 10000);
             });
@@ -104,9 +120,12 @@ const BetValueField = ({
               if (chain == "eth") {
                 if (parseFloat(newValue) > walletBalance)
                   newValue = walletBalance;
-              } else {
+              } else if (chain == "bsc") {
                 if (parseFloat(newValue) > bnbWalletBalance)
                   newValue = bnbWalletBalance;
+              } else {
+                if (parseFloat(newValue) > polyWalletBalance)
+                  newValue = polyWalletBalance;
               }
               return parseFloat(Math.floor(newValue * 10000) / 10000);
             });
@@ -122,8 +141,10 @@ const BetValueField = ({
               var newValue;
               if (chain == "eth") {
                 newValue = walletBalance;
-              } else {
+              } else if (chain == "bsc") {
                 newValue = bnbWalletBalance;
+              } else {
+                newValue = polyWalletBalance;
               }
               return parseFloat(Math.floor(newValue * 10000) / 10000);
             });

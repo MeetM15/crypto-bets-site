@@ -10,22 +10,15 @@ import Logout from "../components/modals/Logout";
 import axios from "axios";
 import { MoonLoader } from "react-spinners";
 import { io } from "socket.io-client";
-import Web3 from "web3";
 import LiveBetsComponent from "../components/liveBets/LiveBetsComponent";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { Menu, Transition } from "@headlessui/react";
+import { Menu } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
-const web3 = new Web3(
-  "https://eth-rinkeby.alchemyapi.io/v2/sk88g0PfYAHxltvWlVpWWbvrXMnv22TN"
-);
-const web3_bsc = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/487960593a8857bde8a74862/bsc/testnet"
-);
 const socket = io("https://cryptodice1.herokuapp.com/");
 
 const coingeckoUrl = () => {
-  return `https://api.coingecko.com/api/v3/simple/price?ids=ethereum%2Cbinancecoin&vs_currencies=usd`;
+  return `https://api.coingecko.com/api/v3/simple/price?ids=ethereum%2Cbinancecoin%2Cmatic-network&vs_currencies=usd`;
 };
 
 const l1 = 1000;
@@ -48,10 +41,12 @@ export default function Home() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0.0);
   const [bnbWalletBalance, setBnbWalletBalance] = useState(0.0);
+  const [polyWalletBalance, setPolyWalletBalance] = useState(0.0);
   const [currLiveBets, setCurrLiveBets] = useState([]);
   const [myBets, setMyBets] = useState([]);
   const [etherPrice, setEtherPrice] = useState(0.0);
   const [binancePrice, setBinancePrice] = useState(0.0);
+  const [maticPrice, setMaticPrice] = useState(0.0);
   const [totalBetAmt, setTotalBetAmt] = useState(0.0);
   const [lvl, setLvl] = useState(0);
   const [isRewarded, setIsRewarded] = useState(1);
@@ -158,6 +153,7 @@ export default function Home() {
         response.json().then((jsonData) => {
           setEtherPrice(jsonData.ethereum.usd);
           setBinancePrice(jsonData.binancecoin.usd);
+          setMaticPrice(jsonData["matic-network"].usd);
         })
       );
     };
@@ -224,6 +220,7 @@ export default function Home() {
       setIsRewarded(parseFloat(user[0].usedReferralBonus));
       setWalletBalance(parseFloat(user[0].availableBalanceEth));
       setBnbWalletBalance(parseFloat(user[0].availableBalanceBsc));
+      setPolyWalletBalance(parseFloat(user[0].availableBalancePoly));
     }
   }, [user]);
 
@@ -301,6 +298,7 @@ export default function Home() {
           setLoginTab={setLoginTab}
           walletBalance={walletBalance}
           bnbWalletBalance={bnbWalletBalance}
+          polyWalletBalance={polyWalletBalance}
           setShowReferralModal={setShowReferralModal}
           setShowLogoutModal={setShowLogoutModal}>
           <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
@@ -308,22 +306,19 @@ export default function Home() {
               user={user}
               walletBalance={walletBalance}
               bnbWalletBalance={bnbWalletBalance}
-              web3={web3}
-              web3_bsc={web3_bsc}
               setWalletBalance={setWalletBalance}
               setBnbWalletBalance={setBnbWalletBalance}
-              setToggleLoginModalOpen={setToggleLoginModalOpen}
+              polyWalletBalance={polyWalletBalance}
+              setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
               etherPrice={etherPrice}
-              setEtherPrice={setEtherPrice}
               binancePrice={binancePrice}
-              setBinancePrice={setBinancePrice}
+              maticPrice={maticPrice}
               setUser={setUser}
               totalBetAmt={totalBetAmt}
               setTotalBetAmt={setTotalBetAmt}
               setMyBets={setMyBets}
-              myBets={myBets}
             />
           </div>
           <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
@@ -364,6 +359,9 @@ export default function Home() {
               </div>
               <div className="font-medium text-xs text-black">
                 1 BNB = ${binancePrice}
+              </div>
+              <div className="font-medium text-xs text-black">
+                1 MATIC = ${maticPrice}
               </div>
             </div>
             <div className="flex flex-wrap w-3/4 justify-evenly">
@@ -438,10 +436,7 @@ export default function Home() {
             walletBalance={walletBalance}
             bnbWalletBalance={bnbWalletBalance}
             chain={chain}
-            web3={web3}
-            web3_bsc={web3_bsc}
-            setWalletBalance={setWalletBalance}
-            setBnbWalletBalance={setBnbWalletBalance}
+            polyWalletBalance={polyWalletBalance}
           />
           <Referral
             showReferralModal={showReferralModal}
@@ -465,6 +460,7 @@ export default function Home() {
           setLoginTab={setLoginTab}
           walletBalance={walletBalance}
           bnbWalletBalance={bnbWalletBalance}
+          polyWalletBalance={polyWalletBalance}
           setShowReferralModal={setShowReferralModal}
           setShowLogoutModal={setShowLogoutModal}>
           <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
@@ -472,22 +468,19 @@ export default function Home() {
               user={user}
               walletBalance={walletBalance}
               bnbWalletBalance={bnbWalletBalance}
-              web3={web3}
-              web3_bsc={web3_bsc}
               setWalletBalance={setWalletBalance}
               setBnbWalletBalance={setBnbWalletBalance}
-              setToggleLoginModalOpen={setToggleLoginModalOpen}
+              polyWalletBalance={polyWalletBalance}
+              setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
               etherPrice={etherPrice}
-              setEtherPrice={setEtherPrice}
               binancePrice={binancePrice}
-              setBinancePrice={setBinancePrice}
+              maticPrice={maticPrice}
               setUser={setUser}
               totalBetAmt={totalBetAmt}
               setTotalBetAmt={setTotalBetAmt}
               setMyBets={setMyBets}
-              myBets={myBets}
             />
           </div>
           <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
@@ -528,6 +521,9 @@ export default function Home() {
               </div>
               <div className="font-medium text-xs text-black">
                 1 BNB = ${binancePrice}
+              </div>
+              <div className="font-medium text-xs text-black">
+                1 MATIC = ${maticPrice}
               </div>
             </div>
             <div className="flex flex-wrap w-3/4 justify-evenly">
@@ -602,10 +598,7 @@ export default function Home() {
             walletBalance={walletBalance}
             bnbWalletBalance={bnbWalletBalance}
             chain={chain}
-            web3={web3}
-            web3_bsc={web3_bsc}
-            setWalletBalance={setWalletBalance}
-            setBnbWalletBalance={setBnbWalletBalance}
+            polyWalletBalance={polyWalletBalance}
           />
           <Referral
             showReferralModal={showReferralModal}

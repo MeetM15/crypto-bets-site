@@ -35,6 +35,20 @@ const DepositTab = ({ user }) => {
                   className={
                     "px-2  py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium"
                   }
+                  onClick={() => setDepositCurrency(["ETH", "/icons/eth.svg"])}>
+                  ETH
+                  <img
+                    src={"/icons/eth.svg"}
+                    alt="logo"
+                    className="md:p-1 p-0.5 w-3 sm:w-5"
+                  />
+                </span>
+              </Menu.Item>
+              <Menu.Item as="div">
+                <span
+                  className={
+                    "px-2  py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium"
+                  }
                   onClick={() => setDepositCurrency(["BNB", "/icons/bnb.svg"])}>
                   BNB
                   <img
@@ -49,10 +63,12 @@ const DepositTab = ({ user }) => {
                   className={
                     "px-2  py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium"
                   }
-                  onClick={() => setDepositCurrency(["ETH", "/icons/eth.svg"])}>
-                  ETH
+                  onClick={() =>
+                    setDepositCurrency(["MATIC", "/icons/matic.svg"])
+                  }>
+                  MATIC
                   <img
-                    src={"/icons/eth.svg"}
+                    src={"/icons/matic.svg"}
                     alt="logo"
                     className="md:p-1 p-0.5 w-3 sm:w-5"
                   />
@@ -71,7 +87,9 @@ const DepositTab = ({ user }) => {
             <span className="text-center font-medium text-sm px-1.5 py-1 bg-inputbg shadow-inner w-full rounded break-all md:break-none flex items-center justify-between">
               {depositCurrency[0] == "ETH"
                 ? user[0].ethAddress
-                : user[0].bscAddress}
+                : depositCurrency[0] == "BNB"
+                ? user[0].bscAddress
+                : user[0].polyAddress}
               <button
                 type="button"
                 className="flex items-center justify-center px-2 py-1.5 bg-secondary text-btntext font-medium text-xs rounded-lg ml-2 w-20 sm:w-auto"
@@ -79,7 +97,9 @@ const DepositTab = ({ user }) => {
                   navigator.clipboard.writeText(
                     depositCurrency[0] == "ETH"
                       ? user[0].ethAddress
-                      : user[0].bscAddress
+                      : depositCurrency[0] == "BNB"
+                      ? user[0].bscAddress
+                      : user[0].polyAddress
                   );
                 }}>
                 Copy

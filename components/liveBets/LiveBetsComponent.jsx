@@ -53,7 +53,7 @@ const LiveBetsComponent = ({ currLiveBets, myBets }) => {
             </div>
           </Tab.Panel>
           <Tab.Panel>
-            <div className="flex flex-col">
+            <div className="flex flex-col h-120">
               <AllBets currLiveBets={currLiveBets} />
             </div>
           </Tab.Panel>

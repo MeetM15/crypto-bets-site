@@ -8,11 +8,8 @@ const WithdrawTab = ({
   user,
   walletBalance,
   bnbWalletBalance,
+  polyWalletBalance,
   chain,
-  web3,
-  web3_bsc,
-  setWalletBalance,
-  setBnbWalletBalance,
 }) => {
   const [withdrawChain, setWithdrawChain] = useState(chain);
   const [amount, setAmount] = useState(0.0);
@@ -27,9 +24,11 @@ const WithdrawTab = ({
             <Menu.Button className="flex items-center justify-between text-xs text-black font-medium">
               {currency[0] && currency[1] ? (
                 <>
-                  {withdrawChain == "eth"
+                  {chain == "eth"
                     ? parseFloat(walletBalance).toFixed(8)
-                    : parseFloat(bnbWalletBalance).toFixed(8)}
+                    : chain == "bsc"
+                    ? parseFloat(bnbWalletBalance).toFixed(8)
+                    : parseFloat(polyWalletBalance).toFixed(8)}
                   <img
                     src={currency[1]}
                     alt="logo"
@@ -98,6 +97,30 @@ const WithdrawTab = ({
                   BNB
                 </span>
               </Menu.Item>
+              <Menu.Item>
+                <span
+                  className={
+                    "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
+                  }
+                  onClick={() => {
+                    if (amount > parseFloat(polyWalletBalance))
+                      setAmount(
+                        parseFloat(
+                          Math.floor(polyWalletBalance * 1000000) / 1000000
+                        )
+                      );
+                    setWithdrawChain("poly");
+                    setCurrency(["MATIC", "/icons/matic.svg"]);
+                  }}>
+                  {parseFloat(polyWalletBalance).toFixed(8)}
+                  <img
+                    src="/icons/matic.svg"
+                    alt="ethereum"
+                    className="md:p-1 p-0.5 w-3 sm:w-5"
+                  />
+                  MATIC
+                </span>
+              </Menu.Item>
             </Menu.Items>
           </Transition>
         </Menu>
@@ -106,6 +129,7 @@ const WithdrawTab = ({
         <WithdrawForm
           walletBalance={walletBalance}
           bnbWalletBalance={bnbWalletBalance}
+          polyWalletBalance={polyWalletBalance}
           user={user}
           withdrawChain={withdrawChain}
           amount={amount}

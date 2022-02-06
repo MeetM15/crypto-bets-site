@@ -10,11 +10,8 @@ const Wallet = ({
   user,
   walletBalance,
   bnbWalletBalance,
+  polyWalletBalance,
   chain,
-  web3,
-  web3_bsc,
-  setWalletBalance,
-  setBnbWalletBalance,
 }) => {
   return (
     <Transition.Root show={showWalletModal} as={Fragment}>
@@ -86,11 +83,8 @@ const Wallet = ({
                         user={user}
                         walletBalance={walletBalance}
                         bnbWalletBalance={bnbWalletBalance}
+                        polyWalletBalance={polyWalletBalance}
                         chain={chain}
-                        web3={web3}
-                        web3_bsc={web3_bsc}
-                        setWalletBalance={setWalletBalance}
-                        setBnbWalletBalance={setBnbWalletBalance}
                       />
                     </Tab.Panel>
                   </Tab.Panels>

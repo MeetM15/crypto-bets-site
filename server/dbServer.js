@@ -18,12 +18,17 @@ const io = socketIo(server, {
 //web3
 // ether api key : XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6
 // bsc api key : DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY
+// polygon api key : C3VF6A6Q93Z3PXM27YB7KJZKBYVXCEI9MI
+
 const Web3 = require("web3");
 let web3 = new Web3(
   "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/mainnet"
 );
 let web3_bsc = new Web3(
   "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/bsc/mainnet"
+);
+let web3_poly = new Web3(
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/polygon/mainnet"
 );
 const mainWallet = "0x14d260dcb7c543d289527B8855fb9850390565d2";
 const mainPrivateKey =
@@ -99,6 +104,24 @@ function update_query_bsc(depositAmt, availableBalance, address, res) {
     });
   });
 }
+function update_query_poly(depositAmt, availableBalance, address, res) {
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlUpdate =
+      "UPDATE user_table SET depositAmtPoly = ? , availableBalancePoly = ? WHERE polyAddress = ?";
+    const update_query = mysql.format(sqlUpdate, [
+      depositAmt,
+      availableBalance,
+      address,
+    ]);
+    await connection.query(update_query, async (err, update_result) => {
+      connection.release();
+      if (err) throw err;
+      console.log("updates poly : ", update_result);
+      res.sendStatus(201);
+    });
+  });
+}
 function search_query_address_eth(balances, currAddBal, k) {
   db.getConnection(async (err, connection) => {
     if (err) throw err;
@@ -150,6 +173,32 @@ function search_query_address_bsc(balancesBsc, currAddBal, k, res) {
     );
   });
 }
+function search_query_address_poly(balancesPoly, currAddBal, k, res) {
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlSearch = "SELECT * FROM user_table WHERE polyAddress = ?";
+    const search_query_address = mysql.format(sqlSearch, [
+      balancesPoly.result[k].account,
+    ]);
+
+    await connection.query(
+      search_query_address,
+      async (err, search_add_result) => {
+        connection.release();
+        if (err) throw err;
+        console.log("poly search data : ", search_add_result);
+        update_query_poly(
+          parseFloat(currAddBal),
+          parseFloat(currAddBal) +
+            search_add_result[0].winAmtPoly -
+            search_add_result[0].lossAmtPoly,
+          balancesPoly.result[k].account,
+          res
+        );
+      }
+    );
+  });
+}
 //middleware to read req.body.<params>
 //update balance ***
 app.post("/updateBalance", async (req, res) => {
@@ -164,19 +213,22 @@ app.post("/updateBalance", async (req, res) => {
         const calls = (result.length - 1) / 20;
         for (let i = 0; i < calls + 1; i++) {
           //mainnet
-          // var urlEth = `https://api.etherscan.io/api?module=account&action=balancemulti&address=`;
-          // var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
-          // var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
-          // var urlBsc = `https://api.bscscan.com/api?module=account&action=balancemulti&address=`;
+          var urlEth = `https://api.etherscan.io/api?module=account&action=balancemulti&address=`;
+          var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
+          var urlBsc = `https://api.bscscan.com/api?module=account&action=balancemulti&address=`;
+          var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
+          var urlPoly = `https://api.polygonscan.com/api?module=account&action=balancemulti&address=`;
+          var urlPolyTag = `&tag=latest&apikey=C3VF6A6Q93Z3PXM27YB7KJZKBYVXCEI9MI`;
 
           //testnet
-          var urlEth = `https://api-rinkeby.etherscan.io/api?module=account&action=balancemulti&address=`;
-          var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
-          var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
-          var urlBsc = `https://api-testnet.bscscan.com/api?module=account&action=balancemulti&address=`;
+          // var urlEth = `https://api-rinkeby.etherscan.io/api?module=account&action=balancemulti&address=`;
+          // var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
+          // var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
+          // var urlBsc = `https://api-testnet.bscscan.com/api?module=account&action=balancemulti&address=`;
 
           var currArrEth = [];
           var currArrBsc = [];
+          var currArrPoly = [];
           //last call
           if (calls == i) {
             currArrEth = result.map((user, index) => {
@@ -184,6 +236,9 @@ app.post("/updateBalance", async (req, res) => {
             });
             currArrBsc = result.map((user, index) => {
               if (index >= 20 * i) return user.bscAddress;
+            });
+            currArrPoly = result.map((user, index) => {
+              if (index >= 20 * i) return user.polyAddress;
             });
           } else {
             currArrEth = result.map((user, index) => {
@@ -194,17 +249,26 @@ app.post("/updateBalance", async (req, res) => {
               if (index >= 20 * i && index < 20 * (i + 1))
                 return user.bscAddress;
             });
+            currArrPoly = result.map((user, index) => {
+              if (index >= 20 * i && index < 20 * (i + 1))
+                return user.polyAddress;
+            });
           }
           urlEth = urlEth + currArrEth[0];
           urlBsc = urlBsc + currArrBsc[0];
+          urlPoly = urlPoly + currArrPoly[0];
           for (let j = 1; j < currArrEth.length; j++) {
             urlEth = urlEth + "," + currArrEth[j];
           }
           for (let j = 1; j < currArrBsc.length; j++) {
             urlBsc = urlBsc + "," + currArrBsc[j];
           }
+          for (let j = 1; j < currArrPoly.length; j++) {
+            urlPoly = urlPoly + "," + currArrPoly[j];
+          }
           console.log("eth fetch url : ", urlEth + urlEthTag);
           console.log("bsc fetch url : ", urlBsc + urlBscTag);
+          console.log("poly fetch url : ", urlPoly + urlPolyTag);
           fetch(urlEth + urlEthTag)
             .then((res) => {
               //eth
@@ -238,6 +302,25 @@ app.post("/updateBalance", async (req, res) => {
                     balancesBsc.result[k].balance
                   );
                   search_query_address_bsc(balancesBsc, currAddBal, k, res);
+                }
+              }
+            })
+            .then(() => {
+              return fetch(urlPoly + urlPolyTag);
+            })
+            .then((res) => {
+              //eth
+              return res.json();
+            })
+            .then(async (balancesPoly) => {
+              //bsc
+              console.log("poly data : ", balancesPoly);
+              if (balancesPoly["status"] == "1") {
+                for (let k = 0; k < balancesPoly.result.length; k++) {
+                  const currAddBal = await web3_poly.utils.fromWei(
+                    balancesPoly.result[k].balance
+                  );
+                  search_query_address_poly(balancesPoly, currAddBal, k, res);
                 }
               }
             })
@@ -277,7 +360,7 @@ function insert_user(values, res) {
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlInsert =
-      "INSERT INTO user_table VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      "INSERT INTO user_table VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     const insert_query = mysql.format(sqlInsert, [
       values[0],
       values[1],
@@ -299,15 +382,51 @@ function insert_user(values, res) {
       values[17],
       values[18],
       values[19],
+      values[20],
+      values[21],
+      values[22],
     ]);
     const email = values[1];
     // ? will be replaced by values
     // ?? will be replaced by string
     await connection.query(insert_query, async (err, insertResult) => {
+      connection.release();
       if (err) throw err;
       console.log("--------> Created new User");
       console.log(insertResult.insertId);
       search_user(email, res);
+    });
+  }); //end of db.getConnection()
+}
+function insert_address(
+  email,
+  ethAddress,
+  ethPrivatekey,
+  bscAddress,
+  bscPrivatekey,
+  polyAddress,
+  polyPrivateKey,
+  res
+) {
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlInsert = "INSERT INTO address_table VALUES (?,?,?,?,?)";
+    const insert_query = mysql.format(sqlInsert, [
+      email,
+      ethAddress,
+      ethPrivatekey,
+      bscAddress,
+      bscPrivatekey,
+      polyAddress,
+      polyPrivateKey,
+    ]);
+    // ? will be replaced by values
+    // ?? will be replaced by string
+    await connection.query(insert_query, async (err, insertResult) => {
+      connection.release();
+      if (err) throw err;
+      console.log("--------> Inserted new User address");
+      console.log(insertResult.insertId);
     });
   }); //end of db.getConnection()
 }
@@ -318,10 +437,13 @@ app.post("/createUser", async (req, res) => {
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
   const wallet = await web3.eth.accounts.create();
   const bscwallet = await web3_bsc.eth.accounts.create();
+  const polywallet = await web3_poly.eth.accounts.create();
   const ethAddress = wallet.address;
   const ethPrivateKey = wallet.privateKey;
   const bscAddress = bscwallet.address;
   const bscPrivateKey = bscwallet.privateKey;
+  const polyAddress = polywallet.address;
+  const polyPrivateKey = polywallet.privateKey;
   const referredById =
     req.body.referredById != undefined ? req.body.referredById : 0;
   const points = req.body.points != undefined ? req.body.points : 0;
@@ -337,6 +459,10 @@ app.post("/createUser", async (req, res) => {
   const winAmtBsc = 0.0;
   const lossAmtBsc = 0.0;
   const availableBalanceBsc = 0.0;
+  const depositAmtPoly = 0.0;
+  const winAmtPoly = 0.0;
+  const lossAmtPoly = 0.0;
+  const availableBalancePoly = 0.0;
   db.getConnection(async (err, connection) => {
     if (err) throw err;
     const sqlSearch = "SELECT * FROM user_table WHERE email = ?";
@@ -349,7 +475,6 @@ app.post("/createUser", async (req, res) => {
       console.log("------> Search Results");
       console.log(result.length);
       if (result.length != 0) {
-        connection.release();
         console.log("------> User already exists");
         res.sendStatus(409);
       } else {
@@ -360,8 +485,7 @@ app.post("/createUser", async (req, res) => {
             hashedPassword,
             ethAddress,
             bscAddress,
-            ethPrivateKey,
-            bscPrivateKey,
+            polyAddress,
             referredById,
             points,
             usedReferralBonus,
@@ -375,7 +499,21 @@ app.post("/createUser", async (req, res) => {
             winAmtBsc,
             lossAmtBsc,
             availableBalanceBsc,
+            depositAmtPoly,
+            winAmtPoly,
+            lossAmtPoly,
+            availableBalancePoly,
           ],
+          res
+        );
+        insert_address(
+          email,
+          ethAddress,
+          ethPrivateKey,
+          bscAddress,
+          bscPrivateKey,
+          polyAddress,
+          polyPrivateKey,
           res
         );
       }
@@ -519,6 +657,40 @@ function update_user_bet(
           connection.release();
           if (err) throw err;
           console.log("--------> added bet data eth loss");
+          console.log(result.insertId);
+        }); //end of bet details connection.query()
+      }
+    } else if (chain == "poly") {
+      const sqlUpdateUserWin =
+        "UPDATE user_table SET totalBetAmt = ? , winAmtPoly = ? , availableBalancePoly = ? WHERE email = ?";
+      const update_query_win = mysql.format(sqlUpdateUserWin, [
+        totalBetAmt,
+        result[0].winAmtPoly + profitAmt,
+        result[0].availableBalancePoly + profitAmt,
+        email,
+      ]);
+      const sqlUpdateUserLoss =
+        "UPDATE user_table SET totalBetAmt = ? , lossAmtPoly = ? , availableBalancePoly = ? WHERE email = ?";
+      const update_query_loss = mysql.format(sqlUpdateUserLoss, [
+        totalBetAmt,
+        result[0].lossAmtPoly + betAmt,
+        result[0].availableBalancePoly - betAmt,
+        email,
+      ]);
+      if (betResult === true) {
+        //Store bet details
+        await connection.query(update_query_win, async (err, result) => {
+          connection.release();
+          if (err) throw err;
+          console.log("--------> added bet data Polygon win");
+          console.log(result.insertId);
+        }); //end of bet details connection.query()
+      } else {
+        //Store bet details
+        await connection.query(update_query_loss, async (err, result) => {
+          connection.release();
+          if (err) throw err;
+          console.log("--------> added bet data Polygon loss");
           console.log(result.insertId);
         }); //end of bet details connection.query()
       }
@@ -710,6 +882,67 @@ function withdraw_w_less_d_eth(result, withdrawAmt, email, res) {
     });
   });
 }
+function withdraw_b_less_d_poly(remainingAmt, withdrawAmt, email, res) {
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlWithdrawPoly =
+      "UPDATE user_table SET winAmtPoly = ? , lossAmtPoly = ? , depositAmtPoly = ? , availableBalancePoly = ? WHERE email = ?";
+    const withdraw_query_poly = mysql.format(sqlWithdrawPoly, [
+      0,
+      0,
+      remainingAmt - withdrawAmt,
+      remainingAmt - withdrawAmt,
+      email,
+    ]);
+    await connection.query(withdraw_query_poly, async (err, result) => {
+      connection.release();
+      if (err) throw err;
+      res.json(result);
+    });
+  });
+}
+function withdraw_w_more_d_poly(result, fromMainAccAmt, email, res) {
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlUpdatePoly =
+      "UPDATE user_table SET winAmtPoly = ? , depositAmtPoly = ? , availableBalancePoly = ? WHERE email = ?";
+    const update_query_poly = mysql.format(sqlUpdatePoly, [
+      result[0].winAmtPoly - fromMainAccAmt,
+      0,
+      result[0].winAmtPoly - fromMainAccAmt - result[0].lossAmtPoly,
+      email,
+    ]);
+    await connection.query(update_query_poly, async (err, result) => {
+      connection.release();
+      if (err) throw err;
+      console.log("--------> updated after withdraw > deposit poly");
+      console.log(result.insertId);
+      res.sendStatus(201);
+    });
+  });
+}
+function withdraw_w_less_d_poly(result, withdrawAmt, email, res) {
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlUpdatePoly =
+      "UPDATE user_table SET depositAmtPoly = ? , availableBalancePoly = ? WHERE email = ?";
+    const update_query_poly = mysql.format(sqlUpdatePoly, [
+      result[0].depositAmtPoly - withdrawAmt,
+      result[0].depositAmtPoly -
+        withdrawAmt +
+        result[0].winAmtPoly -
+        result[0].lossAmtPoly,
+      email,
+    ]);
+    await connection.query(update_query_poly, async (err, result) => {
+      connection.release();
+      if (err) throw err;
+      console.log("--------> updated after withdraw < deposit poly");
+      console.log(result.insertId);
+      res.sendStatus(201);
+    });
+  });
+}
 function withdraw_b_less_d_bsc(remainingAmt, withdrawAmt, email, res) {
   db.getConnection(async (err, connection) => {
     if (err) throw err;
@@ -771,23 +1004,26 @@ function withdraw_w_less_d_bsc(result, withdrawAmt, email, res) {
     });
   });
 }
-
-app.post("/withdraw", async (req, res) => {
-  const email = req.body.email;
-  const chain = req.body.chain;
-  const receiver = req.body.receiver;
-  const withdrawAmt = req.body.amt;
-  const withdrawAmtWei = await web3.utils.toWei(String(req.body.amt));
-  const txFeeEth = (await web3.eth.getGasPrice()) * 21000;
-  const txFeeBsc = (await web3_bsc.eth.getGasPrice()) * 21000;
+function get_address_key(
+  result,
+  withdrawAmt,
+  withdrawAmtWei,
+  email,
+  res,
+  txFeeEth,
+  txFeeBsc,
+  txFeePoly,
+  receiver,
+  chain
+) {
   db.getConnection(async (err, connection) => {
     if (err) throw err;
-    const sqlSearch = "Select * from user_table where email = ?";
+    const sqlSearch = "Select * from address_table where email = ?";
     const search_query = mysql.format(sqlSearch, [email]);
-    await connection.query(search_query, async (err, result) => {
+    await connection.query(search_query, async (err, addressResult) => {
       connection.release();
       if (err) throw err;
-      if (result.length == 0) {
+      if (addressResult.length == 0) {
         console.log("--------> User does not exist");
         res.sendStatus(404);
       } else {
@@ -800,8 +1036,8 @@ app.post("/withdraw", async (req, res) => {
               String(result[0].depositAmtEth - result[0].availableBalanceEth)
             );
             const remainingAmt = result[0].depositAmtEth - toMainAccAmt;
-            const privateKey = result[0].ethPrivateKey;
-            const sender = result[0].ethAddress;
+            const privateKey = addressResult[0].ethPrivateKey;
+            const sender = addressResult[0].ethAddress;
 
             //1.) transfer (depositAmt - availableBalance) to main acc.
             //2.) transfer withdraw amt to receiver acc.
@@ -869,8 +1105,8 @@ app.post("/withdraw", async (req, res) => {
               const fromMainAccAmtWei = await web3.utils.toWei(
                 String(parseFloat(withdrawAmt) - result[0].depositAmtEth)
               );
-              const privateKey = result[0].ethPrivateKey;
-              const sender = result[0].ethAddress;
+              const privateKey = addressResult[0].ethPrivateKey;
+              const sender = addressResult[0].ethAddress;
               //1.) transfer depositAmt to receiver acc.
               web3.eth
                 .getBalance(sender)
@@ -926,8 +1162,8 @@ app.post("/withdraw", async (req, res) => {
               withdraw_w_more_d_eth(result, fromMainAccAmt, email, res);
             } //withdraw amt. less than deposit
             else {
-              const privateKey = result[0].ethPrivateKey;
-              const sender = result[0].ethAddress;
+              const privateKey = addressResult[0].ethPrivateKey;
+              const sender = addressResult[0].ethAddress;
 
               //1.) transfer depositAmt to receiver acc.
               web3.eth
@@ -971,6 +1207,189 @@ app.post("/withdraw", async (req, res) => {
               withdraw_w_less_d_eth(result, withdrawAmt, email, res);
             }
           }
+        } else if (chain == "poly") {
+          //available balance less than deposit
+          if (result[0].availableBalancePoly < result[0].depositAmtPoly) {
+            const toMainAccAmt =
+              result[0].depositAmtPoly - result[0].availableBalancePoly;
+            const toMainAccAmtWei = await web3_poly.utils.toWei(
+              String(result[0].depositAmtPoly - result[0].availableBalancePoly)
+            );
+            const remainingAmt = result[0].depositAmtPoly - toMainAccAmt;
+            const privateKey = addressResult[0].polyPrivateKey;
+            const sender = addressResult[0].polyAddress;
+            //1.) transfer (depositAmt - availableBalance) to main acc.
+            //2.) transfer withdraw amt to receiver acc.
+            web3_poly.eth.accounts
+              .signTransaction(
+                {
+                  to: mainWallet,
+                  value: toMainAccAmtWei,
+                  gas: 21000,
+                },
+                privateKey
+              )
+              .then((signedTx) => {
+                console.log(signedTx);
+                return web3_poly.eth.sendSignedTransaction(
+                  signedTx.rawTransaction
+                );
+              })
+              .then((hash) => {
+                console.log(hash);
+              })
+              .then((hash) => {
+                return web3_poly.eth.getBalance(sender);
+              })
+              .then((currBal) => {
+                if (currBal < withdrawAmtWei + txFeePoly) {
+                  //withdrawing max amt.
+                  return web3_poly.eth.accounts.signTransaction(
+                    {
+                      to: receiver,
+                      value: withdrawAmtWei - txFeePoly,
+                      gas: 21000,
+                    },
+                    privateKey
+                  );
+                } else {
+                  //send matic
+                  return web3_poly.eth.accounts.signTransaction(
+                    {
+                      to: receiver,
+                      value: withdrawAmtWei,
+                      gas: 21000,
+                    },
+                    privateKey
+                  );
+                }
+              })
+              .then((signedTx) => {
+                console.log(signedTx);
+                return web3_poly.eth.sendSignedTransaction(
+                  signedTx.rawTransaction
+                );
+              })
+              .then((hash) => {
+                console.log(hash);
+              })
+              .catch((err) => {
+                console.log(err);
+                res.json(err);
+              });
+            // 3.) set win = 0 , loss = 0 , depositAmt=remainingBal-withdrawAmt , availableBalance=remainingBal-withdrawAmt
+            withdraw_b_less_d_poly(remainingAmt, withdrawAmt, email, res);
+          } //available balance greater than deposit
+          else {
+            //withdraw amt. greater than deposit
+            if (withdrawAmt > result[0].depositAmtPoly) {
+              const fromMainAccAmt =
+                parseFloat(withdrawAmt) - result[0].depositAmtPoly;
+              const fromMainAccAmtWei = await web3_poly.utils.toWei(
+                String(parseFloat(withdrawAmt) - result[0].depositAmtPoly)
+              );
+              const privateKey = addressResult[0].polyPrivateKey;
+              const sender = addressResult[0].polyAddress;
+              //1.) transfer depositAmt to receiver acc.
+              web3_poly.eth
+                .getBalance(sender)
+                .then((currBal) => {
+                  //withdrawing max amt.
+                  return web3_poly.eth.accounts.signTransaction(
+                    {
+                      to: receiver,
+                      value: currBal - txFeePoly,
+                      gas: 21000,
+                    },
+                    privateKey
+                  );
+                })
+                .then((signedTx) => {
+                  console.log(signedTx);
+                  return web3_poly.eth.sendSignedTransaction(
+                    signedTx.rawTransaction
+                  );
+                })
+                .then((hash) => {
+                  console.log(hash);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.json(err);
+                });
+
+              //2.) transfer (withdraw Amt. - depositAmt) from main to receiver acc.
+              web3_poly.eth.accounts
+                .signTransaction(
+                  {
+                    to: receiver,
+                    value: fromMainAccAmtWei - txFeePoly,
+                    gas: 21000,
+                  },
+                  mainPrivateKey
+                )
+                .then((signedTx) => {
+                  console.log(signedTx);
+                  return web3_poly.eth.sendSignedTransaction(
+                    signedTx.rawTransaction
+                  );
+                })
+                .then((hash) => {
+                  console.log(hash);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.json(err);
+                });
+              //3.) update deposit=0 , win = dep + win - withdrawAmt and availableBalance
+              withdraw_w_more_d_poly(result, fromMainAccAmt, email, res);
+            } //withdraw amt. less than deposit
+            else {
+              const privateKey = addressResult[0].polyPrivateKey;
+              const sender = addressResult[0].polyAddress;
+
+              //1.) transfer depositAmt to receiver acc.
+              web3_poly.eth
+                .getBalance(sender)
+                .then((currBal) => {
+                  if (currBal < withdrawAmtWei + txFeePoly) {
+                    //withdrawing max amt.
+                    return web3_poly.eth.accounts.signTransaction(
+                      {
+                        to: receiver,
+                        value: withdrawAmtWei - txFeePoly,
+                        gas: 21000,
+                      },
+                      privateKey
+                    );
+                  } else {
+                    return web3_poly.eth.accounts.signTransaction(
+                      {
+                        to: receiver,
+                        value: withdrawAmtWei,
+                        gas: 21000,
+                      },
+                      privateKey
+                    );
+                  }
+                })
+                .then((signedTx) => {
+                  console.log(signedTx);
+                  return web3_poly.eth.sendSignedTransaction(
+                    signedTx.rawTransaction
+                  );
+                })
+                .then((hash) => {
+                  console.log(hash);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.json(err);
+                });
+              //2.) update deposit= deposit - withdrawAmt and availableBalance
+              withdraw_w_less_d_poly(result, withdrawAmt, email, res);
+            }
+          }
         } else {
           //BSC
           if (result[0].availableBalanceBsc < result[0].depositAmtBsc) {
@@ -980,8 +1399,8 @@ app.post("/withdraw", async (req, res) => {
               result[0].depositBsc - result[0].availableBalanceBsc
             );
             const remainingAmt = result[0].depositBsc - toMainAccAmt;
-            const privateKey = result[0].bscPrivateKey;
-            const sender = result[0].bscAddress;
+            const privateKey = addressResult[0].bscPrivateKey;
+            const sender = addressResult[0].bscAddress;
             //1.) transfer (depositAmt - availableBalance) to main acc.
             //2.) transfer withdraw amt to receiver acc.
             web3_bsc.eth.accounts
@@ -1053,8 +1472,8 @@ app.post("/withdraw", async (req, res) => {
               const fromMainAccAmtWei = await web3_bsc.utils.toWei(
                 String(parseFloat(withdrawAmt) - result[0].depositAmtBsc)
               );
-              const privateKey = result[0].bscPrivateKey;
-              const sender = result[0].bscAddress;
+              const privateKey = addressResult[0].bscPrivateKey;
+              const sender = addressResult[0].bscAddress;
               //1.) transfer depositAmt to receiver acc.
               web3_bsc.eth
                 .getBalance(sender)
@@ -1110,8 +1529,8 @@ app.post("/withdraw", async (req, res) => {
               withdraw_w_more_d_bsc(result, fromMainAccAmt, email, res);
             } //withdraw amt. less than deposit
             else {
-              const privateKey = result[0].bscPrivateKey;
-              const sender = result[0].bscAddress;
+              const privateKey = addressResult[0].bscPrivateKey;
+              const sender = addressResult[0].bscAddress;
 
               //1.) transfer depositAmt to receiver acc.
               web3_bsc.eth
@@ -1156,6 +1575,43 @@ app.post("/withdraw", async (req, res) => {
             }
           }
         }
+      } //end of User exists
+    }); //end of connection.query()
+  }); //end of db.getConnection()
+}
+
+app.post("/withdraw", async (req, res) => {
+  const email = req.body.email;
+  const chain = req.body.chain;
+  const receiver = req.body.receiver;
+  const withdrawAmt = req.body.amt;
+  const withdrawAmtWei = await web3.utils.toWei(String(req.body.amt));
+  const txFeeEth = (await web3.eth.getGasPrice()) * 21000;
+  const txFeeBsc = (await web3_bsc.eth.getGasPrice()) * 21000;
+  const txFeePoly = (await web3_poly.eth.getGasPrice()) * 21000;
+  db.getConnection(async (err, connection) => {
+    if (err) throw err;
+    const sqlSearch = "Select * from user_table where email = ?";
+    const search_query = mysql.format(sqlSearch, [email]);
+    await connection.query(search_query, async (err, result) => {
+      connection.release();
+      if (err) throw err;
+      if (result.length == 0) {
+        console.log("--------> User does not exist");
+        res.sendStatus(404);
+      } else {
+        get_address_key(
+          result,
+          withdrawAmt,
+          withdrawAmtWei,
+          email,
+          res,
+          txFeeEth,
+          txFeeBsc,
+          txFeePoly,
+          receiver,
+          chain
+        );
       } //end of User exists
     }); //end of connection.query()
   }); //end of db.getConnection()

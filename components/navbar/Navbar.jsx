@@ -17,6 +17,7 @@ const Navbar = ({
   setShowWalletModal,
   walletBalance,
   bnbWalletBalance,
+  polyWalletBalance,
   chain,
   setChain,
   setLoginTab,
@@ -61,7 +62,9 @@ const Navbar = ({
                     <ChevronDownIcon className="ml-1 mr-2 sm:ml-2 h-7 w-7 opacity-60 text-btntext border-r-2 border-btnText" />
                     {chain == "eth"
                       ? parseFloat(walletBalance).toFixed(8)
-                      : parseFloat(bnbWalletBalance).toFixed(8)}
+                      : chain == "bsc"
+                      ? parseFloat(bnbWalletBalance).toFixed(8)
+                      : parseFloat(polyWalletBalance).toFixed(8)}
                   </>
                 ) : (
                   ""
@@ -110,6 +113,24 @@ const Navbar = ({
                       className="md:p-1 p-0.5 w-3 sm:w-5"
                     />
                     BNB
+                  </span>
+                </Menu.Item>
+                <Menu.Item>
+                  <span
+                    className={
+                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-evenly font-medium"
+                    }
+                    onClick={() => {
+                      setChain("poly");
+                      setCurrency(["MATIC", "/icons/matic.svg"]);
+                    }}>
+                    {parseFloat(polyWalletBalance).toFixed(8)}
+                    <img
+                      src="/icons/matic.svg"
+                      alt="ethereum"
+                      className="md:p-1 p-0.5 w-3 sm:w-5"
+                    />
+                    MATIC
                   </span>
                 </Menu.Item>
               </Menu.Items>

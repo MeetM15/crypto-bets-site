@@ -21,9 +21,15 @@ const MyBets = ({ myBets }) => {
               alt="logo"
               className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
             />
-          ) : (
+          ) : currBet.chain == "bsc" ? (
             <img
               src="/icons/bnb.svg"
+              alt="logo"
+              className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
+            />
+          ) : (
+            <img
+              src="/icons/matic.svg"
               alt="logo"
               className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
             />
@@ -39,13 +45,19 @@ const MyBets = ({ myBets }) => {
             <img
               src="/icons/eth.svg"
               alt="logo"
-              className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-1"
+              className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
             />
-          ) : (
+          ) : currBet.chain == "bsc" ? (
             <img
               src="/icons/bnb.svg"
               alt="logo"
-              className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-1"
+              className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
+            />
+          ) : (
+            <img
+              src="/icons/matic.svg"
+              alt="logo"
+              className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
             />
           )}
         </span>

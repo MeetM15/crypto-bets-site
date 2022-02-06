@@ -43,12 +43,15 @@ const AutoFormComponent = ({
   bnbWalletBalance,
   setWalletBalance,
   setBnbWalletBalance,
+  polyWalletBalance,
+  setPolyWalletBalance,
   chain,
   socket,
   etherPrice,
   binancePrice,
-  totalBetAmt,
+  maticPrice,
   setTotalBetAmt,
+  totalBetAmt,
   setMyBets,
 }) => {
   const btnRef = useRef(false);
@@ -472,6 +475,209 @@ const AutoFormComponent = ({
       };
     }
   };
+  const handlePlaceBetPoly = (currentBet, currentProf, totalProf) => {
+    if (user && user[0] && currentBet > 0.0) {
+      //place bet
+      const result = placeBet(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
+
+      //set dice position acc. to bet result
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
+      //set profitAmtAuto on win and on loss
+      if (betResult == "green") {
+        setPolyWalletBalance(
+          (prev) => parseFloat(prev) + parseFloat(currentProf)
+        );
+        currentProf = parseFloat(
+          (
+            parseFloat(multiplierValue) * parseFloat(currentBet) -
+            parseFloat(currentBet)
+          ).toFixed(6)
+        );
+        totalProf = parseFloat(
+          (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
+        );
+      } else {
+        setPolyWalletBalance((prev) =>
+          parseFloat(parseFloat(prev) - parseFloat(currentBet))
+        );
+        currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
+        totalProf = parseFloat(
+          (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
+        );
+      }
+      //set dice result color acc to win/loss
+      document.getElementById("diceResult").style.color = betResult;
+      if (user && user[0] != undefined) {
+        var d = new Date(); // for curr time
+        const betTime = `${
+          String(d.getHours().toString()).length == 1
+            ? "0" + Number(d.getHours()).toString()
+            : Number(d.getHours()).toString()
+        }:${
+          String(d.getMinutes().toString()).length == 1
+            ? "0" + Number(d.getMinutes()).toString()
+            : Number(d.getMinutes()).toString()
+        }`;
+        const betData = {
+          username: user[0].username,
+          multiplier: multiplierValue,
+          betTime: betTime,
+          result: diceValue,
+          payout:
+            betResult == "green"
+              ? (parseFloat(currentBet) + parseFloat(currentProf)).toFixed(8)
+              : `-${currentBet}`,
+          email: user[0].email,
+          chain: chain,
+          betResult: betResult == "green" ? true : false,
+          betAmt: currentBet.toString(),
+          profitAmt:
+            parseFloat(currentProf) > 0 ? parseFloat(currentProf) : 0.0,
+          totalBetAmt:
+            parseFloat(totalBetAmt) +
+            parseFloat(maticPrice) * parseFloat(currentBet),
+        };
+        setTotalBetAmt(
+          (prev) =>
+            parseFloat(prev) + parseFloat(maticPrice) * parseFloat(currentBet)
+        );
+        console.log("bet data : ", betData);
+        axios
+          .post("/bet", betData)
+          .then((res) => {
+            console.log(res);
+            return socket.emit("placeBet");
+          })
+          .then((res) => {
+            return axios.post("myBets", {
+              email: user[0].email,
+            });
+          })
+          .then((res) => {
+            setMyBets(res.data);
+            return res;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
+        // set bet amt incr. on win/loss
+        if (betResult == "green") {
+          setBetAmt((prev) => {
+            const increasedBetWin = (onWin * parseFloat(prev)) / 100;
+            const newBet = parseFloat(prev) + increasedBetWin;
+            return parseFloat(Math.floor(newBet * 1000000) / 1000000);
+          });
+          currentBet = parseFloat(
+            (
+              parseFloat(currentBet) +
+              (parseFloat(onWin) * parseFloat(currentBet)) / 100
+            ).toFixed(6)
+          );
+        } else {
+          setBetAmt((prev) => {
+            const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
+            const newBet = parseFloat(prev) + increasedBetLoss;
+            return parseFloat(Math.floor(newBet * 1000000) / 1000000);
+          });
+          currentBet = parseFloat(
+            (
+              parseFloat(currentBet) +
+              (parseFloat(onLoss) * parseFloat(currentBet)) / 100
+            ).toFixed(6)
+          );
+        }
+        setShowDice("flex");
+        setTimeout(() => {
+          setShowDice("hidden");
+        }, 3000);
+        setResult(parseFloat(diceValue.toFixed(2)));
+        return {
+          currentBet: currentBet,
+          currentProf: currentProf,
+          totalProf: totalProf,
+        };
+      } else {
+        return {
+          currentBet: currentBet,
+          currentProf: currentProf,
+          totalProf: totalProf,
+        };
+      }
+    } else {
+      //place bet
+      const result = placeBet(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
+
+      //set dice position acc. to bet result
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
+
+      //set profitAmtAuto on win and on loss
+      if (betResult == "green") {
+        setPolyWalletBalance(
+          (prev) => parseFloat(prev) + parseFloat(currentProf)
+        );
+        currentProf = (
+          parseFloat(multiplierValue) * parseFloat(currentBet) -
+          parseFloat(currentBet)
+        ).toFixed(6);
+        totalProf = (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(
+          6
+        );
+      } else {
+        setPolyWalletBalance(
+          (prev) => parseFloat(prev) - parseFloat(currentBet)
+        );
+        currentProf = (-parseFloat(currentBet)).toFixed(6);
+        totalProf = (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(
+          6
+        );
+      }
+
+      // set bet amt incr. on win/loss
+      if (betResult == "green") {
+        setBetAmt((prev) => {
+          const increasedBetWin = (onWin * parseFloat(prev)) / 100;
+          const newBet = parseFloat(prev) + increasedBetWin;
+          return parseFloat(Math.floor(newBet * 1000000) / 1000000);
+        });
+        currentBet = (
+          parseFloat(currentBet) +
+          (parseFloat(onWin) * parseFloat(currentBet)) / 100
+        ).toFixed(6);
+      } else {
+        setBetAmt((prev) => {
+          const increasedBetLoss = (onLoss * parseFloat(prev)) / 100;
+          const newBet = parseFloat(prev) + increasedBetLoss;
+          return parseFloat(Math.floor(newBet * 1000000) / 1000000);
+        });
+        currentBet = (
+          parseFloat(currentBet) +
+          (parseFloat(onLoss) * parseFloat(currentBet)) / 100
+        ).toFixed(6);
+      }
+      setShowDice("flex");
+      setTimeout(() => {
+        setShowDice("hidden");
+      }, 3000);
+      setResult(parseFloat(diceValue.toFixed(2)));
+
+      //set dice result color acc to win/loss
+      document.getElementById("diceResult").style.color = betResult;
+      return {
+        currentBet: currentBet,
+        currentProf: currentProf,
+        totalProf: totalProf,
+      };
+    }
+  };
 
   useEffect(() => {
     setWinChance(parseFloat((99.0 / multiplierValue).toFixed(2)));
@@ -496,6 +702,7 @@ const AutoFormComponent = ({
                 walletBalance={walletBalance}
                 disableClick={disableClick}
                 bnbWalletBalance={bnbWalletBalance}
+                polyWalletBalance={polyWalletBalance}
                 chain={chain}
               />
               <div className="w-full md:w-1/2 h-16">
@@ -828,6 +1035,93 @@ const AutoFormComponent = ({
                     await timer(1000); // wait between next bet
                   }
                 };
+                const runBetsPoly = async () => {
+                  const currentProf = 0.0;
+                  const totalProf = 0.0;
+                  const currentBet = betAmt;
+
+                  for (let i = 0; i < noOfBets; i++) {
+                    console.log("stop", btnRef.current);
+                    if (btnRef.current) {
+                      console.log("enable click");
+                      document
+                        .getElementById("rollBtn")
+                        .removeAttribute("disabled");
+                      setDisableClick(false);
+                      btnRef.current = false;
+
+                      break;
+                    }
+                    if (parseFloat(polyWalletBalance) < currentBet) {
+                      console.log("enable click");
+                      console.log("Insufficient Balance!");
+                      document
+                        .getElementById("rollBtn")
+                        .removeAttribute("disabled");
+                      setDisableClick(false);
+
+                      break;
+                    }
+
+                    currentProf = 0.0;
+                    //break loop if stop profit achieved
+                    if (stopProfit != -1) {
+                      if (parseFloat(totalProf) >= parseFloat(stopProfit)) {
+                        console.log("enable click");
+                        document
+                          .getElementById("rollBtn")
+                          .removeAttribute("disabled");
+                        setDisableClick(false);
+
+                        break;
+                      }
+                    }
+                    //break loop if stop Loss achieved
+                    if (stopLoss != -1) {
+                      if (
+                        parseFloat(totalProf) < 0 &&
+                        Math.abs(parseFloat(totalProf)) >= stopLoss
+                      ) {
+                        console.log("enable click");
+                        document
+                          .getElementById("rollBtn")
+                          .removeAttribute("disabled");
+                        setDisableClick(false);
+
+                        break;
+                      }
+                    }
+                    const handleBetRes = handlePlaceBetPoly(
+                      currentBet,
+                      currentProf,
+                      totalProf
+                    );
+                    if (handleBetRes == -1) {
+                      console.log("Insufficient Balance!");
+                      break;
+                    }
+                    if (handleBetRes) {
+                      currentBet = handleBetRes.currentBet;
+                      currentProf = handleBetRes.currentProf;
+                      totalProf = handleBetRes.totalProf;
+                    }
+                    if (i == noOfBets - 1) {
+                      console.log("enable click");
+                      document
+                        .getElementById("rollBtn")
+                        .removeAttribute("disabled");
+                      setDisableClick(false);
+                    }
+                    console.log("Handle bet res : ", handleBetRes);
+
+                    console.log("stopLoss " + i + " : ", stopLoss);
+                    console.log("stopProfit " + i + " : ", stopProfit);
+                    console.log("CBet : ", currentBet);
+                    console.log("CProfit : ", currentProf);
+                    console.log("TProfit : ", totalProf);
+                    await timer(1000); // wait between next bet
+                  }
+                };
                 const runBets = async () => {
                   const currentProf = 0.0;
                   const totalProf = 0.0;
@@ -922,7 +1216,8 @@ const AutoFormComponent = ({
                   .getElementById("rollBtn")
                   .setAttribute("disabled", "true");
                 if (chain == "eth") runBets();
-                else runBetsBnb();
+                else if (chain == "bsc") runBetsBnb();
+                else runBetsPoly();
               }}>
               Roll Dice
             </button>

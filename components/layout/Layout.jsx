@@ -7,6 +7,7 @@ const Layout = ({
   setShowWalletModal,
   walletBalance,
   bnbWalletBalance,
+  polyWalletBalance,
   chain,
   setChain,
   setLoginTab,
@@ -23,6 +24,7 @@ const Layout = ({
         setShowWalletModal={setShowWalletModal}
         walletBalance={walletBalance}
         bnbWalletBalance={bnbWalletBalance}
+        polyWalletBalance={polyWalletBalance}
         chain={chain}
         setChain={setChain}
         setLoginTab={setLoginTab}

@@ -6,22 +6,19 @@ const BettingForm = ({
   user,
   setUser,
   walletBalance,
-  web3,
-  web3_bsc,
   setWalletBalance,
-  setToggleLoginModalOpen,
   bnbWalletBalance,
   setBnbWalletBalance,
+  polyWalletBalance,
+  setPolyWalletBalance,
   chain,
   socket,
   etherPrice,
-  setEtherPrice,
   binancePrice,
-  setBinancePrice,
+  maticPrice,
   totalBetAmt,
   setTotalBetAmt,
   setMyBets,
-  myBets,
 }) => {
   return (
     <div className="bg-secondary p-2 md:p-7 rounded-2xl mt-12">
@@ -60,10 +57,13 @@ const BettingForm = ({
               bnbWalletBalance={bnbWalletBalance}
               setWalletBalance={setWalletBalance}
               setBnbWalletBalance={setBnbWalletBalance}
+              polyWalletBalance={polyWalletBalance}
+              setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
               etherPrice={etherPrice}
               binancePrice={binancePrice}
+              maticPrice={maticPrice}
               setUser={setUser}
               setTotalBetAmt={setTotalBetAmt}
               totalBetAmt={totalBetAmt}
@@ -77,10 +77,13 @@ const BettingForm = ({
               bnbWalletBalance={bnbWalletBalance}
               setWalletBalance={setWalletBalance}
               setBnbWalletBalance={setBnbWalletBalance}
+              polyWalletBalance={polyWalletBalance}
+              setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
               etherPrice={etherPrice}
               binancePrice={binancePrice}
+              maticPrice={maticPrice}
               setUser={setUser}
               totalBetAmt={totalBetAmt}
               setTotalBetAmt={setTotalBetAmt}
@@ -94,10 +97,13 @@ const BettingForm = ({
               bnbWalletBalance={bnbWalletBalance}
               setWalletBalance={setWalletBalance}
               setBnbWalletBalance={setBnbWalletBalance}
+              polyWalletBalance={polyWalletBalance}
+              setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
               etherPrice={etherPrice}
               binancePrice={binancePrice}
+              maticPrice={maticPrice}
               setUser={setUser}
               totalBetAmt={totalBetAmt}
               setTotalBetAmt={setTotalBetAmt}
