@@ -22,13 +22,13 @@ const io = socketIo(server, {
 
 const Web3 = require("web3");
 let web3 = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/rinkeby"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/eth/mainnet"
 );
 let web3_bsc = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/bsc/testnet"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/bsc/mainnet"
 );
 let web3_poly = new Web3(
-  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/polygon/mumbai"
+  "https://speedy-nodes-nyc.moralis.io/44bc1ff84c8edc2499fd1db9/polygon/mainnet"
 );
 const mainWallet = "0x14d260dcb7c543d289527B8855fb9850390565d2";
 const mainPrivateKey =
@@ -213,20 +213,20 @@ app.post("/updateBalance", async (req, res) => {
           console.log("i : ", i);
           console.log("calls : ", calls);
           //mainnet
-          // var urlEth = `https://api.etherscan.io/api?module=account&action=balancemulti&address=`;
-          // var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
-          // var urlBsc = `https://api.bscscan.com/api?module=account&action=balancemulti&address=`;
-          // var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
-          // var urlPoly = `https://api.polygonscan.com/api?module=account&action=balancemulti&address=`;
-          // var urlPolyTag = `&tag=latest&apikey=C3VF6A6Q93Z3PXM27YB7KJZKBYVXCEI9MI`;
+          var urlEth = `https://api.etherscan.io/api?module=account&action=balancemulti&address=`;
+          var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
+          var urlBsc = `https://api.bscscan.com/api?module=account&action=balancemulti&address=`;
+          var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
+          var urlPoly = `https://api.polygonscan.com/api?module=account&action=balancemulti&address=`;
+          var urlPolyTag = `&tag=latest&apikey=C3VF6A6Q93Z3PXM27YB7KJZKBYVXCEI9MI`;
 
           //testnet
-          var urlEth = `https://api-rinkeby.etherscan.io/api?module=account&action=balancemulti&address=`;
-          var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
-          var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
-          var urlBsc = `https://api-testnet.bscscan.com/api?module=account&action=balancemulti&address=`;
-          var urlPoly = `https://api-testnet.polygonscan.com/api?module=account&action=balancemulti&address=`;
-          var urlPolyTag = `&tag=latest&apikey=C3VF6A6Q93Z3PXM27YB7KJZKBYVXCEI9MI`;
+          // var urlEth = `https://api-rinkeby.etherscan.io/api?module=account&action=balancemulti&address=`;
+          // var urlEthTag = `&tag=latest&apikey=XTZCENR92PIG64NUGCDGPDCBJSNTIPQ9W6`;
+          // var urlBscTag = `&tag=latest&apikey=DCKX4BYY4Z15NRWM4ABD5556CYM7PBP7NY`;
+          // var urlBsc = `https://api-testnet.bscscan.com/api?module=account&action=balancemulti&address=`;
+          // var urlPoly = `https://api-testnet.polygonscan.com/api?module=account&action=balancemulti&address=`;
+          // var urlPolyTag = `&tag=latest&apikey=C3VF6A6Q93Z3PXM27YB7KJZKBYVXCEI9MI`;
 
           var currArrEth = [];
           var currArrBsc = [];
