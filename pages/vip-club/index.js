@@ -281,10 +281,10 @@ const VipClub = () => {
               </div>
               <div className="w-32 h-1 bg-primary-100 rounded-2xl"></div>
               <div className="w-full flex items-center justify-center text-sm font-medium text-btntext">
-                "You gain points as you wager, and each point allows for you to
+                You gain points as you wager, and each point allows for you to
                 reach new levels that unlock additional benefits. Wager only
                 $1,000 worth of ETH, BNB, or MATIC to hit the first level and
-                unlock these perks below."
+                unlock these perks below.
               </div>
             </div>
             <div className="flex items-center text-center justify-center text-5xl leading-tight w-full font-bold text-black">
