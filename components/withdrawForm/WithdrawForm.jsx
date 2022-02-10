@@ -18,8 +18,8 @@ const WithdrawForm = ({
     if (user) {
       const data = {
         chain: withdrawChain,
-        receiver: withdrawAddress,
-        amt: amount,
+        withdraw_address: withdrawAddress,
+        amount: amount,
       };
       console.log(data);
       withdraw(user?.token, data)
