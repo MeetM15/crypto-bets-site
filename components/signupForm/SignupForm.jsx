@@ -11,6 +11,7 @@ const SignupForm = ({ setToggleLoginModalOpen, user }) => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [invalidEmail, setInvalidEmail] = useState(false);
   const [userExist, setUserExist] = useState(false);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   const handleSignup = async (e) => {
@@ -37,13 +38,19 @@ const SignupForm = ({ setToggleLoginModalOpen, user }) => {
           return false;
         });
         setUserExist(false);
+        setInvalidEmail(false);
         router.reload();
       })
       .catch((err) => {
-        // if (err.message == "EMAIL_NOT_FOUND") {
-        //   setUserExist(true);
-        //   setIsLoginLoading(false);
-        // }
+        if (err.code == "auth/invalid-email") {
+          setInvalidEmail(true);
+          setIsLoginLoading(false);
+        } else if (err.code == "auth/email-already-in-use") {
+          setUserExist(true);
+          setIsLoginLoading(false);
+        } else {
+          setIsLoginLoading(false);
+        }
         console.log("error : ", err.code);
         console.log("error : ", err.message);
       });
@@ -108,6 +115,11 @@ const SignupForm = ({ setToggleLoginModalOpen, user }) => {
               {userExist == true && (
                 <div className="w-full font-medium text-red-800 text-sm">
                   User already exists!
+                </div>
+              )}
+              {invalidEmail == true && (
+                <div className="w-full font-medium text-red-800 text-sm">
+                  Invalid Email!
                 </div>
               )}
             </div>

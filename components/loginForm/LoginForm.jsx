@@ -30,16 +30,24 @@ const LoginForm = ({ setToggleLoginModalOpen, user }) => {
           return false;
         });
         setPasswordIncorrect(false);
+        setInvalidEmail(false);
         setUserExist(true);
         router.reload();
         console.log(res);
       })
       .catch((err) => {
-        // if (error.message == "EMAIL_NOT_FOUND") {
-        //   setUserExist(false);
-        //   setPasswordIncorrect(false);
-        //   setIsLoginLoading(false);
-        // }
+        if (err.code == "auth/invalid-email") {
+          setInvalidEmail(true);
+          setIsLoginLoading(false);
+        } else if (err.code == "auth/wrong-password") {
+          setPasswordIncorrect(true);
+          setIsLoginLoading(false);
+        } else if (err.code == "auth/user-not-found") {
+          setUserExist(false);
+          setIsLoginLoading(false);
+        } else {
+          setIsLoginLoading(false);
+        }
         console.log("error : ", err.code);
         console.log("error : ", err.message);
         console.log("error : ", err);
