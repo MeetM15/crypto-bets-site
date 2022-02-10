@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { ClipLoader } from "react-spinners";
 import { signUp } from "../../services/authService";
+import { signIn } from "../../services/authService";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 
 const SignupForm = ({ setToggleLoginModalOpen, user }) => {
   const router = useRouter();
@@ -14,7 +17,7 @@ const SignupForm = ({ setToggleLoginModalOpen, user }) => {
     e.preventDefault();
     const data = {
       username: username,
-      referredById: localStorage.getItem("referredById")
+      refer_code: localStorage.getItem("referredById")
         ? localStorage.getItem("referredById")
         : "",
     };
@@ -23,11 +26,9 @@ const SignupForm = ({ setToggleLoginModalOpen, user }) => {
       password: password,
     };
     signUp(signUpData)
-      .then((res) => {
+      .then(async (res) => {
         console.log(res);
-        return res.idToken;
-      })
-      .then((token) => {
+        const token = await firebase.auth().currentUser.getIdToken();
         return signIn(token, data);
       })
       .then((res) => {
