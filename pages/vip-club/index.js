@@ -80,6 +80,7 @@ const VipClub = () => {
   //set totalBet and isRewarded
   useEffect(() => {
     if (user && user != undefined) {
+      setPoints(user.points);
       setWalletBalance(parseFloat(user.available_balance_eth));
       setBnbWalletBalance(parseFloat(user.available_balance_bsc));
       setPolyWalletBalance(parseFloat(user.available_balance_poly));

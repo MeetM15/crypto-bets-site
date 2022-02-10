@@ -11,31 +11,31 @@ const AllBets = ({ currLiveBets }) => {
           <span className="w-42 h-12 items-center justify-center bg-primary-10 p-2 hidden xsm:flex">
             {currBet.username}
           </span>
-          {/* <span className="w-32 h-12 items-center justify-center bg-primary-5 p-2 hidden lg:flex">
-          {currBet.time}
-        </span>
-        <span className="w-42 h-12 bg-primary-10 p-2 flex items-center justify-center hidden lg:flex">
-          {currBet.betAmt}
-          {currBet.chain == "eth" ? (
-            <img
-              src="/icons/eth.svg"
-              alt="logo"
-              className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
-            />
-          ) : currBet.chain == "bsc" ? (
-            <img
-              src="/icons/bnb.svg"
-              alt="logo"
-              className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
-            />
-          ) : (
-            <img
-              src="/icons/matic.svg"
-              alt="logo"
-              className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
-            />
-          )}
-        </span> */}
+          <span className="w-32 h-12 items-center justify-center bg-primary-5 p-2 hidden lg:flex">
+            {currBet.date_added.substring(11)}
+          </span>
+          <span className="w-42 h-12 bg-primary-10 p-2 flex items-center justify-center hidden lg:flex">
+            {currBet.bet_amount}
+            {currBet.chain == "eth" ? (
+              <img
+                src="/icons/eth.svg"
+                alt="logo"
+                className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
+              />
+            ) : currBet.chain == "bsc" ? (
+              <img
+                src="/icons/bnb.svg"
+                alt="logo"
+                className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
+              />
+            ) : (
+              <img
+                src="/icons/matic.svg"
+                alt="logo"
+                className="sm:m-1 m-0.5 sm:p-1 p-0.5 w-3 sm:w-5 ml-0.5"
+              />
+            )}
+          </span>
           <span className="w-32 h-12 items-center justify-center bg-primary-5 p-2 hidden xsm:flex">{`${currBet.multiplier}x`}</span>
           <span className="w-32 h-12 flex items-center justify-center bg-primary-10 p-2">
             {currBet.roll_result}

@@ -55,20 +55,20 @@ const ManualFormComponent = ({
   const [showDice, setShowDice] = useState("hidden");
   const [result, setResult] = useState();
 
-  const handlePlaceBet = (currentBet, currentProf, totalProf) => {
-    if (user && currentBet > 0.0) {
+  const handlePlaceBet = () => {
+    if (user && betAmt > 0.0) {
       //place bet
       const betData = {
         chain: chain,
         slider_value: sliderValue,
         roll_type: toggleRollOver,
-        betAmt: currentBet,
+        bet_amount: betAmt,
         multiplier: multiplierValue,
       };
       placeBet(user?.token, betData)
         .then((res) => {
-          const betResult = res.data.result;
-          const diceValue = res.data.number;
+          const betResult = res.result;
+          const diceValue = res.number;
           //set dice position acc. to bet result
           document.getElementById("dice").style.left = `calc(${Math.floor(
             diceValue
@@ -93,7 +93,7 @@ const ManualFormComponent = ({
           return getMyBets(user?.token, {});
         })
         .then((res) => {
-          setMyBets(res.data);
+          setMyBets(res);
         })
         .catch((err) => {
           console.log(err);
@@ -119,20 +119,21 @@ const ManualFormComponent = ({
       }, 3000);
     }
   };
-  const handlePlaceBetBnb = (currentBet, currentProf, totalProf) => {
-    if (user && currentBet > 0.0) {
+  const handlePlaceBetBnb = () => {
+    if (user && betAmt > 0.0) {
       //place bet
       const betData = {
         chain: chain,
         slider_value: sliderValue,
         roll_type: toggleRollOver,
-        betAmt: currentBet,
+        bet_amount: betAmt,
         multiplier: multiplierValue,
       };
       placeBet(user?.token, betData)
         .then((res) => {
-          const betResult = res.data.result;
-          const diceValue = res.data.number;
+          console.log(res);
+          const betResult = res.result;
+          const diceValue = res.number;
           //set dice position acc. to bet result
           document.getElementById("dice").style.left = `calc(${Math.floor(
             diceValue
@@ -159,7 +160,7 @@ const ManualFormComponent = ({
           return getMyBets(user?.token, {});
         })
         .then((res) => {
-          setMyBets(res.data);
+          setMyBets(res);
         })
         .catch((err) => {
           console.log(err);
@@ -185,20 +186,20 @@ const ManualFormComponent = ({
       }, 3000);
     }
   };
-  const handlePlaceBetPoly = (currentBet, currentProf, totalProf) => {
-    if (user && currentBet > 0.0) {
+  const handlePlaceBetPoly = () => {
+    if (user && betAmt > 0.0) {
       //place bet
       const betData = {
         chain: chain,
         slider_value: sliderValue,
         roll_type: toggleRollOver,
-        betAmt: currentBet,
+        bet_amount: betAmt,
         multiplier: multiplierValue,
       };
       placeBet(user?.token, betData)
         .then((res) => {
-          const betResult = res.data.result;
-          const diceValue = res.data.number;
+          const betResult = res.result;
+          const diceValue = res.number;
           //set dice position acc. to bet result
           document.getElementById("dice").style.left = `calc(${Math.floor(
             diceValue
@@ -226,7 +227,7 @@ const ManualFormComponent = ({
           return getMyBets(user?.token, {});
         })
         .then((res) => {
-          setMyBets(res.data);
+          setMyBets(res);
         })
         .catch((err) => {
           console.log(err);

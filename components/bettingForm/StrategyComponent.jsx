@@ -33,6 +33,10 @@ const placeBetLocal = (sliderValue, rollType) => {
   return result;
 };
 
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 const StrategyComponent = ({
   user,
   walletBalance,
@@ -63,20 +67,20 @@ const StrategyComponent = ({
   const originalBet = useRef(0.0);
   const [selectedStartegy, setSelectedStartegy] = useState("Martingale");
 
-  const handlePlaceBet = (currentBet, currentProf, totalProf) => {
+  const handlePlaceBet = async (currentBet, currentProf, totalProf) => {
     if (user && currentBet > 0.0) {
       //place bet
       const betData = {
         chain: chain,
         slider_value: sliderValue,
         roll_type: toggleRollOver,
-        betAmt: currentBet,
+        bet_amount: currentBet,
         multiplier: multiplierValue,
       };
-      placeBet(user?.token, betData)
+      const response = await placeBet(user?.token, betData)
         .then((res) => {
-          const betResult = res.data.result;
-          const diceValue = res.data.number;
+          const betResult = res.result;
+          const diceValue = res.number;
           //set dice position acc. to bet result
           document.getElementById("dice").style.left = `calc(${Math.floor(
             diceValue
@@ -133,7 +137,7 @@ const StrategyComponent = ({
           return getMyBets(user?.token, {});
         })
         .then((res) => {
-          setMyBets(res.data);
+          setMyBets(res);
           return {
             currentBet: currentBet,
             currentProf: currentProf,
@@ -143,6 +147,7 @@ const StrategyComponent = ({
         .catch((err) => {
           console.log(err);
         });
+      return response;
     } else {
       //place bet
       const result = placeBetLocal(sliderValue, toggleRollOver);
@@ -163,27 +168,29 @@ const StrategyComponent = ({
         setShowDice("hidden");
       }, 3000);
 
-      return {
-        currentBet: 0,
-        currentProf: 0,
-        totalProf: 0,
-      };
+      return sleep(1000).then((v) => {
+        return {
+          currentBet: 0,
+          currentProf: 0,
+          totalProf: 0,
+        };
+      });
     }
   };
-  const handlePlaceBetBnb = (currentBet, currentProf, totalProf) => {
+  const handlePlaceBetBnb = async (currentBet, currentProf, totalProf) => {
     if (user && currentBet > 0.0) {
       //place bet
       const betData = {
         chain: chain,
         slider_value: sliderValue,
         roll_type: toggleRollOver,
-        betAmt: currentBet,
+        bet_amount: currentBet,
         multiplier: multiplierValue,
       };
-      placeBet(user?.token, betData)
+      const response = await placeBet(user?.token, betData)
         .then((res) => {
-          const betResult = res.data.result;
-          const diceValue = res.data.number;
+          const betResult = res.result;
+          const diceValue = res.number;
           //set dice position acc. to bet result
           document.getElementById("dice").style.left = `calc(${Math.floor(
             diceValue
@@ -193,9 +200,6 @@ const StrategyComponent = ({
             betResult == "win" ? "green" : "red";
           setResult(parseFloat(diceValue.toFixed(2)));
           if (betResult == "win") {
-            setBnbWalletBalance(
-              (prev) => parseFloat(prev) + parseFloat(currentProf)
-            );
             currentProf = parseFloat(
               (
                 parseFloat(multiplierValue) * parseFloat(currentBet) -
@@ -205,13 +209,16 @@ const StrategyComponent = ({
             totalProf = parseFloat(
               (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
             );
-          } else {
             setBnbWalletBalance(
-              (prev) => parseFloat(prev) - parseFloat(currentBet)
+              (prev) => parseFloat(prev) + parseFloat(currentProf)
             );
+          } else {
             currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
             totalProf = parseFloat(
               (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
+            );
+            setBnbWalletBalance(
+              (prev) => parseFloat(prev) - parseFloat(currentBet)
             );
           }
           // set bet amt incr. on win/loss
@@ -240,7 +247,7 @@ const StrategyComponent = ({
           return getMyBets(user?.token, {});
         })
         .then((res) => {
-          setMyBets(res.data);
+          setMyBets(res);
           return {
             currentBet: currentBet,
             currentProf: currentProf,
@@ -250,6 +257,7 @@ const StrategyComponent = ({
         .catch((err) => {
           console.log(err);
         });
+      return response;
     } else {
       //place bet
       const result = placeBetLocal(sliderValue, toggleRollOver);
@@ -270,27 +278,29 @@ const StrategyComponent = ({
         setShowDice("hidden");
       }, 3000);
 
-      return {
-        currentBet: 0,
-        currentProf: 0,
-        totalProf: 0,
-      };
+      return sleep(1000).then((v) => {
+        return {
+          currentBet: 0,
+          currentProf: 0,
+          totalProf: 0,
+        };
+      });
     }
   };
-  const handlePlaceBetPoly = (currentBet, currentProf, totalProf) => {
+  const handlePlaceBetPoly = async (currentBet, currentProf, totalProf) => {
     if (user && currentBet > 0.0) {
       //place bet
       const betData = {
         chain: chain,
         slider_value: sliderValue,
         roll_type: toggleRollOver,
-        betAmt: currentBet,
+        bet_amount: currentBet,
         multiplier: multiplierValue,
       };
-      placeBet(user?.token, betData)
+      const response = await placeBet(user?.token, betData)
         .then((res) => {
-          const betResult = res.data.result;
-          const diceValue = res.data.number;
+          const betResult = res.result;
+          const diceValue = res.number;
           //set dice position acc. to bet result
           document.getElementById("dice").style.left = `calc(${Math.floor(
             diceValue
@@ -300,9 +310,6 @@ const StrategyComponent = ({
             betResult == "win" ? "green" : "red";
           setResult(parseFloat(diceValue.toFixed(2)));
           if (betResult == "win") {
-            setPolyWalletBalance(
-              (prev) => parseFloat(prev) + parseFloat(currentProf)
-            );
             currentProf = parseFloat(
               (
                 parseFloat(multiplierValue) * parseFloat(currentBet) -
@@ -312,13 +319,16 @@ const StrategyComponent = ({
             totalProf = parseFloat(
               (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
             );
-          } else {
             setPolyWalletBalance(
-              (prev) => parseFloat(prev) - parseFloat(currentBet)
+              (prev) => parseFloat(prev) + parseFloat(currentProf)
             );
+          } else {
             currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
             totalProf = parseFloat(
               (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
+            );
+            setPolyWalletBalance(
+              (prev) => parseFloat(prev) - parseFloat(currentBet)
             );
           }
           // set bet amt incr. on win/loss
@@ -347,7 +357,7 @@ const StrategyComponent = ({
           return getMyBets(user?.token, {});
         })
         .then((res) => {
-          setMyBets(res.data);
+          setMyBets(res);
           return {
             currentBet: currentBet,
             currentProf: currentProf,
@@ -357,6 +367,7 @@ const StrategyComponent = ({
         .catch((err) => {
           console.log(err);
         });
+      return response;
     } else {
       //place bet
       const result = placeBetLocal(sliderValue, toggleRollOver);
@@ -377,11 +388,13 @@ const StrategyComponent = ({
         setShowDice("hidden");
       }, 3000);
 
-      return {
-        currentBet: 0,
-        currentProf: 0,
-        totalProf: 0,
-      };
+      return sleep(1000).then((v) => {
+        return {
+          currentBet: 0,
+          currentProf: 0,
+          totalProf: 0,
+        };
+      });
     }
   };
 
@@ -500,7 +513,6 @@ const StrategyComponent = ({
               id="rollBtn"
               onClick={() => {
                 setDisableClick(true);
-                const timer = (ms) => new Promise((res) => setTimeout(res, ms));
                 const runBetsPoly = async () => {
                   const currentProf = 0.0;
                   const totalProf = 0.0;
@@ -524,11 +536,11 @@ const StrategyComponent = ({
                     }
 
                     if (i == 0) {
-                      originalBet.current = betAmt;
+                      originalBet.current = currentBet;
                     }
                     currentProf = 0.0;
 
-                    const handleBetRes = handlePlaceBetPoly(
+                    const handleBetRes = await handlePlaceBetPoly(
                       currentBet,
                       currentProf,
                       totalProf
@@ -544,7 +556,6 @@ const StrategyComponent = ({
                         .removeAttribute("disabled");
                       setDisableClick(false);
                     }
-                    await timer(1000); // wait between next bet
                   }
                 };
                 const runBetsBnb = async () => {
@@ -570,11 +581,11 @@ const StrategyComponent = ({
                     }
 
                     if (i == 0) {
-                      originalBet.current = betAmt;
+                      originalBet.current = currentBet;
                     }
                     currentProf = 0.0;
 
-                    const handleBetRes = handlePlaceBetBnb(
+                    const handleBetRes = await handlePlaceBetBnb(
                       currentBet,
                       currentProf,
                       totalProf
@@ -590,7 +601,6 @@ const StrategyComponent = ({
                         .removeAttribute("disabled");
                       setDisableClick(false);
                     }
-                    await timer(1000); // wait between next bet
                   }
                 };
                 const runBets = async () => {
@@ -615,11 +625,11 @@ const StrategyComponent = ({
                       break;
                     }
                     if (i == 0) {
-                      originalBet.current = betAmt;
+                      originalBet.current = currentBet;
                     }
                     currentProf = 0.0;
 
-                    const handleBetRes = handlePlaceBet(
+                    const handleBetRes = await handlePlaceBet(
                       currentBet,
                       currentProf,
                       totalProf
@@ -635,7 +645,6 @@ const StrategyComponent = ({
                         .removeAttribute("disabled");
                       setDisableClick(false);
                     }
-                    await timer(1000); // wait between next bet
                   }
                 };
                 // To prevent spamming of bets

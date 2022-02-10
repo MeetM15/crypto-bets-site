@@ -36,6 +36,10 @@ const placeBetLocal = (sliderValue, rollType) => {
   return result;
 };
 
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 const AutoFormComponent = ({
   user,
   walletBalance,
@@ -67,20 +71,21 @@ const AutoFormComponent = ({
   const [stopProfit, setStopProfit] = useState(-1);
   const [stopLoss, setStopLoss] = useState(-1);
 
-  const handlePlaceBet = (currentBet, currentProf, totalProf) => {
+  const handlePlaceBet = async (currentBet, currentProf, totalProf) => {
     if (user && currentBet > 0.0) {
       //place bet
       const betData = {
         chain: chain,
         slider_value: sliderValue,
         roll_type: toggleRollOver,
-        betAmt: currentBet,
+        bet_amount: currentBet,
         multiplier: multiplierValue,
       };
-      placeBet(user?.token, betData)
+      const response = await placeBet(user?.token, betData)
         .then((res) => {
-          const betResult = res.data.result;
-          const diceValue = res.data.number;
+          console.log(res);
+          const betResult = res.result;
+          const diceValue = res.number;
           //set dice position acc. to bet result
           document.getElementById("dice").style.left = `calc(${Math.floor(
             diceValue
@@ -145,7 +150,7 @@ const AutoFormComponent = ({
           return getMyBets(user?.token, {});
         })
         .then((res) => {
-          setMyBets(res.data);
+          setMyBets(res);
           return {
             currentBet: currentBet,
             currentProf: currentProf,
@@ -155,6 +160,7 @@ const AutoFormComponent = ({
         .catch((err) => {
           console.log(err);
         });
+      return response;
     } else {
       //place bet
       const result = placeBetLocal(sliderValue, toggleRollOver);
@@ -175,27 +181,29 @@ const AutoFormComponent = ({
         setShowDice("hidden");
       }, 3000);
 
-      return {
-        currentBet: 0,
-        currentProf: 0,
-        totalProf: 0,
-      };
+      return sleep(1000).then((v) => {
+        return {
+          currentBet: 0,
+          currentProf: 0,
+          totalProf: 0,
+        };
+      });
     }
   };
-  const handlePlaceBetBnb = (currentBet, currentProf, totalProf) => {
+  const handlePlaceBetBnb = async (currentBet, currentProf, totalProf) => {
     if (user && currentBet > 0.0) {
       //place bet
       const betData = {
         chain: chain,
         slider_value: sliderValue,
         roll_type: toggleRollOver,
-        betAmt: currentBet,
+        bet_amount: currentBet,
         multiplier: multiplierValue,
       };
-      placeBet(user?.token, betData)
+      const response = await placeBet(user?.token, betData)
         .then((res) => {
-          const betResult = res.data.result;
-          const diceValue = res.data.number;
+          const betResult = res.result;
+          const diceValue = res.number;
           //set dice position acc. to bet result
           document.getElementById("dice").style.left = `calc(${Math.floor(
             diceValue
@@ -206,9 +214,6 @@ const AutoFormComponent = ({
           setResult(parseFloat(diceValue.toFixed(2)));
           //set profitAmtAuto on win and on loss
           if (betResult == "win") {
-            setBnbWalletBalance(
-              (prev) => parseFloat(prev) + parseFloat(currentProf)
-            );
             currentProf = parseFloat(
               (
                 parseFloat(multiplierValue) * parseFloat(currentBet) -
@@ -218,13 +223,16 @@ const AutoFormComponent = ({
             totalProf = parseFloat(
               (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
             );
-          } else {
-            setBnbWalletBalance((prev) =>
-              parseFloat(parseFloat(prev) - parseFloat(currentBet))
+            setBnbWalletBalance(
+              (prev) => parseFloat(prev) + parseFloat(currentProf)
             );
+          } else {
             currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
             totalProf = parseFloat(
               (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
+            );
+            setBnbWalletBalance((prev) =>
+              parseFloat(parseFloat(prev) - parseFloat(currentBet))
             );
           }
           // set bet amt incr. on win/loss
@@ -262,7 +270,7 @@ const AutoFormComponent = ({
           return getMyBets(user?.token, {});
         })
         .then((res) => {
-          setMyBets(res.data);
+          setMyBets(res);
           return {
             currentBet: currentBet,
             currentProf: currentProf,
@@ -272,6 +280,7 @@ const AutoFormComponent = ({
         .catch((err) => {
           console.log(err);
         });
+      return response;
     } else {
       //place bet
       const result = placeBetLocal(sliderValue, toggleRollOver);
@@ -292,27 +301,29 @@ const AutoFormComponent = ({
         setShowDice("hidden");
       }, 3000);
 
-      return {
-        currentBet: 0,
-        currentProf: 0,
-        totalProf: 0,
-      };
+      return sleep(1000).then((v) => {
+        return {
+          currentBet: 0,
+          currentProf: 0,
+          totalProf: 0,
+        };
+      });
     }
   };
-  const handlePlaceBetPoly = (currentBet, currentProf, totalProf) => {
+  const handlePlaceBetPoly = async (currentBet, currentProf, totalProf) => {
     if (user && currentBet > 0.0) {
       //place bet
       const betData = {
         chain: chain,
         slider_value: sliderValue,
         roll_type: toggleRollOver,
-        betAmt: currentBet,
+        bet_amount: currentBet,
         multiplier: multiplierValue,
       };
-      placeBet(user?.token, betData)
+      const response = await placeBet(user?.token, betData)
         .then((res) => {
-          const betResult = res.data.result;
-          const diceValue = res.data.number;
+          const betResult = res.result;
+          const diceValue = res.number;
           //set dice position acc. to bet result
           document.getElementById("dice").style.left = `calc(${Math.floor(
             diceValue
@@ -322,9 +333,6 @@ const AutoFormComponent = ({
             betResult == "win" ? "green" : "red";
           setResult(parseFloat(diceValue.toFixed(2)));
           if (betResult == "win") {
-            setPolyWalletBalance(
-              (prev) => parseFloat(prev) + parseFloat(currentProf)
-            );
             currentProf = parseFloat(
               (
                 parseFloat(multiplierValue) * parseFloat(currentBet) -
@@ -334,13 +342,16 @@ const AutoFormComponent = ({
             totalProf = parseFloat(
               (parseFloat(totalProf) + parseFloat(currentProf)).toFixed(6)
             );
-          } else {
-            setPolyWalletBalance((prev) =>
-              parseFloat(parseFloat(prev) - parseFloat(currentBet))
+            setPolyWalletBalance(
+              (prev) => parseFloat(prev) + parseFloat(currentProf)
             );
+          } else {
             currentProf = parseFloat((-parseFloat(currentBet)).toFixed(6));
             totalProf = parseFloat(
               (parseFloat(currentProf) + parseFloat(totalProf)).toFixed(6)
+            );
+            setPolyWalletBalance((prev) =>
+              parseFloat(parseFloat(prev) - parseFloat(currentBet))
             );
           }
           // set bet amt incr. on win/loss
@@ -377,7 +388,7 @@ const AutoFormComponent = ({
           return getMyBets(user?.token, {});
         })
         .then((res) => {
-          setMyBets(res.data);
+          setMyBets(res);
           return {
             currentBet: currentBet,
             currentProf: currentProf,
@@ -387,6 +398,7 @@ const AutoFormComponent = ({
         .catch((err) => {
           console.log(err);
         });
+      return response;
     } else {
       //place bet
       const result = placeBetLocal(sliderValue, toggleRollOver);
@@ -407,11 +419,13 @@ const AutoFormComponent = ({
         setShowDice("hidden");
       }, 3000);
 
-      return {
-        currentBet: 0,
-        currentProf: 0,
-        totalProf: 0,
-      };
+      return sleep(1000).then((v) => {
+        return {
+          currentBet: 0,
+          currentProf: 0,
+          totalProf: 0,
+        };
+      });
     }
   };
 
@@ -684,7 +698,6 @@ const AutoFormComponent = ({
               id="rollBtn"
               onClick={() => {
                 setDisableClick(true);
-                const timer = (ms) => new Promise((res) => setTimeout(res, ms));
                 const runBetsBnb = async () => {
                   const currentProf = 0.0;
                   const totalProf = 0.0;
@@ -730,7 +743,7 @@ const AutoFormComponent = ({
                         break;
                       }
                     }
-                    const handleBetRes = handlePlaceBetBnb(
+                    const handleBetRes = await handlePlaceBetBnb(
                       currentBet,
                       currentProf,
                       totalProf
@@ -746,7 +759,6 @@ const AutoFormComponent = ({
                         .removeAttribute("disabled");
                       setDisableClick(false);
                     }
-                    await timer(1000); // wait between next bet
                   }
                 };
                 const runBetsPoly = async () => {
@@ -795,7 +807,7 @@ const AutoFormComponent = ({
                         break;
                       }
                     }
-                    const handleBetRes = handlePlaceBetPoly(
+                    const handleBetRes = await handlePlaceBetPoly(
                       currentBet,
                       currentProf,
                       totalProf
@@ -811,7 +823,6 @@ const AutoFormComponent = ({
                         .removeAttribute("disabled");
                       setDisableClick(false);
                     }
-                    await timer(1000); // wait between next bet
                   }
                 };
                 const runBets = async () => {
@@ -863,12 +874,11 @@ const AutoFormComponent = ({
                         break;
                       }
                     }
-                    const handleBetRes = handlePlaceBet(
+                    const handleBetRes = await handlePlaceBet(
                       currentBet,
                       currentProf,
                       totalProf
                     );
-
                     if (handleBetRes) {
                       currentBet = handleBetRes.currentBet;
                       currentProf = handleBetRes.currentProf;
@@ -880,7 +890,6 @@ const AutoFormComponent = ({
                         .removeAttribute("disabled");
                       setDisableClick(false);
                     }
-                    await timer(1000); // wait between next bet
                   }
                 };
                 // To prevent spamming of bets

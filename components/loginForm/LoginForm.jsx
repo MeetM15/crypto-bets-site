@@ -22,8 +22,7 @@ const LoginForm = ({ setToggleLoginModalOpen, user }) => {
     login(data)
       .then(async (res) => {
         console.log(res);
-        const token = await firebase.auth().currentUser.getIdToken();
-        return signIn(token);
+        return res;
       })
       .then((res) => {
         setToggleLoginModalOpen(() => {

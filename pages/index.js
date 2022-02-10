@@ -91,7 +91,7 @@ export default function Home() {
       //get live data
       liveBets()
         .then((res) => {
-          setCurrLiveBets(res.data);
+          setCurrLiveBets(res);
         })
         .catch((error) => {
           console.log(error);
@@ -101,7 +101,7 @@ export default function Home() {
   useEffect(() => {
     liveBets()
       .then((res) => {
-        setCurrLiveBets(res.data);
+        setCurrLiveBets(res);
       })
       .catch((error) => {
         console.log(error);
@@ -114,7 +114,7 @@ export default function Home() {
       //get live data
       getMyBets(user?.token, {})
         .then((res) => {
-          setMyBets(res.data);
+          setMyBets(res);
         })
         .catch((error) => {
           console.log(error);

@@ -30,12 +30,12 @@ const LiveBetsComponent = ({ currLiveBets, myBets }) => {
           <span className="bg-primary-10 w-42 h-12 items-center justify-center border-b border-#E8E8E8 p-2 hidden xsm:flex">
             User
           </span>
-          {/* <span className="bg-primary-5 w-32 h-12 items-center justify-center border-b border-#E8E8E8 p-2 hidden lg:flex">
+          <span className="bg-primary-5 w-32 h-12 items-center justify-center border-b border-#E8E8E8 p-2 hidden lg:flex">
             Time
           </span>
           <span className="bg-primary-10 w-42 h-12 items-center justify-center border-b border-#E8E8E8 p-2 hidden lg:flex">
             Bet
-          </span> */}
+          </span>
           <span className="bg-primary-5 w-32 h-12 items-center justify-center border-b border-#E8E8E8 p-2 hidden xsm:flex">
             Multiplier
           </span>
