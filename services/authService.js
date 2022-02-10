@@ -1,6 +1,6 @@
 import axios from "../config/axios";
 import firebase from "firebase/compat/app";
-import "firebase/auth";
+import "firebase/compat/auth";
 import firebaseClient from "../lib/firebaseClient";
 
 export const signUp = (data = {}) => {

@@ -3,8 +3,19 @@ import { Transition, Dialog } from "@headlessui/react";
 import { Fragment } from "react";
 import { XIcon } from "@heroicons/react/solid";
 import { useRouter } from "next/router";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 const Logout = ({ showLogoutModal, setShowLogoutModal }) => {
   const router = useRouter();
+  const logout = async () => {
+    await firebase
+      .auth()
+      .signOut()
+      .then((res) => {
+        router.push("/");
+        setShowLogoutModal(false);
+      });
+  };
   return (
     <Transition.Root show={showLogoutModal} as={Fragment}>
       <Dialog
@@ -56,8 +67,7 @@ const Logout = ({ showLogoutModal, setShowLogoutModal }) => {
                   type="button"
                   className="w-full bg-logoutBtn rounded-lg text-logoutBtnText mt-4 h-10 font-medium"
                   onClick={() => {
-                    localStorage.removeItem("token");
-                    router.reload();
+                    logout();
                   }}>
                   Logout
                 </button>

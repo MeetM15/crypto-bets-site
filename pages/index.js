@@ -121,7 +121,7 @@ export default function Home() {
           console.log(error);
         });
     });
-  }, [socket]);
+  }, [socket, user]);
   useEffect(() => {
     liveBets(user?.token)
       .then((res) => {
