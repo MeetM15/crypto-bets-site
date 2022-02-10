@@ -113,7 +113,7 @@ export default function Home() {
   useEffect(() => {
     socket.on("getLiveBetData", () => {
       //get live data
-      liveBets(user?.token)
+      liveBets()
         .then((res) => {
           setCurrLiveBets(res.data);
         })
@@ -123,7 +123,7 @@ export default function Home() {
     });
   }, [socket, user]);
   useEffect(() => {
-    liveBets(user?.token)
+    liveBets()
       .then((res) => {
         setCurrLiveBets(res.data);
       })
