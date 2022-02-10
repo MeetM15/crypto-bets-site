@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { ClipLoader } from "react-spinners";
 import { signUp } from "../../services/authService";
 
-const SignupForm = ({ setToggleLoginModalOpen }) => {
+const SignupForm = ({ setToggleLoginModalOpen, user }) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -23,6 +23,13 @@ const SignupForm = ({ setToggleLoginModalOpen }) => {
       password: password,
     };
     signUp(signUpData)
+      .then((res) => {
+        console.log(res);
+        return res.token;
+      })
+      .then((token) => {
+        return signIn(token, data);
+      })
       .then((res) => {
         setToggleLoginModalOpen(() => {
           setIsLoginLoading(false);

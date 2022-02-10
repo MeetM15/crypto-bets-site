@@ -351,6 +351,7 @@ const VipClub = () => {
             toggleLoginModalOpen={toggleLoginModalOpen}
             setToggleLoginModalOpen={setToggleLoginModalOpen}
             loginTab={loginTab}
+            user={user}
           />
           <Wallet
             setShowWalletModal={setShowWalletModal}

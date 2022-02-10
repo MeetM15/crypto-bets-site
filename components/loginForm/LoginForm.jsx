@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { ClipLoader } from "react-spinners";
 import { login } from "../../services/authService";
+import { signIn } from "../../services/authService";
 
-const LoginForm = ({ setToggleLoginModalOpen }) => {
+const LoginForm = ({ setToggleLoginModalOpen, user }) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,6 +20,13 @@ const LoginForm = ({ setToggleLoginModalOpen }) => {
       password: password,
     };
     login(data)
+      .then((res) => {
+        console.log(res);
+        return res.token;
+      })
+      .then((token) => {
+        return signIn(token, data);
+      })
       .then((res) => {
         setToggleLoginModalOpen(() => {
           setIsLoginLoading(false);

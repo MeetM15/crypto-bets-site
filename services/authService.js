@@ -38,7 +38,7 @@ export const login = (data = {}) => {
 // };
 
 // login to our system by passing firebase token
-export const signIn = (token, data) => {
+export const signIn = (token, data = {}) => {
   return axios({
     url: "/login",
     method: "POST",

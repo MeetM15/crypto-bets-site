@@ -4,7 +4,12 @@ import LoginForm from "../loginForm/LoginForm";
 import SignupForm from "../signupForm/SignupForm";
 import { XIcon } from "@heroicons/react/solid";
 
-const Login = ({ toggleLoginModalOpen, setToggleLoginModalOpen, loginTab }) => {
+const Login = ({
+  toggleLoginModalOpen,
+  setToggleLoginModalOpen,
+  loginTab,
+  user,
+}) => {
   return (
     <Transition.Root show={toggleLoginModalOpen} as={Fragment}>
       <Dialog
@@ -94,11 +99,13 @@ const Login = ({ toggleLoginModalOpen, setToggleLoginModalOpen, loginTab }) => {
                       <Tab.Panel>
                         <LoginForm
                           setToggleLoginModalOpen={setToggleLoginModalOpen}
+                          user={user}
                         />
                       </Tab.Panel>
                       <Tab.Panel>
                         <SignupForm
                           setToggleLoginModalOpen={setToggleLoginModalOpen}
+                          user={user}
                         />
                       </Tab.Panel>
                     </Tab.Panels>
