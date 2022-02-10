@@ -14,7 +14,7 @@ const Layout = ({
   setShowReferralModal,
   setShowLogoutModal,
   lvl,
-  totalBetAmt,
+  points,
 }) => {
   return (
     <div className="bg-primary-5 min-h-screen">
@@ -31,7 +31,7 @@ const Layout = ({
         setShowReferralModal={setShowReferralModal}
         setShowLogoutModal={setShowLogoutModal}
         lvl={lvl}
-        totalBetAmt={totalBetAmt}
+        points={points}
       />
       <div className="flex flex-col items-center">{children}</div>
     </div>

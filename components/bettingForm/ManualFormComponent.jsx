@@ -40,7 +40,6 @@ const ManualFormComponent = ({
   setPolyWalletBalance,
   chain,
   socket,
-  setTotalBetAmt,
   setMyBets,
 }) => {
   const [betAmt, setBetAmt] = useState(0.0);
@@ -66,7 +65,6 @@ const ManualFormComponent = ({
         betAmt: currentBet,
         multiplier: multiplierValue,
       };
-      setTotalBetAmt((prev) => parseFloat(prev) + parseFloat(currentBet));
       placeBet(user?.token, betData)
         .then((res) => {
           const betResult = res.data.result;
@@ -131,7 +129,6 @@ const ManualFormComponent = ({
         betAmt: currentBet,
         multiplier: multiplierValue,
       };
-      setTotalBetAmt((prev) => parseFloat(prev) + parseFloat(currentBet));
       placeBet(user?.token, betData)
         .then((res) => {
           const betResult = res.data.result;
@@ -198,7 +195,6 @@ const ManualFormComponent = ({
         betAmt: currentBet,
         multiplier: multiplierValue,
       };
-      setTotalBetAmt((prev) => parseFloat(prev) + parseFloat(currentBet));
       placeBet(user?.token, betData)
         .then((res) => {
           const betResult = res.data.result;

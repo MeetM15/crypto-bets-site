@@ -12,7 +12,6 @@ const BettingForm = ({
   setPolyWalletBalance,
   chain,
   socket,
-  setTotalBetAmt,
   setMyBets,
 }) => {
   return (
@@ -56,7 +55,6 @@ const BettingForm = ({
               setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
-              setTotalBetAmt={setTotalBetAmt}
               setMyBets={setMyBets}
             />
           </Tab.Panel>
@@ -71,7 +69,6 @@ const BettingForm = ({
               setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
-              setTotalBetAmt={setTotalBetAmt}
               setMyBets={setMyBets}
             />
           </Tab.Panel>
@@ -86,7 +83,6 @@ const BettingForm = ({
               setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
-              setTotalBetAmt={setTotalBetAmt}
               setMyBets={setMyBets}
             />
           </Tab.Panel>

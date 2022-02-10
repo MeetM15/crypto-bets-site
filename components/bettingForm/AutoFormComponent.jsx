@@ -46,7 +46,6 @@ const AutoFormComponent = ({
   setPolyWalletBalance,
   chain,
   socket,
-  setTotalBetAmt,
   setMyBets,
 }) => {
   const btnRef = useRef(false);
@@ -78,7 +77,6 @@ const AutoFormComponent = ({
         betAmt: currentBet,
         multiplier: multiplierValue,
       };
-      setTotalBetAmt((prev) => parseFloat(prev) + parseFloat(currentBet));
       placeBet(user?.token, betData)
         .then((res) => {
           const betResult = res.data.result;
@@ -194,7 +192,6 @@ const AutoFormComponent = ({
         betAmt: currentBet,
         multiplier: multiplierValue,
       };
-      setTotalBetAmt((prev) => parseFloat(prev) + parseFloat(currentBet));
       placeBet(user?.token, betData)
         .then((res) => {
           const betResult = res.data.result;
@@ -312,7 +309,6 @@ const AutoFormComponent = ({
         betAmt: currentBet,
         multiplier: multiplierValue,
       };
-      setTotalBetAmt((prev) => parseFloat(prev) + parseFloat(currentBet));
       placeBet(user?.token, betData)
         .then((res) => {
           const betResult = res.data.result;

@@ -24,7 +24,7 @@ const Navbar = ({
   setShowReferralModal,
   setShowLogoutModal,
   lvl,
-  totalBetAmt,
+  points,
 }) => {
   const router = useRouter();
   const [currency, setCurrency] = useState(["ETH", "/icons/eth.svg"]);
@@ -155,9 +155,7 @@ const Navbar = ({
                 <UserCircleIcon className="w-10 h-10 text-primary-100" />
                 <span className="ml-2 text-md font-medium flex flex-col">
                   {user.username}
-                  <span className="text-xxs font-bold">
-                    {Math.floor(parseFloat(totalBetAmt) * 100)} Points
-                  </span>
+                  <span className="text-xxs font-bold">{points} Points</span>
                   <span className="text-xxxs text-black font-bold absolute h-4 flex left-[1.35rem] bottom-0.5 px-2 bg-secondary opacity-95 rounded flex items-center justify-center">
                     <RiVipCrown2Fill className="h-full mr-0.5 text-viplogo" />
                     LvL {lvl}
@@ -286,7 +284,7 @@ const Navbar = ({
                         console.log(user);
                       }}>
                       <GiDiamondTrophy className="w-5 h-5 mr-1 text-lvllogo" />
-                      {Math.floor(parseFloat(totalBetAmt) * 100)} Points
+                      {points} Points
                     </div>
                   </Menu.Item>
                   <Menu.Item>
