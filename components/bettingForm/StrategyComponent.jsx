@@ -367,7 +367,9 @@ const StrategyComponent = ({
         .catch((err) => {
           console.log(err);
         });
-      return response;
+      return sleep(1000).then((v) => {
+        return response;
+      });
     } else {
       //place bet
       const result = placeBetLocal(sliderValue, toggleRollOver);
