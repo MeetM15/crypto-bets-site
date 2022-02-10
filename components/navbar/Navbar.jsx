@@ -78,11 +78,11 @@ const Navbar = ({
               leave="transition-opacity ease-out duration-100"
               leaveFrom="opacity-100"
               leaveTo="opacity-0">
-              <Menu.Items className="origin-top-right absolute right-0 mt-3 w-full w-38 rounded-md shadow-lg p-1 bg-secondary ring-1 ring-black ring-opacity-5 z-10">
+              <Menu.Items className="origin-top-right absolute right-0 mt-3 w-auto min-w-38 rounded-md shadow-lg p-1 bg-secondary ring-1 ring-black ring-opacity-5 z-10">
                 <Menu.Item>
                   <span
                     className={
-                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium"
+                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium w-max"
                     }
                     onClick={() => {
                       setChain("eth");
@@ -94,13 +94,13 @@ const Navbar = ({
                       alt="logo"
                       className="md:p-1 p-0.5 w-3 sm:w-5"
                     />
-                    ETH
+                    {"  ETH"}
                   </span>
                 </Menu.Item>
                 <Menu.Item>
                   <span
                     className={
-                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium"
+                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium w-max"
                     }
                     onClick={() => {
                       setChain("bsc");
@@ -112,13 +112,13 @@ const Navbar = ({
                       alt="ethereum"
                       className="md:p-1 p-0.5 w-3 sm:w-5"
                     />
-                    BNB
+                    {"  BNB"}
                   </span>
                 </Menu.Item>
                 <Menu.Item>
                   <span
                     className={
-                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium"
+                      "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium w-max"
                     }
                     onClick={() => {
                       setChain("poly");

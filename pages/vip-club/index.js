@@ -38,42 +38,18 @@ const VipClub = () => {
   const [etherPrice, setEtherPrice] = useState(0.0);
   const [binancePrice, setBinancePrice] = useState(0.0);
   const [maticPrice, setMaticPrice] = useState(0.0);
-  const [totalBetAmt, setTotalBetAmt] = useState(0.0);
+  const [points, setPoints] = useState(0);
   const [lvl, setLvl] = useState(0);
 
   useEffect(() => {
-    if (
-      Math.floor(parseFloat(totalBetAmt) * 100) >= 0 &&
-      Math.floor(parseFloat(totalBetAmt) * 100) < l1
-    )
-      setLvl(0);
-    else if (
-      Math.floor(parseFloat(totalBetAmt) * 100) >= l1 &&
-      Math.floor(parseFloat(totalBetAmt) * 100) < l2
-    )
-      setLvl(1);
-    else if (
-      Math.floor(parseFloat(totalBetAmt) * 100) >= l2 &&
-      Math.floor(parseFloat(totalBetAmt) * 100) < l3
-    )
-      setLvl(2);
-    else if (
-      Math.floor(parseFloat(totalBetAmt) * 100) >= l3 &&
-      Math.floor(parseFloat(totalBetAmt) * 100) < l4
-    )
-      setLvl(3);
-    else if (
-      Math.floor(parseFloat(totalBetAmt) * 100) >= l4 &&
-      Math.floor(parseFloat(totalBetAmt) * 100) < l5
-    )
-      setLvl(4);
-    else if (
-      Math.floor(parseFloat(totalBetAmt) * 100) >= l5 &&
-      Math.floor(parseFloat(totalBetAmt) * 100) < l6
-    )
-      setLvl(5);
-    else if (Math.floor(parseFloat(totalBetAmt) * 100) >= l6) setLvl(6);
-  }, [totalBetAmt, user]);
+    if (points >= 0 && points < l1) setLvl(0);
+    else if (points >= l1 && points < l2) setLvl(1);
+    else if (points >= l2 && points < l3) setLvl(2);
+    else if (points >= l3 && points < l4) setLvl(3);
+    else if (points >= l4 && points < l5) setLvl(4);
+    else if (points >= l5 && points < l6) setLvl(5);
+    else if (points >= l6) setLvl(6);
+  }, [points, user]);
 
   //fetch prices
   useEffect(() => {
@@ -140,7 +116,7 @@ const VipClub = () => {
         <Layout
           user={user}
           lvl={lvl}
-          totalBetAmt={totalBetAmt}
+          points={points}
           setToggleLoginModalOpen={setToggleLoginModalOpen}
           setShowWalletModal={setShowWalletModal}
           chain={chain}
