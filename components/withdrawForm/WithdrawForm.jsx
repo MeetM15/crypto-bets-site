@@ -50,7 +50,7 @@ const WithdrawForm = ({
             <label
               htmlFor="withdrawAddress"
               className="p-2 text-xs text-formtext font-medium">
-              {withdrawChain == "eth" ? "ETH" : "BNB"} Address
+              Withdraw Address
             </label>
             <input
               id="withdrawAddress"

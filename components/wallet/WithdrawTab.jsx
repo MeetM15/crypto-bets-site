@@ -28,9 +28,9 @@ const WithdrawTab = ({
             <Menu.Button className="flex items-center justify-between text-xs text-black font-medium">
               {currency[0] && currency[1] ? (
                 <>
-                  {chain == "eth"
+                  {withdrawChain == "eth"
                     ? parseFloat(walletBalance).toFixed(8)
-                    : chain == "bsc"
+                    : withdrawChain == "bsc"
                     ? parseFloat(bnbWalletBalance).toFixed(8)
                     : parseFloat(polyWalletBalance).toFixed(8)}
                   <img

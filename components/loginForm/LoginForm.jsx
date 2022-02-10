@@ -34,13 +34,15 @@ const LoginForm = ({ setToggleLoginModalOpen, user }) => {
         router.reload();
         console.log(res);
       })
-      .catch((error) => {
-        if (error.message == "EMAIL_NOT_FOUND") {
-          setUserExist(false);
-          setPasswordIncorrect(false);
-          setIsLoginLoading(false);
-        }
-        console.log("error : ", error);
+      .catch((err) => {
+        // if (error.message == "EMAIL_NOT_FOUND") {
+        //   setUserExist(false);
+        //   setPasswordIncorrect(false);
+        //   setIsLoginLoading(false);
+        // }
+        console.log("error : ", err.code);
+        console.log("error : ", err.message);
+        console.log("error : ", err);
       });
   };
   return (
