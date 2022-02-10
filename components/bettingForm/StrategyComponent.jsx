@@ -332,7 +332,7 @@ const StrategyComponent = ({
             );
           }
           // set bet amt incr. on win/loss
-          if (betResult == "green") {
+          if (betResult == "win") {
             setBetAmt(originalBet.current);
             currentBet = originalBet.current;
           } else {
