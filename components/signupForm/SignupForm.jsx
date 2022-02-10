@@ -25,7 +25,7 @@ const SignupForm = ({ setToggleLoginModalOpen, user }) => {
     signUp(signUpData)
       .then((res) => {
         console.log(res);
-        return res.token;
+        return res.idToken;
       })
       .then((token) => {
         return signIn(token, data);

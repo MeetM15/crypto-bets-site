@@ -22,7 +22,7 @@ const LoginForm = ({ setToggleLoginModalOpen, user }) => {
     login(data)
       .then((res) => {
         console.log(res);
-        return res.token;
+        return res.idToken;
       })
       .then((token) => {
         return signIn(token, data);
