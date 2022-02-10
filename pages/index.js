@@ -148,6 +148,7 @@ export default function Home() {
 
   //set totalBet and isRewarded
   useEffect(() => {
+    console.log("user :", user);
     if (user && user != undefined) {
       // setTotalBetAmt(parseFloat(user.totalBetAmt));
       setWalletBalance(parseFloat(user.availableBalanceEth));
