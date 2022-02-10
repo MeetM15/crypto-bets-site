@@ -44,9 +44,11 @@ const SignupForm = ({ setToggleLoginModalOpen, user }) => {
       .catch((err) => {
         if (err.code == "auth/invalid-email") {
           setInvalidEmail(true);
+          setUserExist(false);
           setIsLoginLoading(false);
         } else if (err.code == "auth/email-already-in-use") {
           setUserExist(true);
+          setInvalidEmail(false);
           setIsLoginLoading(false);
         } else {
           setIsLoginLoading(false);

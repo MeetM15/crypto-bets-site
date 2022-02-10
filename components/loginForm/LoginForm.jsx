@@ -38,12 +38,18 @@ const LoginForm = ({ setToggleLoginModalOpen, user }) => {
       .catch((err) => {
         if (err.code == "auth/invalid-email") {
           setInvalidEmail(true);
+          setPasswordIncorrect(false);
+          setUserExist(true);
           setIsLoginLoading(false);
         } else if (err.code == "auth/wrong-password") {
           setPasswordIncorrect(true);
+          setInvalidEmail(false);
+          setUserExist(true);
           setIsLoginLoading(false);
         } else if (err.code == "auth/user-not-found") {
           setUserExist(false);
+          setPasswordIncorrect(false);
+          setInvalidEmail(false);
           setIsLoginLoading(false);
         } else {
           setIsLoginLoading(false);
