@@ -3,7 +3,7 @@ import { useAuth } from "../lib/auth";
 import BettingForm from "../components/bettingForm/BettingForm";
 import Layout from "../components/layout/Layout";
 import styles from "../styles/Home.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Login from "../components/modals/Login";
 import Wallet from "../components/modals/Wallet";
 import Referral from "../components/modals/Referral";
@@ -16,6 +16,7 @@ import Link from "next/link";
 import { Menu } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import { liveBets, getMyBets } from "/services/betsService";
+import { userInfo } from "/services/userInfo";
 const socket = io("https://cryptodice1.herokuapp.com/");
 
 const coingeckoUrl = () => {
@@ -32,6 +33,7 @@ const l6 = 40000;
 export default function Home() {
   const router = useRouter();
   const { user, loading } = useAuth();
+  const myInterval = useRef(null);
   const [loginTab, setLoginTab] = useState("login");
   const [chain, setChain] = useState("eth");
   const [toggleLoginModalOpen, setToggleLoginModalOpen] = useState(false);
@@ -48,6 +50,32 @@ export default function Home() {
   const [maticPrice, setMaticPrice] = useState(0.0);
   const [points, setPoints] = useState(0);
   const [lvl, setLvl] = useState(0);
+
+  const [isFetchingUser, setIsFetchingUser] = useState(false);
+
+  //fetch user every minute
+  useEffect(() => {
+    myInterval.current = setInterval(() => {
+      setIsFetchingUser(true);
+    }, 60000);
+    return () => clearInterval(myInterval.current);
+  }, []);
+  useEffect(() => {
+    if (user) {
+      console.log("fetched user!");
+      userInfo(user?.token)
+        .then((res) => {
+          setPoints(res.points);
+          setWalletBalance(parseFloat(res.available_balance_eth));
+          setBnbWalletBalance(parseFloat(res.available_balance_bsc));
+          setPolyWalletBalance(parseFloat(res.available_balance_poly));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      setIsFetchingUser(false);
+    }
+  }, [isFetchingUser]);
 
   useEffect(() => {
     if (points >= 0 && points < l1) setLvl(0);

@@ -52,11 +52,11 @@ const WithdrawTab = ({
             leave="transition-opacity ease-out duration-100"
             leaveFrom="opacity-100"
             leaveTo="opacity-0">
-            <Menu.Items className="origin-top-right absolute right-0 mt-2 min-w-full rounded-md shadow-lg py-1 bg-secondary ring-1 ring-black ring-opacity-5 z-10">
+            <Menu.Items className="origin-top-right absolute right-0 mt-3 w-auto min-w-38 rounded-md shadow-lg p-1 bg-secondary ring-1 ring-black ring-opacity-5 z-10">
               <Menu.Item>
                 <span
                   className={
-                    "px-2 py-0.5 sm:py-1 text-xs text-black flex cursor-pointer items-center justify-between font-medium"
+                    "px-2 py-0.5 sm:py-1 text-xs text-black flex cursor-pointer items-center justify-between font-medium w-max"
                   }
                   onClick={() => {
                     if (amount > parseFloat(walletBalance))
@@ -80,7 +80,7 @@ const WithdrawTab = ({
               <Menu.Item>
                 <span
                   className={
-                    "px-2 py-0.5 sm:py-1 text-xs text-black flex cursor-pointer items-center justify-between font-medium"
+                    "px-2 py-0.5 sm:py-1 text-xs text-black flex cursor-pointer items-center justify-between font-medium w-max"
                   }
                   onClick={() => {
                     if (amount > parseFloat(bnbWalletBalance))
@@ -104,7 +104,7 @@ const WithdrawTab = ({
               <Menu.Item>
                 <span
                   className={
-                    "px-2 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700 flex cursor-pointer items-center justify-between font-medium"
+                    "px-2 py-0.5 sm:py-1 text-xs text-black flex cursor-pointer items-center justify-between font-medium w-max"
                   }
                   onClick={() => {
                     if (amount > parseFloat(polyWalletBalance))
