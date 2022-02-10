@@ -13,7 +13,7 @@ const getRandomArbitrary = (min, max) => {
 const placeBetLocal = (sliderValue, rollType) => {
   const result = [];
   result[1] = getRandomArbitrary(0.0, 100.0);
-  if (rollType) {
+  if (rollType == "over") {
     if (result[1] >= sliderValue) {
       console.log("You win ! Result: ", result);
       result[0] = "win";
@@ -53,7 +53,7 @@ const StrategyComponent = ({
   const [disableClick, setDisableClick] = useState(false);
   const [betAmt, setBetAmt] = useState(0.0);
   const [noOfBets, setNoOfBets] = useState(1);
-  const [toggleRollOver, setToggleRollOverOver] = useState(true); //true - roll over , false - roll under
+  const [rollType, setRollType] = useState("over"); //roll over , roll under
   const [sliderValue, setSliderValue] = useState(
     parseFloat((100.0 - parseFloat((99.0 / 2.0).toFixed(2))).toFixed(2))
   );
@@ -73,7 +73,7 @@ const StrategyComponent = ({
       const betData = {
         chain: chain,
         slider_value: sliderValue,
-        roll_type: toggleRollOver,
+        roll_type: rollType,
         bet_amount: currentBet,
         multiplier: multiplierValue,
       };
@@ -152,7 +152,7 @@ const StrategyComponent = ({
       });
     } else {
       //place bet
-      const result = placeBetLocal(sliderValue, toggleRollOver);
+      const result = placeBetLocal(sliderValue, rollType);
       const betResult = result[0];
       const diceValue = result[1];
 
@@ -185,7 +185,7 @@ const StrategyComponent = ({
       const betData = {
         chain: chain,
         slider_value: sliderValue,
-        roll_type: toggleRollOver,
+        roll_type: rollType,
         bet_amount: currentBet,
         multiplier: multiplierValue,
       };
@@ -264,7 +264,7 @@ const StrategyComponent = ({
       });
     } else {
       //place bet
-      const result = placeBetLocal(sliderValue, toggleRollOver);
+      const result = placeBetLocal(sliderValue, rollType);
       const betResult = result[0];
       const diceValue = result[1];
 
@@ -297,7 +297,7 @@ const StrategyComponent = ({
       const betData = {
         chain: chain,
         slider_value: sliderValue,
-        roll_type: toggleRollOver,
+        roll_type: rollType,
         bet_amount: currentBet,
         multiplier: multiplierValue,
       };
@@ -376,7 +376,7 @@ const StrategyComponent = ({
       });
     } else {
       //place bet
-      const result = placeBetLocal(sliderValue, toggleRollOver);
+      const result = placeBetLocal(sliderValue, rollType);
       const betResult = result[0];
       const diceValue = result[1];
 
@@ -408,8 +408,7 @@ const StrategyComponent = ({
     setWinChance(parseFloat((99.0 / multiplierValue).toFixed(2)));
   }, [multiplierValue]);
   useEffect(() => {
-    if (!toggleRollOver)
-      setSliderValue(parseFloat(parseFloat(winChance).toFixed(2)));
+    if (!rollType) setSliderValue(parseFloat(parseFloat(winChance).toFixed(2)));
     else setSliderValue(parseFloat((100.0 - parseFloat(winChance)).toFixed(2)));
   }, [winChance]);
 
@@ -456,9 +455,9 @@ const StrategyComponent = ({
             </div>
             <ChancesFields
               sliderValue={sliderValue}
-              toggleRollOver={toggleRollOver}
+              rollType={rollType}
               setSliderValue={setSliderValue}
-              setToggleRollOverOver={setToggleRollOverOver}
+              setRollType={setRollType}
               winChance={winChance}
               setWinChance={setWinChance}
               multiplierValue={multiplierValue}
@@ -698,7 +697,7 @@ const StrategyComponent = ({
               x={sliderValue}
               onChange={({ x }) => {
                 setSliderValue(x);
-                if (toggleRollOver) {
+                if (rollType == "over") {
                   setMultiplierValue(
                     parseFloat((99.0 / parseFloat(100.0 - x)).toFixed(4))
                   );
@@ -708,17 +707,21 @@ const StrategyComponent = ({
                   );
                 }
 
-                if (!toggleRollOver) setWinChance(parseFloat(x.toFixed(2)));
+                if (rollType == "under") setWinChance(parseFloat(x.toFixed(2)));
                 else
                   setWinChance(parseFloat((100.0 - parseFloat(x)).toFixed(2)));
               }}
               styles={{
                 track: {
-                  backgroundColor: `${toggleRollOver ? "#24AE8F" : "#FF7878"}`,
+                  backgroundColor: `${
+                    rollType == "over" ? "#24AE8F" : "#FF7878"
+                  }`,
                   width: "100%",
                 },
                 active: {
-                  backgroundColor: `${toggleRollOver ? "#FF7878" : "#24AE8F"}`,
+                  backgroundColor: `${
+                    rollType == "over" ? "#FF7878" : "#24AE8F"
+                  }`,
                 },
                 thumb: {
                   width: 28,

@@ -137,6 +137,9 @@ const WithdrawTab = ({
         />
       </span>
       <div className="font-medium text-xs px-4 text-btntext text-center">
+        It can take upto 24 Hours for withdrawal.
+      </div>
+      <div className="font-medium text-xs px-4 text-btntext text-center">
         Your withdrawal will have 0.00020000 subtracted from your remaining
         balance to cover the fee required to process the transaction.
       </div>

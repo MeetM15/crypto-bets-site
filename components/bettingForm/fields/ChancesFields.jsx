@@ -1,12 +1,11 @@
 import { XIcon } from "@heroicons/react/solid";
-import { SwitchHorizontalIcon } from "@heroicons/react/solid";
 import { useEffect, useState } from "react";
 import { FiRepeat } from "react-icons/fi";
 const ChancesFields = ({
-  toggleRollOver,
+  rollType,
   sliderValue,
   setSliderValue,
-  setToggleRollOverOver,
+  setRollType,
   winChance,
   setWinChance,
   multiplierValue,
@@ -16,7 +15,7 @@ const ChancesFields = ({
   const [rollValue, setRollValue] = useState(sliderValue);
   useEffect(() => {
     setRollValue(parseFloat(sliderValue.toFixed(2)));
-    if (toggleRollOver) {
+    if (rollType == "over") {
       setMultiplierValue(
         parseFloat(
           (99.0 / parseFloat(100.0 - parseFloat(sliderValue))).toFixed(4)
@@ -32,7 +31,7 @@ const ChancesFields = ({
     <div className="flex flex-col md:flex-row items-center justify-between w-full mt-7 gap-4">
       <div className="rounded-md w-full md:w-48 p-3 flex flex-col justify-center gap-2 bg-inputbg h-28">
         <label htmlFor="roll" className="text-xs text-formtext font-medium">
-          {toggleRollOver ? "Roll Over" : "Roll Under"}
+          {rollType == "over" ? "Roll Over" : "Roll Under"}
         </label>
         <div className="p-0.5 h-12 flex items-center justify-start">
           <button
@@ -44,7 +43,8 @@ const ChancesFields = ({
                 const newState = 100.0 - prevState;
                 return parseFloat(newState.toFixed(2));
               });
-              setToggleRollOverOver(!toggleRollOver);
+              if (rollType == "over") setRollType("under");
+              else setRollType("over");
             }}>
             <span className="w-full h-full text-sm font-medium mr-2 flex items-center justify-center">
               {rollValue}
