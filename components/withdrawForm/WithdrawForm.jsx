@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { BsCashStack } from "react-icons/bs";
 import { withdraw } from "../../services/withdrawService";
+import { userInfo } from "../../services/userInfo";
 const WithdrawForm = ({
   walletBalance,
   bnbWalletBalance,
@@ -10,6 +11,10 @@ const WithdrawForm = ({
   withdrawChain,
   amount,
   setAmount,
+  setPoints,
+  setWalletBalance,
+  setBnbWalletBalance,
+  setPolyWalletBalance,
 }) => {
   const [withdrawAddress, setWithdrawAddress] = useState("");
   const [isWithdrawing, setIsWithdrawing] = useState(false);
@@ -21,12 +26,16 @@ const WithdrawForm = ({
         withdraw_address: withdrawAddress,
         amount: amount,
       };
-      console.log(data);
       withdraw(user?.token, data)
         .then((withdrawRes) => {
-          console.log(withdrawRes);
+          return userInfo(user?.token);
+        })
+        .then((userRes) => {
+          setPoints(userRes.points);
+          setWalletBalance(parseFloat(userRes.available_balance_eth));
+          setBnbWalletBalance(parseFloat(userRes.available_balance_bsc));
+          setPolyWalletBalance(parseFloat(userRes.available_balance_poly));
           setIsWithdrawing(false);
-          console.log(withdrawRes);
         })
         .catch((error) => {
           console.log("error : ", error);

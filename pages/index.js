@@ -179,9 +179,9 @@ export default function Home() {
               user={user}
               walletBalance={walletBalance}
               bnbWalletBalance={bnbWalletBalance}
+              polyWalletBalance={polyWalletBalance}
               setWalletBalance={setWalletBalance}
               setBnbWalletBalance={setBnbWalletBalance}
-              polyWalletBalance={polyWalletBalance}
               setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
@@ -279,6 +279,10 @@ export default function Home() {
             bnbWalletBalance={bnbWalletBalance}
             chain={chain}
             polyWalletBalance={polyWalletBalance}
+            setPoints={setPoints}
+            setWalletBalance={setWalletBalance}
+            setBnbWalletBalance={setBnbWalletBalance}
+            setPolyWalletBalance={setPolyWalletBalance}
           />
           <Referral
             showReferralModal={showReferralModal}

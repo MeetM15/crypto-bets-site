@@ -10,6 +10,10 @@ const WithdrawTab = ({
   bnbWalletBalance,
   polyWalletBalance,
   chain,
+  setPoints,
+  setWalletBalance,
+  setBnbWalletBalance,
+  setPolyWalletBalance,
 }) => {
   const [withdrawChain, setWithdrawChain] = useState(chain);
   const [amount, setAmount] = useState(0.0);
@@ -134,6 +138,10 @@ const WithdrawTab = ({
           withdrawChain={withdrawChain}
           amount={amount}
           setAmount={setAmount}
+          setPoints={setPoints}
+          setWalletBalance={setWalletBalance}
+          setBnbWalletBalance={setBnbWalletBalance}
+          setPolyWalletBalance={setPolyWalletBalance}
         />
       </span>
       <div className="font-medium text-xs px-4 text-btntext text-center">

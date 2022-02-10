@@ -5,10 +5,10 @@ import StrategyComponent from "./StrategyComponent";
 const BettingForm = ({
   user,
   walletBalance,
-  setWalletBalance,
   bnbWalletBalance,
-  setBnbWalletBalance,
   polyWalletBalance,
+  setWalletBalance,
+  setBnbWalletBalance,
   setPolyWalletBalance,
   chain,
   socket,
