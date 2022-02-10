@@ -1,7 +1,8 @@
-import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { ClipLoader } from "react-spinners";
+import { signUp } from "../../services/authService";
+
 const SignupForm = ({ setToggleLoginModalOpen }) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -12,18 +13,17 @@ const SignupForm = ({ setToggleLoginModalOpen }) => {
   const handleSignup = async (e) => {
     e.preventDefault();
     const data = {
-      email: email,
       username: username,
-      password: password,
       referredById: localStorage.getItem("referredById")
-        ? parseInt(localStorage.getItem("referredById"))
-        : 0,
-      points: 0,
+        ? localStorage.getItem("referredById")
+        : "",
     };
-    axios
-      .post("/createUser", data)
+    const signUpData = {
+      email: email,
+      password: password,
+    };
+    signUp(signUpData)
       .then((res) => {
-        localStorage.setItem("token", res.data.accessToken);
         setToggleLoginModalOpen(() => {
           setIsLoginLoading(false);
           return false;
@@ -32,7 +32,7 @@ const SignupForm = ({ setToggleLoginModalOpen }) => {
         router.reload();
       })
       .catch((error) => {
-        if (error.response.status == 409) {
+        if (error.message == "EMAIL_NOT_FOUND") {
           setUserExist(true);
           setIsLoginLoading(false);
         }

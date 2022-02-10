@@ -53,16 +53,16 @@ const Referral = ({ showReferralModal, setShowReferralModal, user }) => {
                     Referral Link
                   </span>
                   <span className="text-center font-medium text-xs sm:text-sm px-2 py-1 bg-inputbg shadow-inner w-full rounded-lg break-all md:break-none flex items-center justify-between">
-                    {user && user[0] && user[0].id
-                      ? `https://crypto-dice-site.herokuapp.com/?refer=${user[0].id}`
+                    {user && user.id
+                      ? `https://crypto-dice-site.herokuapp.com/?refer=${user.id}`
                       : "https://crypto-dice-site.herokuapp.com/?refer=0"}
                     <button
                       type="button"
                       className="flex items-center justify-center px-0.5 md:px-1 py-1.5 bg-secondary text-btntext font-medium text-xs rounded-lg ml-2 w-12 sm:w-16"
                       onClick={() => {
                         navigator.clipboard.writeText(
-                          user && user[0] && user[0].id
-                            ? `https://crypto-dice-site.herokuapp.com?refer=${user[0].id}`
+                          user && user.id
+                            ? `https://crypto-dice-site.herokuapp.com?refer=${user.id}`
                             : "https://crypto-dice-site.herokuapp.com?refer=0"
                         );
                       }}>

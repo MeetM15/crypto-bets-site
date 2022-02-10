@@ -1,13 +1,13 @@
 import Head from "next/head";
+import { useAuth } from "../lib/auth";
 import BettingForm from "../components/bettingForm/BettingForm";
 import Layout from "../components/layout/Layout";
 import styles from "../styles/Home.module.css";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Login from "../components/modals/Login";
 import Wallet from "../components/modals/Wallet";
 import Referral from "../components/modals/Referral";
 import Logout from "../components/modals/Logout";
-import axios from "axios";
 import { MoonLoader } from "react-spinners";
 import { io } from "socket.io-client";
 import LiveBetsComponent from "../components/liveBets/LiveBetsComponent";
@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { Menu } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
+import { liveBets, getMyBets } from "/services/betsService";
 const socket = io("https://cryptodice1.herokuapp.com/");
 
 const coingeckoUrl = () => {
@@ -30,9 +31,7 @@ const l6 = 40000;
 
 export default function Home() {
   const router = useRouter();
-  const myInterval = useRef(null);
-  const [user, setUser] = useState();
-  const [userEmail, setUserEmail] = useState();
+  const { user, loading } = useAuth();
   const [loginTab, setLoginTab] = useState("login");
   const [chain, setChain] = useState("eth");
   const [toggleLoginModalOpen, setToggleLoginModalOpen] = useState(false);
@@ -49,70 +48,8 @@ export default function Home() {
   const [maticPrice, setMaticPrice] = useState(0.0);
   const [totalBetAmt, setTotalBetAmt] = useState(0.0);
   const [lvl, setLvl] = useState(0);
-  const [isRewarded, setIsRewarded] = useState(1);
-  const [vipReward, setVipReward] = useState(0);
-  const [isFetchingUser, setIsFetchingUser] = useState(false);
-
-  //fetch user every minute
-  useEffect(() => {
-    myInterval.current = setInterval(() => {
-      setIsFetchingUser(true);
-    }, 60000);
-    return () => clearInterval(myInterval.current);
-  }, []);
-  useEffect(() => {
-    if (userEmail && isFetchingUser) {
-      console.log("fetched user!");
-      axios
-        .post("/getUserData", {
-          email: userEmail,
-        })
-        .then((res) => {
-          setUser([res.data]);
-        })
-        .catch((error) => {
-          setUser([]);
-          console.log(error);
-        });
-      setIsFetchingUser(false);
-    }
-  }, [isFetchingUser]);
-
-  //total bet amt
-  useEffect(() => {
-    if (user && user[0] && userEmail) {
-      if (lvl > vipReward) {
-        console.log(`vip updated from ${vipReward} to ${lvl} !`);
-        axios
-          .post("/vipLevelUp", {
-            email: userEmail,
-            amt: parseFloat(100.0 / parseFloat(etherPrice)),
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    }
-  }, [lvl]);
 
   useEffect(() => {
-    console.log("total bet: ", totalBetAmt * 100);
-    if (!isRewarded && user && user[0] != undefined) {
-      if (parseFloat(totalBetAmt) > 10.0) {
-        axios
-          .post("/referralBonus", {
-            email: user[0].email,
-            amt: parseFloat(10.0 / parseFloat(etherPrice)),
-          })
-          .then((res) => {
-            setIsRewarded(1);
-            console.log(res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    }
     if (
       Math.floor(parseFloat(totalBetAmt) * 100) >= 0 &&
       Math.floor(parseFloat(totalBetAmt) * 100) < l1
@@ -176,8 +113,7 @@ export default function Home() {
   useEffect(() => {
     socket.on("getLiveBetData", () => {
       //get live data
-      axios
-        .get("liveBets")
+      liveBets(user?.token)
         .then((res) => {
           setCurrLiveBets(res.data);
         })
@@ -187,8 +123,7 @@ export default function Home() {
     });
   }, [socket]);
   useEffect(() => {
-    axios
-      .get("liveBets")
+    liveBets(user?.token)
       .then((res) => {
         setCurrLiveBets(res.data);
       })
@@ -199,10 +134,9 @@ export default function Home() {
 
   //My bets
   useEffect(() => {
-    if (user && user[0] != undefined) {
+    if (user && user != undefined) {
       //get live data
-      axios
-        .post("myBets", { email: user[0].email })
+      getMyBets(user?.token, {})
         .then((res) => {
           setMyBets(res.data);
         })
@@ -214,51 +148,13 @@ export default function Home() {
 
   //set totalBet and isRewarded
   useEffect(() => {
-    if (user && user[0] != undefined) {
-      setTotalBetAmt(parseFloat(user[0].totalBetAmt));
-      setVipReward(parseFloat(user[0].usedVipBonus));
-      setIsRewarded(parseFloat(user[0].usedReferralBonus));
-      setWalletBalance(parseFloat(user[0].availableBalanceEth));
-      setBnbWalletBalance(parseFloat(user[0].availableBalanceBsc));
-      setPolyWalletBalance(parseFloat(user[0].availableBalancePoly));
+    if (user && user != undefined) {
+      // setTotalBetAmt(parseFloat(user.totalBetAmt));
+      setWalletBalance(parseFloat(user.availableBalanceEth));
+      setBnbWalletBalance(parseFloat(user.availableBalanceBsc));
+      setPolyWalletBalance(parseFloat(user.availableBalancePoly));
     }
   }, [user]);
-
-  //get user email
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      axios
-        .get("user", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        })
-        .then((res) => {
-          setUserEmail(res.data.authorizedData.email);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } else {
-      setUserEmail("notConnected");
-    }
-  }, []);
-  //get user details
-  useEffect(() => {
-    if (userEmail) {
-      axios
-        .post("/getUserData", {
-          email: userEmail,
-        })
-        .then((res) => {
-          setUser([res.data]);
-        })
-        .catch((error) => {
-          setUser([]);
-          console.log(error);
-        });
-    }
-  }, [userEmail]);
 
   return (
     <>
@@ -286,7 +182,7 @@ export default function Home() {
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
       </Head>
-      {userEmail && userEmail == "notConnected" ? (
+      {!loading ? (
         <Layout
           user={user}
           lvl={lvl}
@@ -315,140 +211,6 @@ export default function Home() {
               etherPrice={etherPrice}
               binancePrice={binancePrice}
               maticPrice={maticPrice}
-              setUser={setUser}
-              totalBetAmt={totalBetAmt}
-              setTotalBetAmt={setTotalBetAmt}
-              setMyBets={setMyBets}
-            />
-          </div>
-          <div className="p-2 md:p-7 w-11/12 max-w-5xl bg-secondary flex rounded-2xl mb-24">
-            <LiveBetsComponent currLiveBets={currLiveBets} myBets={myBets} />
-          </div>
-          <div className="p-8 md:py-7 md:px-32 w-full bg-secondary flex justify-between">
-            <div className="flex flex-col items-start gap-2 w-1/2 md:w-1/4 p-2">
-              <Link href="/">
-                <img
-                  className="h-6 sm:h-8 w-auto p-1 cursor-pointer"
-                  src="/icons/logo1.svg"
-                  alt="logo"
-                />
-              </Link>
-              <div className="font-medium text-xs text-btntext">
-                © 2022 diceup.com
-              </div>
-              <div className="font-medium text-xs text-btntext">
-                All Rights Reserved.
-              </div>
-              <div className="font-medium text-xs text-btntext">
-                <Menu
-                  as="div"
-                  className="relative px-2 py-1 w-full flex items-start justify-start">
-                  <Menu.Button className="flex items-center w-full justify-center text-btnText font-medium text-xs">
-                    <img
-                      src="/icons/usa.svg"
-                      alt="logo"
-                      className="p-0.5 w-4 sm:w-6"
-                    />
-                    <ChevronDownIcon className="mr-1 sm:mr-2 h-5 w-5 opacity-60 text-btntext " />
-                    English
-                  </Menu.Button>
-                </Menu>
-              </div>
-              <div className="font-medium text-xs text-black">
-                1 ETH = ${etherPrice}
-              </div>
-              <div className="font-medium text-xs text-black">
-                1 BNB = ${binancePrice}
-              </div>
-              <div className="font-medium text-xs text-black">
-                1 MATIC = ${maticPrice}
-              </div>
-            </div>
-            <div className="flex flex-wrap w-3/4 justify-evenly">
-              <div className="flex flex-col items-start justify-between md:w-auto p-2">
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs font-medium text-black">Support</div>
-                  <a
-                    href="https://www.begambleaware.org/"
-                    target="_blank"
-                    rel="noreferrer">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      Gamble Aware
-                    </div>
-                  </a>
-                </div>
-                <img
-                  className="h-10 sm:h-16 w-auto p-1 cursor-pointer"
-                  src="/icons/gambling.svg"
-                  alt="logo"
-                />
-              </div>
-              <div className="flex flex-col items-start justify-between md:w-auto p-2">
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs font-medium text-black">About Us</div>
-                  <Link href="/vip-club">
-                    <div className="font-medium text-xs text-btntext cursor-pointer">
-                      VIP Club
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-          <Login
-            toggleLoginModalOpen={toggleLoginModalOpen}
-            setToggleLoginModalOpen={setToggleLoginModalOpen}
-            loginTab={loginTab}
-          />
-          <Wallet
-            setShowWalletModal={setShowWalletModal}
-            showWalletModal={showWalletModal}
-            user={user}
-            walletBalance={walletBalance}
-            bnbWalletBalance={bnbWalletBalance}
-            chain={chain}
-            polyWalletBalance={polyWalletBalance}
-          />
-          <Referral
-            showReferralModal={showReferralModal}
-            setShowReferralModal={setShowReferralModal}
-            user={user}
-          />
-          <Logout
-            showLogoutModal={showLogoutModal}
-            setShowLogoutModal={setShowLogoutModal}
-          />
-        </Layout>
-      ) : user ? (
-        <Layout
-          user={user}
-          lvl={lvl}
-          totalBetAmt={totalBetAmt}
-          setToggleLoginModalOpen={setToggleLoginModalOpen}
-          setShowWalletModal={setShowWalletModal}
-          chain={chain}
-          setChain={setChain}
-          setLoginTab={setLoginTab}
-          walletBalance={walletBalance}
-          bnbWalletBalance={bnbWalletBalance}
-          polyWalletBalance={polyWalletBalance}
-          setShowReferralModal={setShowReferralModal}
-          setShowLogoutModal={setShowLogoutModal}>
-          <div className="p-2 md:p-7 flex items-center justify-center mb-4 mt-8">
-            <BettingForm
-              user={user}
-              walletBalance={walletBalance}
-              bnbWalletBalance={bnbWalletBalance}
-              setWalletBalance={setWalletBalance}
-              setBnbWalletBalance={setBnbWalletBalance}
-              polyWalletBalance={polyWalletBalance}
-              setPolyWalletBalance={setPolyWalletBalance}
-              chain={chain}
-              socket={socket}
-              etherPrice={etherPrice}
-              binancePrice={binancePrice}
-              maticPrice={maticPrice}
-              setUser={setUser}
               totalBetAmt={totalBetAmt}
               setTotalBetAmt={setTotalBetAmt}
               setMyBets={setMyBets}

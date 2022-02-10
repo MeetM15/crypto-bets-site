@@ -1,14 +1,14 @@
-import { LockClosedIcon } from "@heroicons/react/solid";
-import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { ClipLoader } from "react-spinners";
+import { login } from "../../services/authService";
 
 const LoginForm = ({ setToggleLoginModalOpen }) => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userExist, setUserExist] = useState(true);
+  const [invalidEmail, setInvalidEmail] = useState(false);
   const [passwordIncorrect, setPasswordIncorrect] = useState(false);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
 
@@ -18,31 +18,24 @@ const LoginForm = ({ setToggleLoginModalOpen }) => {
       email: email,
       password: password,
     };
-    axios
-      .post("/login", data)
+    login(data)
       .then((res) => {
-        if (res.data == "Password incorrect!") {
-          setPasswordIncorrect(true);
+        setToggleLoginModalOpen(() => {
           setIsLoginLoading(false);
-          setUserExist(true);
-        } else {
-          localStorage.setItem("token", res.data.accessToken);
-          setToggleLoginModalOpen(() => {
-            setIsLoginLoading(false);
-            return false;
-          });
-          setPasswordIncorrect(false);
-          setUserExist(true);
-          router.reload();
-        }
+          return false;
+        });
+        setPasswordIncorrect(false);
+        setUserExist(true);
+        router.reload();
+        console.log(res);
       })
       .catch((error) => {
-        if (error.response.status == 404) {
+        if (error.message == "EMAIL_NOT_FOUND") {
           setUserExist(false);
           setPasswordIncorrect(false);
           setIsLoginLoading(false);
         }
-        console.log("error : ", error.response);
+        console.log("error : ", error);
       });
   };
   return (
@@ -90,6 +83,11 @@ const LoginForm = ({ setToggleLoginModalOpen }) => {
               {userExist == false && (
                 <div className="w-full font-medium text-red-800 text-sm">
                   User does not exist!
+                </div>
+              )}
+              {invalidEmail == true && (
+                <div className="w-full font-medium text-red-800 text-sm">
+                  Invalid Email!
                 </div>
               )}
               {passwordIncorrect == true && (

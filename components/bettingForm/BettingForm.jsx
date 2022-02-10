@@ -4,7 +4,6 @@ import ManualFormComponent from "./ManualFormComponent";
 import StrategyComponent from "./StrategyComponent";
 const BettingForm = ({
   user,
-  setUser,
   walletBalance,
   setWalletBalance,
   bnbWalletBalance,
@@ -13,10 +12,6 @@ const BettingForm = ({
   setPolyWalletBalance,
   chain,
   socket,
-  etherPrice,
-  binancePrice,
-  maticPrice,
-  totalBetAmt,
   setTotalBetAmt,
   setMyBets,
 }) => {
@@ -61,12 +56,7 @@ const BettingForm = ({
               setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
-              etherPrice={etherPrice}
-              binancePrice={binancePrice}
-              maticPrice={maticPrice}
-              setUser={setUser}
               setTotalBetAmt={setTotalBetAmt}
-              totalBetAmt={totalBetAmt}
               setMyBets={setMyBets}
             />
           </Tab.Panel>
@@ -81,11 +71,6 @@ const BettingForm = ({
               setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
-              etherPrice={etherPrice}
-              binancePrice={binancePrice}
-              maticPrice={maticPrice}
-              setUser={setUser}
-              totalBetAmt={totalBetAmt}
               setTotalBetAmt={setTotalBetAmt}
               setMyBets={setMyBets}
             />
@@ -101,11 +86,6 @@ const BettingForm = ({
               setPolyWalletBalance={setPolyWalletBalance}
               chain={chain}
               socket={socket}
-              etherPrice={etherPrice}
-              binancePrice={binancePrice}
-              maticPrice={maticPrice}
-              setUser={setUser}
-              totalBetAmt={totalBetAmt}
               setTotalBetAmt={setTotalBetAmt}
               setMyBets={setMyBets}
             />

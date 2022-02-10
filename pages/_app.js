@@ -1,9 +1,12 @@
 import "../styles/globals.css";
-import axios from "axios";
-axios.defaults.baseURL = "https://diceup-api.herokuapp.com";
+import { AuthProvider } from "../lib/auth";
 
 function MyApp({ Component, pageProps }) {
-    return <Component {...pageProps} />;
+  return (
+    <AuthProvider>
+      <Component {...pageProps} />
+    </AuthProvider>
+  );
 }
 
 export default MyApp;

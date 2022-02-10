@@ -47,7 +47,7 @@ const Navbar = ({
           />
         </Link>
       </div>
-      {user && user[0] && (
+      {user && (
         <div className="bg-inputbg shadow-inner flex items-center justify-between rounded">
           <Menu as="div" className="relative px-2 py-1 w-full">
             <div>
@@ -147,14 +147,14 @@ const Navbar = ({
           </button>
         </div>
       )}
-      {user && user[0] ? (
+      {user ? (
         <>
           <div className="hidden sm:flex items-center pr-2">
             <Menu as="div" className="mr-3 relative">
               <Menu.Button className="flex items-center justify-between text-sm bg-inputbg px-6 py-1 shadow-inner rounded-lg text-primary-100">
                 <UserCircleIcon className="w-10 h-10 text-primary-100" />
                 <span className="ml-2 text-md font-medium flex flex-col">
-                  {user[0].username}
+                  {user.username}
                   <span className="text-xxs font-bold">
                     {Math.floor(parseFloat(totalBetAmt) * 100)} Points
                   </span>
@@ -283,7 +283,7 @@ const Navbar = ({
                         "px-4 py-2 text-sm text-btntext font-medium flex items-center justify-start cursor-pointer"
                       }
                       onClick={() => {
-                        console.log(user[0]);
+                        console.log(user);
                       }}>
                       <GiDiamondTrophy className="w-5 h-5 mr-1 text-lvllogo" />
                       {Math.floor(parseFloat(totalBetAmt) * 100)} Points

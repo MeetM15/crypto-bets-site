@@ -79,27 +79,27 @@ const DepositTab = ({ user }) => {
         </Menu>
       </span>
       <span className="w-full">
-        {user && user[0] ? (
+        {user ? (
           <span className="flex flex-col items-center justify-center font-medium bg-secondary w-full rounded py-2">
             <span className="text-left text-xs w-full font-medium text-formtext">
               Your {depositCurrency[0]} deposit address :
             </span>
             <span className="text-center font-medium text-sm px-1.5 py-1 bg-inputbg shadow-inner w-full rounded break-all md:break-none flex items-center justify-between">
               {depositCurrency[0] == "ETH"
-                ? user[0].ethAddress
+                ? user.ethAddress
                 : depositCurrency[0] == "BNB"
-                ? user[0].bscAddress
-                : user[0].polyAddress}
+                ? user.bscAddress
+                : user.polyAddress}
               <button
                 type="button"
                 className="flex items-center justify-center px-2 py-1.5 bg-secondary text-btntext font-medium text-xs rounded-lg ml-2 w-20 sm:w-auto"
                 onClick={() => {
                   navigator.clipboard.writeText(
                     depositCurrency[0] == "ETH"
-                      ? user[0].ethAddress
+                      ? user.ethAddress
                       : depositCurrency[0] == "BNB"
-                      ? user[0].bscAddress
-                      : user[0].polyAddress
+                      ? user.bscAddress
+                      : user.polyAddress
                   );
                 }}>
                 Copy

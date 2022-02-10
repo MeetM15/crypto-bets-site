@@ -1,30 +1,30 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import Slider from "react-input-slider";
 import BetValueField from "./fields/BetValueField";
 import ChancesFields from "./fields/ChancesFields";
+import { placeBet, getMyBets } from "../../services/betsService";
 
 const getRandomArbitrary = (min, max) => {
   return Math.random() * (max - min) + min;
 };
-const placeBet = (sliderValue, rollType) => {
+const placeBetLocal = (sliderValue, rollType) => {
   const result = [];
   result[1] = getRandomArbitrary(0.0, 100.0);
   if (rollType) {
     if (result[1] >= sliderValue) {
       console.log("You win ! Result: ", result);
-      result[0] = "green";
+      result[0] = "win";
     } else {
       console.log("You Lose ! Result: ", result);
-      result[0] = "red";
+      result[0] = "lose";
     }
   } else {
     if (result[1] <= sliderValue) {
       console.log("You win ! Result: ", result);
-      result[0] = "green";
+      result[0] = "win";
     } else {
       console.log("You Lose ! Result: ", result);
-      result[0] = "red";
+      result[0] = "lose";
     }
   }
   return result;
@@ -32,7 +32,6 @@ const placeBet = (sliderValue, rollType) => {
 
 const ManualFormComponent = ({
   user,
-  setUser,
   walletBalance,
   bnbWalletBalance,
   setWalletBalance,
@@ -41,11 +40,7 @@ const ManualFormComponent = ({
   setPolyWalletBalance,
   chain,
   socket,
-  etherPrice,
-  binancePrice,
-  maticPrice,
   setTotalBetAmt,
-  totalBetAmt,
   setMyBets,
 }) => {
   const [betAmt, setBetAmt] = useState(0.0);
@@ -61,310 +56,204 @@ const ManualFormComponent = ({
   const [showDice, setShowDice] = useState("hidden");
   const [result, setResult] = useState();
 
-  const handlePlaceBet = () => {
-    if (user && user[0] && parseFloat(betAmt) > 0.0) {
-      const result = placeBet(sliderValue, toggleRollOver);
-      const betResult = result[0];
-      const diceValue = result[1];
-      document.getElementById("dice").style.left = `calc(${Math.floor(
-        diceValue
-      )}% - 2rem)`;
-
-      //set return value
-      if (betResult == "green") {
-        setWalletBalance((prev) => parseFloat(prev) + parseFloat(profitAmt));
-      } else {
-        setWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
-      }
-      setShowDice("flex");
-      setTimeout(() => {
-        setShowDice("hidden");
-      }, 2000);
-      setResult(parseFloat(diceValue.toFixed(2)));
-      document.getElementById("diceResult").style.color = betResult;
-      var d = new Date(); // for curr time
-      const betTime = `${
-        String(d.getHours().toString()).length == 1
-          ? "0" + Number(d.getHours()).toString()
-          : Number(d.getHours()).toString()
-      }:${
-        String(d.getMinutes().toString()).length == 1
-          ? "0" + Number(d.getMinutes()).toString()
-          : Number(d.getMinutes()).toString()
-      }`;
+  const handlePlaceBet = (currentBet, currentProf, totalProf) => {
+    if (user && currentBet > 0.0) {
+      //place bet
       const betData = {
-        username: user[0].username,
-        betTime: betTime,
-        betAmt: betAmt,
-        multiplier: multiplierValue,
-        result: diceValue,
-        payout:
-          betResult == "green"
-            ? (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(8)
-            : `-${betAmt}`,
-        betResult: betResult == "green" ? true : false,
         chain: chain,
-        email: user[0].email,
-        profitAmt: betResult == "green" ? parseFloat(profitAmt) : 0.0,
-        totalBetAmt: parseFloat(totalBetAmt) + parseFloat(etherPrice) * betAmt,
+        slider_value: sliderValue,
+        roll_type: toggleRollOver,
+        betAmt: currentBet,
+        multiplier: multiplierValue,
       };
-      setTotalBetAmt(
-        (prev) => parseFloat(prev) + parseFloat(etherPrice) * betAmt
-      );
-      console.log("bet data : ", betData);
-      axios
-        .post("/bet", betData)
+      setTotalBetAmt((prev) => parseFloat(prev) + parseFloat(currentBet));
+      placeBet(user?.token, betData)
         .then((res) => {
-          console.log(res);
-          return socket.emit("placeBet");
-        })
-        .then((res) => {
-          return axios.post("myBets", {
-            email: user[0].email,
-          });
+          const betResult = res.data.result;
+          const diceValue = res.data.number;
+          //set dice position acc. to bet result
+          document.getElementById("dice").style.left = `calc(${Math.floor(
+            diceValue
+          )}% - 2rem)`;
+          //set dice result color acc to win/loss
+          document.getElementById("diceResult").style.color =
+            betResult == "win" ? "green" : "red";
+          setResult(parseFloat(diceValue.toFixed(2)));
+          //set return value
+          if (betResult == "win") {
+            setWalletBalance(
+              (prev) => parseFloat(prev) + parseFloat(profitAmt)
+            );
+          } else {
+            setWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
+          }
+          setShowDice("flex");
+          setTimeout(() => {
+            setShowDice("hidden");
+          }, 3000);
+          socket.emit("placeBet");
+          return getMyBets(user?.token, {});
         })
         .then((res) => {
           setMyBets(res.data);
-          return res;
-        })
-        .then((res) => {
-          console.log("enable click");
-          if (document.getElementById("rollBtn").hasAttribute("disabled"))
-            document.getElementById("rollBtn").removeAttribute("disabled");
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
-      const result = placeBet(sliderValue, toggleRollOver);
+      //place bet
+      const result = placeBetLocal(sliderValue, toggleRollOver);
       const betResult = result[0];
       const diceValue = result[1];
-      document.getElementById("dice").style.left = `calc(${Math.floor(
-        diceValue
-      )}% - 2rem)`;
-      //set return value
-      if (betResult == "green") {
-        setWalletBalance((prev) => parseFloat(prev) + parseFloat(profitAmt));
-      } else {
-        setWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
-      }
-      setShowDice("flex");
-      setTimeout(() => {
-        setShowDice("hidden");
-      }, 2000);
-      setResult(parseFloat(diceValue.toFixed(2)));
-      document.getElementById("diceResult").style.color = betResult;
-      console.log("enable click");
-      if (document.getElementById("rollBtn").hasAttribute("disabled"))
-        document.getElementById("rollBtn").removeAttribute("disabled");
-    }
-  };
-  const handlePlaceBetBnb = () => {
-    if (user && user[0] && parseFloat(betAmt) > 0.0) {
-      const result = placeBet(sliderValue, toggleRollOver);
-      const betResult = result[0];
-      const diceValue = result[1];
-      document.getElementById("dice").style.left = `calc(${Math.floor(
-        diceValue
-      )}% - 2rem)`;
 
-      //set return value
-      if (betResult == "green") {
-        setBnbWalletBalance((prev) => parseFloat(prev) + parseFloat(profitAmt));
-      } else {
-        setBnbWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
-      }
-      setShowDice("flex");
-      setTimeout(() => {
-        setShowDice("hidden");
-      }, 2000);
-      setResult(parseFloat(diceValue.toFixed(2)));
-      document.getElementById("diceResult").style.color = betResult;
-      if (user && user[0] != undefined) {
-        var d = new Date(); // for curr time
-        const betTime = `${
-          String(d.getHours().toString()).length == 1
-            ? "0" + Number(d.getHours()).toString()
-            : Number(d.getHours()).toString()
-        }:${
-          String(d.getMinutes().toString()).length == 1
-            ? "0" + Number(d.getMinutes()).toString()
-            : Number(d.getMinutes()).toString()
-        }`;
-
-        const betData = {
-          username: user[0].username,
-          multiplier: multiplierValue,
-          betTime: betTime,
-          result: diceValue,
-          payout:
-            betResult == "green"
-              ? (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(8)
-              : `-${betAmt}`,
-          email: user[0].email,
-          chain: chain,
-          betResult: betResult == "green" ? true : false,
-          betAmt: betAmt,
-          profitAmt: betResult == "green" ? parseFloat(profitAmt) : 0.0,
-          totalBetAmt:
-            parseFloat(totalBetAmt) + parseFloat(binancePrice) * betAmt,
-        };
-        setTotalBetAmt(
-          (prev) => parseFloat(prev) + parseFloat(binancePrice) * betAmt
-        );
-        console.log("bet data : ", betData);
-        axios
-          .post("/bet", betData)
-          .then((res) => {
-            console.log(res);
-            return socket.emit("placeBet");
-          })
-          .then((res) => {
-            return axios.post("myBets", {
-              email: user[0].email,
-            });
-          })
-          .then((res) => {
-            setMyBets(res.data);
-            return res;
-          })
-          .then((res) => {
-            console.log("enable click");
-            if (document.getElementById("rollBtn").hasAttribute("disabled"))
-              document.getElementById("rollBtn").removeAttribute("disabled");
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    } else {
-      const result = placeBet(sliderValue, toggleRollOver);
-      const betResult = result[0];
-      const diceValue = result[1];
+      //set dice position acc. to bet result
       document.getElementById("dice").style.left = `calc(${Math.floor(
         diceValue
       )}% - 2rem)`;
-      //set return value
-      if (betResult == "green") {
-        setBnbWalletBalance((prev) => parseFloat(prev) + parseFloat(profitAmt));
-      } else {
-        setBnbWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
-      }
+      //set dice result color acc to win/loss
+      document.getElementById("diceResult").style.color =
+        betResult == "win" ? "green" : "red";
+      setResult(parseFloat(diceValue.toFixed(2)));
+
       setShowDice("flex");
       setTimeout(() => {
         setShowDice("hidden");
       }, 3000);
-      setResult(parseFloat(diceValue.toFixed(2)));
-      document.getElementById("diceResult").style.color = betResult;
-      console.log("enable click");
-      if (document.getElementById("rollBtn").hasAttribute("disabled"))
-        document.getElementById("rollBtn").removeAttribute("disabled");
     }
   };
-  const handlePlaceBetPoly = () => {
-    if (user && user[0] && parseFloat(betAmt) > 0.0) {
-      const result = placeBet(sliderValue, toggleRollOver);
-      const betResult = result[0];
-      const diceValue = result[1];
-      document.getElementById("dice").style.left = `calc(${Math.floor(
-        diceValue
-      )}% - 2rem)`;
-
-      //set return value
-      if (betResult == "green") {
-        setPolyWalletBalance(
-          (prev) => parseFloat(prev) + parseFloat(profitAmt)
-        );
-      } else {
-        setPolyWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
-      }
-      setShowDice("flex");
-      setTimeout(() => {
-        setShowDice("hidden");
-      }, 2000);
-      setResult(parseFloat(diceValue.toFixed(2)));
-      document.getElementById("diceResult").style.color = betResult;
-      if (user && user[0] != undefined) {
-        var d = new Date(); // for curr time
-        const betTime = `${
-          String(d.getHours().toString()).length == 1
-            ? "0" + Number(d.getHours()).toString()
-            : Number(d.getHours()).toString()
-        }:${
-          String(d.getMinutes().toString()).length == 1
-            ? "0" + Number(d.getMinutes()).toString()
-            : Number(d.getMinutes()).toString()
-        }`;
-
-        const betData = {
-          username: user[0].username,
-          multiplier: multiplierValue,
-          betTime: betTime,
-          result: diceValue,
-          payout:
-            betResult == "green"
-              ? (parseFloat(betAmt) + parseFloat(profitAmt)).toFixed(8)
-              : `-${betAmt}`,
-          email: user[0].email,
-          chain: chain,
-          betResult: betResult == "green" ? true : false,
-          betAmt: betAmt,
-          profitAmt: betResult == "green" ? parseFloat(profitAmt) : 0.0,
-          totalBetAmt:
-            parseFloat(totalBetAmt) + parseFloat(maticPrice) * betAmt,
-        };
-        setTotalBetAmt(
-          (prev) => parseFloat(prev) + parseFloat(maticPrice) * betAmt
-        );
-        console.log("bet data : ", betData);
-        axios
-          .post("/bet", betData)
-          .then((res) => {
-            console.log(res);
-            return socket.emit("placeBet");
-          })
-          .then((res) => {
-            return axios.post("myBets", {
-              email: user[0].email,
-            });
-          })
-          .then((res) => {
-            setMyBets(res.data);
-            return res;
-          })
-          .then((res) => {
-            console.log("enable click");
-            if (document.getElementById("rollBtn").hasAttribute("disabled"))
-              document.getElementById("rollBtn").removeAttribute("disabled");
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
+  const handlePlaceBetBnb = (currentBet, currentProf, totalProf) => {
+    if (user && currentBet > 0.0) {
+      //place bet
+      const betData = {
+        chain: chain,
+        slider_value: sliderValue,
+        roll_type: toggleRollOver,
+        betAmt: currentBet,
+        multiplier: multiplierValue,
+      };
+      setTotalBetAmt((prev) => parseFloat(prev) + parseFloat(currentBet));
+      placeBet(user?.token, betData)
+        .then((res) => {
+          const betResult = res.data.result;
+          const diceValue = res.data.number;
+          //set dice position acc. to bet result
+          document.getElementById("dice").style.left = `calc(${Math.floor(
+            diceValue
+          )}% - 2rem)`;
+          //set dice result color acc to win/loss
+          document.getElementById("diceResult").style.color =
+            betResult == "win" ? "green" : "red";
+          setResult(parseFloat(diceValue.toFixed(2)));
+          //set return value
+          if (betResult == "win") {
+            setBnbWalletBalance(
+              (prev) => parseFloat(prev) + parseFloat(profitAmt)
+            );
+          } else {
+            setBnbWalletBalance(
+              (prev) => parseFloat(prev) - parseFloat(betAmt)
+            );
+          }
+          setShowDice("flex");
+          setTimeout(() => {
+            setShowDice("hidden");
+          }, 3000);
+          socket.emit("placeBet");
+          return getMyBets(user?.token, {});
+        })
+        .then((res) => {
+          setMyBets(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else {
-      const result = placeBet(sliderValue, toggleRollOver);
+      //place bet
+      const result = placeBetLocal(sliderValue, toggleRollOver);
       const betResult = result[0];
       const diceValue = result[1];
+
+      //set dice position acc. to bet result
       document.getElementById("dice").style.left = `calc(${Math.floor(
         diceValue
       )}% - 2rem)`;
-      //set return value
-      if (betResult == "green") {
-        setPolyWalletBalance(
-          (prev) => parseFloat(prev) + parseFloat(profitAmt)
-        );
-      } else {
-        setPolyWalletBalance((prev) => parseFloat(prev) - parseFloat(betAmt));
-      }
+      //set dice result color acc to win/loss
+      document.getElementById("diceResult").style.color =
+        betResult == "win" ? "green" : "red";
+      setResult(parseFloat(diceValue.toFixed(2)));
+
       setShowDice("flex");
       setTimeout(() => {
         setShowDice("hidden");
       }, 3000);
+    }
+  };
+  const handlePlaceBetPoly = (currentBet, currentProf, totalProf) => {
+    if (user && currentBet > 0.0) {
+      //place bet
+      const betData = {
+        chain: chain,
+        slider_value: sliderValue,
+        roll_type: toggleRollOver,
+        betAmt: currentBet,
+        multiplier: multiplierValue,
+      };
+      setTotalBetAmt((prev) => parseFloat(prev) + parseFloat(currentBet));
+      placeBet(user?.token, betData)
+        .then((res) => {
+          const betResult = res.data.result;
+          const diceValue = res.data.number;
+          //set dice position acc. to bet result
+          document.getElementById("dice").style.left = `calc(${Math.floor(
+            diceValue
+          )}% - 2rem)`;
+          //set dice result color acc to win/loss
+          document.getElementById("diceResult").style.color =
+            betResult == "win" ? "green" : "red";
+          setResult(parseFloat(diceValue.toFixed(2)));
+          //set return value
+          //set return value
+          if (betResult == "win") {
+            setPolyWalletBalance(
+              (prev) => parseFloat(prev) + parseFloat(profitAmt)
+            );
+          } else {
+            setPolyWalletBalance(
+              (prev) => parseFloat(prev) - parseFloat(betAmt)
+            );
+          }
+          setShowDice("flex");
+          setTimeout(() => {
+            setShowDice("hidden");
+          }, 3000);
+          socket.emit("placeBet");
+          return getMyBets(user?.token, {});
+        })
+        .then((res) => {
+          setMyBets(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      //place bet
+      const result = placeBetLocal(sliderValue, toggleRollOver);
+      const betResult = result[0];
+      const diceValue = result[1];
+
+      //set dice position acc. to bet result
+      document.getElementById("dice").style.left = `calc(${Math.floor(
+        diceValue
+      )}% - 2rem)`;
+      //set dice result color acc to win/loss
+      document.getElementById("diceResult").style.color =
+        betResult == "win" ? "green" : "red";
       setResult(parseFloat(diceValue.toFixed(2)));
-      document.getElementById("diceResult").style.color = betResult;
-      console.log("enable click");
-      if (document.getElementById("rollBtn").hasAttribute("disabled"))
-        document.getElementById("rollBtn").removeAttribute("disabled");
+
+      setShowDice("flex");
+      setTimeout(() => {
+        setShowDice("hidden");
+      }, 3000);
     }
   };
 

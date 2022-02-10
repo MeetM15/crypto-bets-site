@@ -1,8 +1,7 @@
-import axios from "axios";
 import { useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { BsCashStack } from "react-icons/bs";
-
+import { withdraw } from "../../services/withdrawService";
 const WithdrawForm = ({
   walletBalance,
   bnbWalletBalance,
@@ -16,29 +15,20 @@ const WithdrawForm = ({
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const handleWithdraw = (e) => {
     e.preventDefault();
-    if (user && user[0]) {
+    if (user) {
       const data = {
-        email: user[0].email,
         chain: withdrawChain,
         receiver: withdrawAddress,
         amt: amount,
       };
       console.log(data);
-      axios
-        .post("/withdraw", data)
+      withdraw(user?.token, data)
         .then((withdrawRes) => {
           console.log(withdrawRes);
-          return axios.post("/getUserData", {
-            email: userEmail,
-          });
-        })
-        .then((res) => {
-          setUser([res.data]);
           setIsWithdrawing(false);
           console.log(withdrawRes);
         })
         .catch((error) => {
-          setUser([]);
           console.log("error : ", error);
         });
     }
