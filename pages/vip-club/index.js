@@ -316,9 +316,10 @@ const VipClub = () => {
               <div className="font-medium text-xs text-black">
                 1 BNB = ${binancePrice}
               </div>
-              <div className="font-medium text-xs text-black">
+              {/* polygon */}
+              {/* <div className="font-medium text-xs text-black">
                 1 MATIC = ${maticPrice}
-              </div>
+              </div> */}
             </div>
             <div className="flex flex-wrap w-3/4 justify-evenly">
               <div className="flex flex-col items-start justify-between md:w-auto p-2">
