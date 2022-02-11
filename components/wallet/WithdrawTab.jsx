@@ -101,7 +101,8 @@ const WithdrawTab = ({
                   BNB
                 </span>
               </Menu.Item>
-              <Menu.Item>
+              {/* polygon */}
+              {/* <Menu.Item>
                 <span
                   className={
                     "px-2 py-0.5 sm:py-1 text-xs text-black flex cursor-pointer items-center justify-between font-medium w-max"
@@ -124,7 +125,7 @@ const WithdrawTab = ({
                   />
                   MATIC
                 </span>
-              </Menu.Item>
+              </Menu.Item> */}
             </Menu.Items>
           </Transition>
         </Menu>
