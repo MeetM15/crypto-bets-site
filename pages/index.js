@@ -1,3 +1,4 @@
+// removing polygon in next commit
 import Head from "next/head";
 import { useAuth } from "../lib/auth";
 import BettingForm from "../components/bettingForm/BettingForm";
